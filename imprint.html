@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Imprint | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.05; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; color: var(--frost-blue); text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none; }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+  .legal-page { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 120px 24px 100px; }
+  .legal-eyebrow { font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--frost-blue); margin-bottom: 16px; }
+  .legal-page h1 { font-family: 'Space Mono', monospace; font-size: clamp(32px, 5vw, 52px); font-weight: 700; letter-spacing: -2px; margin-bottom: 12px; }
+  .legal-meta { font-size: 13px; color: var(--muted); font-family: 'Space Mono', monospace; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .legal-page h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; margin: 40px 0 12px; }
+  .legal-page p { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 16px; }
+  .legal-page a { color: var(--frost-blue); text-decoration: none; }
+  .legal-page a:hover { text-decoration: underline; }
+  .info-block { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px 36px; margin-bottom: 28px; }
+  .info-block p { margin-bottom: 6px; }
+  .info-block p:last-child { margin-bottom: 0; }
+  .info-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--frost-blue); font-family: 'Space Mono', monospace; margin-bottom: 16px; }
+  footer { border-top: 1px solid var(--border); padding: 40px 48px; position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); }
+  .footer-logo-sm { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--frost-blue); font-size: 16px; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+  @media(max-width:600px){ nav { padding: 0 20px; } footer { flex-direction: column; gap: 16px; text-align: center; } }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
+    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+  </svg>
+</div>
+<nav>
+  <a class="nav-logo" href="index.html">❄ <span>FROST</span></a>
+  <a class="nav-back" href="index.html">← Back to Home</a>
+</nav>
+
+<div class="legal-page">
+  <div class="legal-eyebrow">Legal</div>
+  <h1>Imprint</h1>
+  <p class="legal-meta">Information pursuant to legal disclosure requirements</p>
+
+  <div class="info-block">
+    <div class="info-label">Project</div>
+    <p><strong>Name:</strong> Frost Client</p>
+    <p><strong>Type:</strong> Free, independent Minecraft client</p>
+  </div>
+
+  <div class="info-block">
+    <div class="info-label">Contact</div>
+    <p><strong>Discord:</strong> <a href="https://discord.gg/KhpsGSFgsx" target="_blank">discord.gg/KhpsGSFgsx</a></p>
+    <p><strong>YouTube:</strong> <a href="https://www.youtube.com/@zippoun" target="_blank">@zippoun</a></p>
+    <p><strong>TikTok:</strong> <a href="https://www.tiktok.com/@zippoun" target="_blank">@zippoun</a></p>
+  </div>
+
+  <h2>Disclaimer</h2>
+  <p>Frost is an independent project and is not affiliated with, endorsed by, or connected to Mojang AB or Microsoft Corporation. "Minecraft" is a trademark of Mojang AB. All product and company names mentioned are the trademarks or registered trademarks of their respective holders.</p>
+
+  <h2>Copyright Notice</h2>
+  <p>All content on this website and within the Frost client, unless otherwise stated, is © Frost 2026. Unauthorised reproduction or redistribution is prohibited.</p>
+
+  <h2>External Links</h2>
+  <p>This website contains links to external websites. We have no control over the content of those sites and accept no responsibility for them or for any loss or damage that may arise from your use of them.</p>
+</div>
+
+<footer>
+  <span class="footer-logo-sm">❄ FROST</span>
+  <div class="footer-links">
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Service</a>
+    <a href="imprint.html">Imprint</a>
+    <a href="index.html">Home</a>
+  </div>
+  <span>© Frost 2026</span>
+</footer>
+</body>
+</html>

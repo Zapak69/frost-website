@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Terms of Service | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.05; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; color: var(--frost-blue); text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none; }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+  .legal-page { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 120px 24px 100px; }
+  .legal-eyebrow { font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--frost-blue); margin-bottom: 16px; }
+  .legal-page h1 { font-family: 'Space Mono', monospace; font-size: clamp(32px, 5vw, 52px); font-weight: 700; letter-spacing: -2px; margin-bottom: 12px; }
+  .legal-meta { font-size: 13px; color: var(--muted); font-family: 'Space Mono', monospace; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .legal-page h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; margin: 40px 0 12px; }
+  .legal-page p { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 16px; }
+  .legal-page ul { padding-left: 20px; margin-bottom: 16px; }
+  .legal-page ul li { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 6px; }
+  .legal-page a { color: var(--frost-blue); text-decoration: none; }
+  .legal-page a:hover { text-decoration: underline; }
+  footer { border-top: 1px solid var(--border); padding: 40px 48px; position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); }
+  .footer-logo-sm { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--frost-blue); font-size: 16px; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+  @media(max-width:600px){ nav { padding: 0 20px; } footer { flex-direction: column; gap: 16px; text-align: center; } }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
+    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+  </svg>
+</div>
+<nav>
+  <a class="nav-logo" href="index.html">❄ <span>FROST</span></a>
+  <a class="nav-back" href="index.html">← Back to Home</a>
+</nav>
+
+<div class="legal-page">
+  <div class="legal-eyebrow">Legal</div>
+  <h1>Terms of Service</h1>
+  <p class="legal-meta">Last updated: June 11, 2026</p>
+
+  <h2>1. Acceptance of Terms</h2>
+  <p>By downloading, installing, or using the Frost Minecraft Client ("Frost", "the Software"), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, do not use Frost.</p>
+
+  <h2>2. License</h2>
+  <p>Frost is provided free of charge for personal, non-commercial use. You are granted a limited, non-exclusive, non-transferable license to install and use the Software on your personal devices. You may not redistribute, resell, or sublicense Frost without prior written permission.</p>
+
+  <h2>3. Permitted Use</h2>
+  <p>You may use Frost to:</p>
+  <ul>
+    <li>Play Minecraft on servers that permit the use of clients with the features Frost provides</li>
+    <li>Browse and install mods from Modrinth and CurseForge</li>
+    <li>Use built-in performance optimisations and cosmetics</li>
+  </ul>
+
+  <h2>4. Prohibited Use</h2>
+  <p>You may not use Frost to:</p>
+  <ul>
+    <li>Cheat, exploit, or gain unfair advantages on servers that prohibit such behaviour</li>
+    <li>Reverse-engineer, decompile, or modify Frost beyond what is expressly permitted</li>
+    <li>Distribute malware, phishing content, or illegal material through the client</li>
+    <li>Violate Mojang's Minecraft End User License Agreement</li>
+  </ul>
+
+  <h2>5. Disclaimer of Warranties</h2>
+  <p>Frost is provided "as is" without warranty of any kind. We do not guarantee that Frost will be error-free, uninterrupted, or compatible with all system configurations.</p>
+
+  <h2>6. Limitation of Liability</h2>
+  <p>To the maximum extent permitted by law, Frost and its team shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of or inability to use the Software.</p>
+
+  <h2>7. Third-Party Content</h2>
+  <p>Frost provides access to mods and content from third-party platforms such as Modrinth and CurseForge. We are not responsible for third-party content and encourage you to review the respective licenses before installing any mod.</p>
+
+  <h2>8. Modifications to Terms</h2>
+  <p>We reserve the right to update these Terms at any time. Continued use of Frost after any changes constitutes acceptance of the new terms.</p>
+
+  <h2>9. Contact</h2>
+  <p>Questions about these Terms? Join our <a href="https://discord.gg/KhpsGSFgsx" target="_blank">Discord server</a>.</p>
+</div>
+
+<footer>
+  <span class="footer-logo-sm">❄ FROST</span>
+  <div class="footer-links">
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Service</a>
+    <a href="imprint.html">Imprint</a>
+    <a href="index.html">Home</a>
+  </div>
+  <span>© Frost 2026</span>
+</footer>
+</body>
+</html>
