@@ -24,12 +24,56 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+
+  /* Disable native scroll — we drive it with JS */
+  html, body { overflow: hidden; height: 100%; }
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'Space Grotesk', sans-serif;
-    overflow-x: hidden;
+  }
+
+  /* ── SCROLL CONTAINER ── */
+  #scroll-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    z-index: 1;
+    will-change: transform;
+  }
+
+  /* ── CURSOR GLOW ── */
+  #cursor-glow {
+    position: fixed;
+    left: 0; top: 0;
+    width: 560px; height: 560px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(0,200,255,0.10) 0%,
+      rgba(79,200,248,0.04) 40%,
+      transparent 70%);
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0;
+    will-change: transform, opacity;
+    transition: opacity 0.35s ease;
+    mix-blend-mode: screen;
+  }
+
+  /* ── SCROLL PROGRESS BAR ── */
+  #scroll-progress {
+    position: fixed;
+    top: 68px; left: 0; right: 0;
+    height: 2px;
+    z-index: 99;
+    background: transparent;
+  }
+  #scroll-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--frost-deep) 0%, var(--frost-glow) 50%, var(--frost-blue) 100%);
+    box-shadow: 0 0 5px rgba(0,200,255,0.55);
+    will-change: width;
   }
 
   /* ── TOPO BACKGROUND ── */
@@ -47,6 +91,7 @@
     backdrop-filter: blur(20px);
     background: rgba(8,12,16,0.75);
     border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
   }
   .nav-logo {
     font-family: 'Space Mono', monospace;
@@ -100,7 +145,12 @@
     text-transform: uppercase;
     margin-bottom: 32px;
   }
-  .hero-badge .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--green); border-radius: 50%;
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
   @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
   h1 {
     font-family: 'Space Mono', monospace;
@@ -112,9 +162,28 @@
   }
   h1 .frost-word {
     display: block;
-    background: linear-gradient(135deg, #a8e6f8 0%, #4fc8f8 40%, #1a7fc4 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 40px rgba(79,200,248,0.4));
+    background: linear-gradient(
+      90deg,
+      #1a7fc4 0%,
+      #4fc8f8 18%,
+      #a8e6f8 30%,
+      #e8f8ff 40%,
+      #a8e6f8 50%,
+      #4fc8f8 62%,
+      #00c8ff 76%,
+      #1a7fc4 100%
+    );
+    background-size: 280% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 40px rgba(79,200,248,0.5));
+    animation: frostShimmer 5s ease-in-out infinite;
+  }
+  @keyframes frostShimmer {
+    0%   { background-position: 100% 50%; }
+    50%  { background-position:   0% 50%; }
+    100% { background-position: 100% 50%; }
   }
   h1 .sub-word { display: block; color: var(--text); font-size: 0.45em; letter-spacing: -1px; margin-top: 8px; }
   .hero-desc {
@@ -130,7 +199,26 @@
     transition: box-shadow 0.2s, transform 0.15s;
     box-shadow: 0 0 28px rgba(61,255,114,0.35);
     font-family: 'Space Mono', monospace;
+    position: relative;
+    isolation: isolate;
   }
+  /* Cursor-direction border glow — JS sets --mx/--my relative to button */
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 13px;
+    background: radial-gradient(
+      circle 70px at var(--mx, 50%) var(--my, 50%),
+      rgba(61,255,114,0.75) 0%,
+      rgba(61,255,114,0.20) 45%,
+      transparent 70%
+    );
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+  .btn-primary:hover::before { opacity: 1; }
   .btn-primary:hover { box-shadow: 0 0 44px rgba(61,255,114,0.6); transform: translateY(-2px); }
   .btn-secondary {
     background: transparent;
@@ -270,11 +358,6 @@
     position: absolute; inset: 0;
     background: radial-gradient(ellipse at 30% 30%, rgba(79,200,248,0.08), transparent 60%);
   }
-  .pixel-text {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px; color: var(--frost-blue);
-    line-height: 2; opacity: 0.8;
-  }
   .mock-row {
     display: flex; align-items: center; gap: 12px;
     padding: 12px 16px; border-radius: 8px;
@@ -293,8 +376,19 @@
   }
   .mock-badge.green { background: rgba(61,255,114,0.15); color: var(--green); }
 
-  /* ── DIVIDER ── */
+  /* ── DIVIDER (kept for reference) ── */
   .divider { height: 1px; background: var(--border); margin: 0 48px; }
+
+  /* ── SECTION GAP — blank breathing room between sections ── */
+  .section-gap {
+    height: 80vh;
+    min-height: 200px;
+  }
+
+  .section-gap-small {
+    height: 40vh;
+    min-height: 200px;
+  }
 
   /* ── DOWNLOAD CTA ── */
   .cta-section {
@@ -303,13 +397,7 @@
     position: relative;
     overflow: hidden;
   }
-  .cta-section::before {
-    content: '';
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    width: 700px; height: 400px;
-    background: radial-gradient(ellipse, rgba(0,200,255,0.1) 0%, transparent 65%);
-    pointer-events: none;
-  }
+  .cta-section::before { display: none; }
   .cta-section h2 { font-size: clamp(40px, 6vw, 72px); margin-bottom: 20px; }
   .cta-section p { color: var(--muted); font-size: 18px; max-width: 480px; margin: 0 auto 48px; }
 
@@ -340,15 +428,109 @@
     font-size: 13px; color: var(--muted);
   }
 
-  /* ── SCROLL REVEAL ── */
+  /* ── SCROLL-DRIVEN REVEAL ──
+     --p is set by JS (0..1) directly from scroll position.
+     No CSS transitions — the value tracks scroll 1:1.
+     Fast scroll → big --p jumps → animation appears fast.
+     Slow scroll → small --p changes → animation appears slow.
+  */
   .reveal {
-    opacity: 0; transform: translateY(32px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
+    opacity: var(--p, 0);
+    transform: translateY(calc((1 - var(--p, 0)) * 40px));
+    will-change: opacity, transform;
   }
-  .reveal.visible { opacity: 1; transform: none; }
-  .reveal-delay-1 { transition-delay: 0.1s; }
-  .reveal-delay-2 { transition-delay: 0.2s; }
-  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-left {
+    opacity: var(--p, 0);
+    transform: translateX(calc((1 - var(--p, 0)) * -56px));
+    will-change: opacity, transform;
+  }
+  .reveal-right {
+    opacity: var(--p, 0);
+    transform: translateX(calc((1 - var(--p, 0)) * 56px));
+    will-change: opacity, transform;
+  }
+  .reveal-scale {
+    opacity: var(--p, 0);
+    transform: scale(calc(0.93 + var(--p, 0) * 0.07)) translateY(calc((1 - var(--p, 0)) * 24px));
+    will-change: opacity, transform;
+  }
+  /* delay classes are consumed by JS to stagger; no CSS rules needed */
+
+  /* ── DOWNLOAD BUTTON ── */
+  .btn-download {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .btn-inner {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    pointer-events: none;
+    transition: transform 0.42s cubic-bezier(0.4,0,0.2,1), opacity 0.36s ease;
+  }
+  .btn-inner--loading {
+    position: absolute; inset: 0;
+    transform: translateY(110%);
+    opacity: 0;
+  }
+  .btn-download.is-loading .btn-inner--default {
+    transform: translateY(-110%);
+    opacity: 0;
+  }
+  .btn-download.is-loading .btn-inner--loading {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .btn-dl-icon {
+    font-size: 1.1em;
+    display: inline-block;
+    transition: transform 0.25s ease;
+  }
+  .btn-download:hover .btn-dl-icon { transform: translateY(3px); }
+  .btn-spinner {
+    width: 17px; height: 17px;
+    border: 2.5px solid rgba(0,0,0,0.28);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── FPS BARS ── */
+  .fps-entry { margin-bottom: 24px; }
+  .fps-entry:last-of-type { margin-bottom: 0; }
+  .fps-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .fps-label { font-size: 13px; color: var(--muted); }
+  .fps-value { font-size: 13px; font-family: 'Space Mono', monospace; color: var(--text); }
+  .fps-label.is-frost, .fps-value.is-frost { color: var(--frost-blue); }
+  .fps-track { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .fps-fill {
+    height: 100%; border-radius: 4px; width: 0;
+    transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* Muted bars: static colour, no gradient animation */
+  .fps-fill--muted { background: #2a404f; }
+  /* Frost bar: animated sliding gradient */
+  .fps-fill--frost {
+    background: linear-gradient(90deg,
+      var(--frost-deep) 0%,
+      #2196a8 30%,
+      var(--frost-blue) 50%,
+      #2196a8 70%,
+      var(--frost-deep) 100%);
+    background-size: 300% 100%;
+    box-shadow: 0 0 7px rgba(0,200,255,0.20);
+  }
+  @keyframes gradientSlide {
+    0%   { background-position: 100% 50%; }
+    100% { background-position: -100% 50%; }
+  }
+  .fps-fill.active { width: var(--w); }
+  .fps-fill--frost.active { animation: gradientSlide 6s linear infinite; }
+  /* No animation on .fps-fill--muted.active — intentionally left plain */
 
   /* ── ICE PARTICLES ── */
   #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
@@ -370,12 +552,10 @@
 </head>
 <body>
 
-<!-- TOPOGRAPHIC BACKGROUND -->
+<!-- FIXED BACKGROUND LAYERS (outside scroll container) -->
 <div class="topo-bg">
   <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style>
-    </defs>
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
     <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
     <path class="tline" d="M-100,270 C80,250 200,310 380,270 S600,190 760,265 S1000,340 1180,285 S1380,225 1500,265"/>
     <path class="tline" d="M-100,340 C60,320 180,380 360,340 S580,255 740,330 S980,400 1160,345 S1360,290 1500,335"/>
@@ -390,12 +570,15 @@
   </svg>
 </div>
 
-<!-- ICE PARTICLES CANVAS -->
 <canvas id="particles"></canvas>
+<div id="cursor-glow"></div>
 
-<!-- NAV -->
+<!-- THIN SCROLL PROGRESS BAR (below nav) -->
+<div id="scroll-progress"><div id="scroll-bar"></div></div>
+
+<!-- NAV (fixed, outside scroll container) -->
 <nav>
-  <a class="nav-logo" href="#"><span>❄</span> FROST</a>
+  <a class="nav-logo" href="#top">❄ <span>FROST</span></a>
   <ul class="nav-links">
     <li><a href="#features">Features</a></li>
     <li><a href="#mods">Mods</a></li>
@@ -405,8 +588,12 @@
   <a href="#download" class="nav-cta">Download Free</a>
 </nav>
 
+<!-- ═══ SCROLL CONTAINER — all page content lives here ═══ -->
+<div id="scroll-container">
+
 <!-- HERO -->
-<section class="hero">
+<div>
+<section class="hero" id="top">
   <div class="hero-glow"></div>
   <div class="hero-badge">
     <span class="dot"></span>
@@ -417,7 +604,7 @@
     <span class="sub-word">Minecraft Client</span>
   </h1>
   <p class="hero-desc">
-    A fast, clean Minecraft client built for players who care about performance, control, and looking good doing it.
+    A modern Minecraft Client built around speed, customization, and simplicity.
   </p>
   <div class="hero-actions">
     <a href="#download" class="btn-primary">▶ Play Now</a>
@@ -425,6 +612,9 @@
   </div>
   <p class="hero-version">Supports Minecraft 1.21.11 · Free forever</p>
 </section>
+</div>
+
+<div class="section-gap-small"></div>
 
 <!-- SCREENSHOT PREVIEW -->
 <div class="preview-section">
@@ -435,7 +625,7 @@
 </div>
 
 <!-- STATS BAR -->
-<div class="stats-bar reveal">
+<div class="stats-bar reveal-scale">
   <div class="stat-item">
     <div class="stat-num">60+</div>
     <div class="stat-label">Built-in Mods</div>
@@ -454,11 +644,14 @@
   </div>
 </div>
 
+<div class="section-gap"></div>
+
 <!-- FEATURES SECTION -->
+<div>
 <section class="features-section" id="features">
   <div class="features-header reveal">
     <div class="section-eyebrow">What's inside</div>
-    <h2>Everything you need.<br/><span class="accent">Nothing you don't.</span></h2>
+    <h2>Everything you use.<br/><span class="accent">Nothing you lose.</span></h2>
     <p class="section-desc">Frost ships with everything built in. No manual file installs, no mod manager chaos.</p>
   </div>
   <div class="features-grid">
@@ -483,29 +676,32 @@
       <p>Browse Modrinth & CurseForge mods and install in one click.</p>
     </div>
     <div class="feature-card reveal reveal-delay-2">
-      <div class="feature-icon">🗂️</div>
-      <h3>Profiles</h3>
-      <p>Switch between Minecraft versions instantly. Each profile has its own mods and settings.</p>
+      <div class="feature-icon">👁️</div>
+      <h3>Aspect Ratio</h3>
+      <p>Change your aspect ratio in-game. No extra software required.</p>
     </div>
     <div class="feature-card reveal reveal-delay-3">
       <div class="feature-icon">➕</div>
-      <h3>Other</h3>
+      <h3>More...</h3>
       <p>Discover more features in-game.</p>
     </div>
   </div>
 </section>
+</div>
 
-<div class="divider"></div>
+<div class="section-gap"></div>
+
 
 <!-- SPLIT SECTION: MODS -->
+<div>
 <section id="mods">
-<div class="split-section reveal">
-  <div class="split-text">
+<div class="split-section">
+  <div class="split-text reveal-left">
     <div class="section-eyebrow">Mod Browser</div>
     <h2>Install mods<br/><span class="accent">in seconds.</span></h2>
-    <p class="section-desc">Browse, enable, and configure mods directly inside Frost. Modrinth and CurseForge in one place — no manual file dropping, no version mismatch headaches.</p>
+    <p class="section-desc">Browse, enable, and configure mods directly inside Frost.</p>
   </div>
-  <div class="split-visual">
+  <div class="split-visual reveal-right">
     <div class="visual-box">
       <div class="mock-row">
         <div class="mock-dot green"></div>
@@ -536,73 +732,112 @@
   </div>
 </div>
 </section>
+</div>
 
-<div class="divider"></div>
+<div>
 
 <!-- SPLIT SECTION: PERFORMANCE -->
 <section id="performance">
-<div class="split-section reverse reveal">
-  <div class="split-text">
+<div class="split-section reverse">
+  <div class="split-text reveal-right">
     <div class="section-eyebrow">Performance</div>
     <h2>Faster than<br/><span class="accent">competition.</span></h2>
     <p class="section-desc">Frost ships with Vulkan by default. You get a performance boost the moment you press play — even on older hardware.</p>
   </div>
-  <div class="split-visual">
+  <div class="split-visual reveal-left">
     <div class="visual-box">
-      <div style="margin-bottom:24px;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-          <span style="font-size:13px;color:var(--muted);">Vanilla Minecraft</span>
-          <span style="font-size:13px;font-family:'Space Mono',monospace;color:var(--text);">85 FPS</span>
+
+      <div class="fps-entry">
+        <div class="fps-row">
+          <span class="fps-label">Vanilla Minecraft</span>
+          <span class="fps-value">85 FPS</span>
         </div>
-        <div style="height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;">
-          <div style="height:100%;width:10%;background:var(--muted);border-radius:4px;"></div>
-        </div>
-      </div>
-      <div style="margin-bottom:24px;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-          <span style="font-size:13px;color:var(--muted);">Other PvP Clients</span>
-          <span style="font-size:13px;font-family:'Space Mono',monospace;color:var(--text);">250 FPS</span>
-        </div>
-        <div style="height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;">
-          <div style="height:100%;width:20%;background:var(--muted);border-radius:4px;"></div>
+        <div class="fps-track">
+          <div class="fps-fill fps-fill--muted" style="--w:10%; transition-delay:0.05s;"></div>
         </div>
       </div>
-      <div style="margin-bottom:24px;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-          <span style="font-size:13px;color:var(--muted);">FoxClient</span>
-          <span style="font-size:13px;font-family:'Space Mono',monospace;color:var(--text);">490 FPS</span>
+
+      <div class="fps-entry">
+        <div class="fps-row">
+          <span class="fps-label">Other PvP Clients</span>
+          <span class="fps-value">250 FPS</span>
         </div>
-        <div style="height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;">
-          <div style="height:100%;width:45%;background:var(--muted);border-radius:4px;"></div>
-        </div>
-      </div>
-      <div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-          <span style="font-size:13px;color:var(--frost-blue);">❄ Frost Client</span>
-          <span style="font-size:13px;font-family:'Space Mono',monospace;color:var(--frost-blue);">810 FPS</span>
-        </div>
-        <div style="height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;">
-          <div style="height:100%;width:100%;background:linear-gradient(90deg,var(--frost-deep),var(--frost-blue));border-radius:4px;box-shadow:0 0 12px rgba(79,200,248,0.4);"></div>
+        <div class="fps-track">
+          <div class="fps-fill fps-fill--muted" style="--w:20%; transition-delay:0.2s;"></div>
         </div>
       </div>
+
+      <div class="fps-entry">
+        <div class="fps-row">
+          <span class="fps-label">FoxClient</span>
+          <span class="fps-value">490 FPS</span>
+        </div>
+        <div class="fps-track">
+          <div class="fps-fill fps-fill--muted" style="--w:45%; transition-delay:0.35s;"></div>
+        </div>
+      </div>
+
+      <div class="fps-entry">
+        <div class="fps-row">
+          <span class="fps-label is-frost">❄ Frost Client</span>
+          <span class="fps-value is-frost">810 FPS</span>
+        </div>
+        <div class="fps-track">
+          <div class="fps-fill fps-fill--frost" style="--w:100%; transition-delay:0.5s;"></div>
+        </div>
+      </div>
+
       <p style="font-size:12px;color:var(--muted);margin-top:20px;">Tested on RTX 3060ti · 2160p · Render distance 20 chunks</p>
     </div>
   </div>
 </div>
 </section>
 
-<div class="divider"></div>
+</div>
+<div class="section-gap"></div>
 
 <!-- DOWNLOAD CTA -->
+<div>
 <section class="cta-section" id="download">
   <div class="section-eyebrow reveal" style="text-align:center;">Free download</div>
   <h2 class="reveal">Ready to play<br/><span class="accent">differently?</span></h2>
   <p class="reveal">Download Frost for free and experience Minecraft the way it was meant to feel — fast, personal, and yours.</p>
-  <div class="hero-actions reveal">
-    <a href="https://modrinth.com/modpack/frost-client" target=_blank class="btn-primary" style="font-size:18px;padding:20px 56px;">▶ Download Frost</a>
-  </div>
-  <p class="hero-version reveal" style="margin-top:24px;">v1.21.11 · Windows · macOS · Linux</p>
+<div class="hero-actions reveal reveal-delay-1">
+  <a id="downloadBtn"
+     href="#"
+     class="btn-primary btn-download"
+     style="font-size:18px;padding:20px 56px;">
+    <span class="btn-inner btn-inner--default">
+      <span class="btn-dl-icon">↓</span>
+      <span>Download Frost</span>
+    </span>
+    <span class="btn-inner btn-inner--loading">
+      <div class="btn-spinner"></div>
+      <span>Downloading...</span>
+    </span>
+  </a>
+</div>
+
+<script>
+document.getElementById("downloadBtn").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    this.classList.add("loading");
+
+    setTimeout(() => {
+        window.open(
+            "https://modrinth.com/modpack/frost-client",
+            "_blank"
+        );
+    }, 2000);
+});
+</script>
+  <p class="hero-version reveal reveal-delay-2" style="margin-top:24px;">v1.21.11 · Windows · macOS · Linux</p>
 </section>
+</div>
+
+<div class="section-gap"></div>
+<div class="section-gap"></div>
 
 <!-- FOOTER -->
 <footer>
@@ -619,9 +854,9 @@
     </div>
     <div class="footer-col">
       <h4>Legal</h4>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Imprint</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="imprint.html">Imprint</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -632,67 +867,283 @@
   </div>
 </footer>
 
+</div><!-- /#scroll-container -->
+
 <script>
-// ── ICE PARTICLE CANVAS ──
+// ═══════════════════════════════════════════════
+//  ICE PARTICLE CANVAS
+// ═══════════════════════════════════════════════
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
 let W, H, particles = [];
 
-function resize() {
+function resizeCanvas() {
   W = canvas.width = window.innerWidth;
   H = canvas.height = window.innerHeight;
 }
-resize();
-window.addEventListener('resize', resize);
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-function randomSnowflake() {
-  return {
-    x: Math.random() * W,
-    y: Math.random() * H,
-    r: Math.random() * 1.5 + 0.5,
-    speed: Math.random() * 0.4 + 0.1,
-    drift: (Math.random() - 0.5) * 0.3,
-    opacity: Math.random() * 0.4 + 0.1
-  };
-}
+for (let i = 0; i < 100; i++) particles.push({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  r: Math.random() * 1.5 + 0.5,
+  speed: Math.random() * 0.4 + 0.1,
+  drift: (Math.random() - 0.5) * 0.3,
+  opacity: Math.random() * 0.4 + 0.1
+});
 
-for (let i = 0; i < 100; i++) particles.push(randomSnowflake());
-
-function animateParticles() {
+(function animateParticles() {
   ctx.clearRect(0, 0, W, H);
-  for (let p of particles) {
+  for (const p of particles) {
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
     ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
     ctx.fill();
-    p.y += p.speed;
-    p.x += p.drift;
+    p.y += p.speed; p.x += p.drift;
     if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
     if (p.x > W + 10) p.x = -10;
     if (p.x < -10) p.x = W + 10;
   }
   requestAnimationFrame(animateParticles);
+})();
+
+// ═══════════════════════════════════════════════
+//  SMOOTH SCROLL ENGINE
+//  — wheel/touch/keyboard all update scrollTarget
+//  — rAF lerps scrollCurrent toward scrollTarget
+//  — lerpFactor increases with wheel velocity so
+//    fast scrolling = snappier, slow = floaty
+// ═══════════════════════════════════════════════
+const scroller   = document.getElementById('scroll-container');
+const scrollBar  = document.getElementById('scroll-bar');
+const navEl      = document.querySelector('nav');
+const fpsFills   = document.querySelectorAll('.fps-fill');
+const perfSect   = document.getElementById('performance');
+
+let scrollTarget  = 0;
+let scrollCurrent = 0;
+let scrollVel     = 0;   // momentum velocity — px/frame, decays each tick
+// navAnimTarget: when set, tick() slowly advances scrollTarget toward it
+// so nav-link scrolls are cinematic and let reveal animations play
+let navAnimTarget = null;
+
+function maxScroll() {
+  return Math.max(0, scroller.offsetHeight - window.innerHeight);
 }
-animateParticles();
 
-// ── SCROLL REVEAL ──
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-}, { threshold: 0.12 });
-reveals.forEach(el => observer.observe(el));
+// — Wheel — accumulate into momentum velocity; tick() applies it gradually
+window.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  navAnimTarget = null;
+  const delta = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY;
+  scrollVel += delta * 0.13;
+  scrollVel = Math.max(-500, Math.min(500, scrollVel));
+}, { passive: false });
 
-// ── HERO IMAGE: load real screenshot if available ──
-// The hero image placeholder can be replaced with your actual screenshot
-// by swapping the src of #heroImg to your image path.
+// — Touch —
+let touchY = 0;
+window.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+window.addEventListener('touchmove',  (e) => {
+  navAnimTarget = null;
+  const dy = (touchY - e.touches[0].clientY) * 2;
+  touchY = e.touches[0].clientY;
+  scrollVel += dy * 0.18;
+  scrollVel = Math.max(-500, Math.min(500, scrollVel));
+}, { passive: true });
 
-// ── NAV SCROLL EFFECT ──
-window.addEventListener('scroll', () => {
-  const nav = document.querySelector('nav');
-  nav.style.background = window.scrollY > 40
-    ? 'rgba(8,12,16,0.95)'
-    : 'rgba(8,12,16,0.75)';
+// — Keyboard — direct jump, no momentum (precision navigation)
+window.addEventListener('keydown', (e) => {
+  const map = {
+    ArrowDown: 80, ArrowUp: -80,
+    PageDown:  window.innerHeight * 0.9,
+    PageUp:   -window.innerHeight * 0.9,
+    End:  Infinity, Home: -Infinity
+  };
+  if (e.key in map) {
+    e.preventDefault();
+    navAnimTarget = null;
+    scrollVel = 0;
+    scrollTarget = Math.max(0, Math.min(scrollTarget + map[e.key], maxScroll()));
+  }
 });
+
+// — Anchor links — slow animated scroll so reveal animations play along the way
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const id = link.getAttribute('href').slice(1);
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    const layoutY = target.getBoundingClientRect().top + scrollCurrent - 80;
+    // Set navAnimTarget — tick() will slowly advance scrollTarget toward it
+    navAnimTarget = Math.max(0, Math.min(layoutY, maxScroll()));
+    scrollVel = 0;
+  });
+});
+
+// ═══════════════════════════════════════════════
+//  SCROLL-DRIVEN REVEAL
+//  Each .reveal* element gets --p (0–1) set live.
+//  No CSS transitions — the change tracks scroll.
+// ═══════════════════════════════════════════════
+const revealEls = [...document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale')];
+const DELAY_MAP = { 'reveal-delay-1': 80, 'reveal-delay-2': 160, 'reveal-delay-3': 240,
+                    'reveal-delay-4': 340, 'reveal-delay-5': 440 };
+
+// Pre-compute delay per element (in px, used as start offset)
+revealEls.forEach(el => {
+  el._delayPx = 0;
+  for (const [cls, px] of Object.entries(DELAY_MAP)) {
+    if (el.classList.contains(cls)) el._delayPx = px;
+  }
+});
+
+// Piecewise reveal — tuned for blank-background breathing room:
+//  • Bottom 22% of viewport: dead zone — nothing appears here
+//  • 78%→30% from top:       entering (ramps 0→1 over 48% vh)
+//  • 30%→16% from top:       fully visible
+//  • 16%→ -14% from top:     exiting quickly (ramps 1→0 over 30% vh)
+//  • Above −14%:             gone
+function getRevealP(rect, delayPx) {
+  const vh         = window.innerHeight;
+  const enterStart = vh * 0.78 - delayPx;        // dead zone: nothing below this threshold
+  const enterEnd   = vh * 0.30;                  // fully visible once top clears 30% from top
+  const exitStart  = vh * 0.16;                  // start disappearing at 16% from top
+  const exitEnd    = -vh * 0.14;                 // fully gone 14% above viewport
+
+  if (rect.top > enterStart) return 0;
+  if (rect.top < exitEnd)    return 0;
+  if (rect.top >= enterEnd)  return (enterStart - rect.top) / (enterStart - enterEnd);
+  if (rect.top >= exitStart) return 1;
+  return (rect.top - exitEnd) / (exitStart - exitEnd);
+}
+
+function updateReveal() {
+  revealEls.forEach(el => {
+    const raw = getRevealP(el.getBoundingClientRect(), el._delayPx);
+    el.style.setProperty('--p', Math.max(0, Math.min(1, raw)).toFixed(4));
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  FPS BAR ACTIVATION
+// ═══════════════════════════════════════════════
+function updateFps() {
+  if (!perfSect) return;
+  const r  = perfSect.getBoundingClientRect();
+  const vh = window.innerHeight;
+  const on = r.top < vh * 0.72 && r.bottom > 0;
+  fpsFills.forEach(f => f.classList.toggle('active', on));
+}
+
+// ═══════════════════════════════════════════════
+//  MAIN ANIMATION LOOP
+// ═══════════════════════════════════════════════
+function tick() {
+  if (navAnimTarget !== null) {
+    // Cinematic nav scroll: slowly ease scrollTarget toward the destination
+    scrollVel = 0;
+    const remaining = navAnimTarget - scrollTarget;
+    if (Math.abs(remaining) < 1) {
+      scrollTarget = navAnimTarget;
+      navAnimTarget = null;
+    } else {
+      scrollTarget += Math.sign(remaining) * Math.max(Math.abs(remaining) * 0.025, 3);
+      scrollTarget = Math.max(0, Math.min(scrollTarget, maxScroll()));
+    }
+  } else {
+    // Momentum scroll: apply velocity then decay (ease-in / coast / ease-out)
+    scrollTarget = Math.max(0, Math.min(scrollTarget + scrollVel, maxScroll()));
+    scrollVel *= 0.88;
+    if (Math.abs(scrollVel) < 0.4) scrollVel = 0;
+  }
+
+  // Smooth lerp from current toward target (adds a soft visual follow)
+  const diff = scrollTarget - scrollCurrent;
+  if (Math.abs(diff) > 0.05) {
+    scrollCurrent += diff * 0.10;
+    scroller.style.transform = `translateY(${-scrollCurrent}px)`;
+
+    // Scroll progress bar
+    const pct = maxScroll() > 0 ? (scrollCurrent / maxScroll()) * 100 : 0;
+    scrollBar.style.width = pct.toFixed(2) + '%';
+
+    // Nav tint
+    navEl.style.background = scrollCurrent > 40
+      ? 'rgba(8,12,16,0.95)'
+      : 'rgba(8,12,16,0.75)';
+
+    updateReveal();
+    updateFps();
+  }
+
+  requestAnimationFrame(tick);
+}
+
+// Recalculate on resize
+window.addEventListener('resize', () => {
+  scrollTarget = Math.min(scrollTarget, maxScroll());
+  updateReveal();
+});
+
+// Kick off — updateReveal first so elements in view get correct --p on load
+updateReveal();
+tick();
+
+// ═══════════════════════════════════════════════
+//  CURSOR GLOW
+//  Follows mouse, hides over interactive elements
+// ═══════════════════════════════════════════════
+const cursorGlow = document.getElementById('cursor-glow');
+const HALF = 280; // half of 560px glow size
+
+document.addEventListener('mousemove', (e) => {
+  cursorGlow.style.transform = `translate(${e.clientX - HALF}px,${e.clientY - HALF}px)`;
+
+  // elementFromPoint ignores pointer-events:none elements
+  const under = document.elementFromPoint(e.clientX, e.clientY);
+  const isInteractive = under && under.closest(
+    'a, button, nav, [class*="btn"], .feature-card, .mock-row, .stat-item, .footer-col'
+  );
+  cursorGlow.style.opacity = isInteractive ? '0' : '1';
+});
+
+document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+
+// ═══════════════════════════════════════════════
+//  BUTTON BORDER GLOW — tracks cursor direction
+//  Updates --mx/--my (percentage of button size)
+//  so the ::before radial-gradient follows the cursor
+// ═══════════════════════════════════════════════
+document.querySelectorAll('.btn-primary').forEach(btn => {
+  btn.addEventListener('mousemove', (e) => {
+    const r = btn.getBoundingClientRect();
+    btn.style.setProperty('--mx', ((e.clientX - r.left) / r.width  * 100).toFixed(1) + '%');
+    btn.style.setProperty('--my', ((e.clientY - r.top)  / r.height * 100).toFixed(1) + '%');
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.removeProperty('--mx');
+    btn.style.removeProperty('--my');
+  });
+});
+
+// ═══════════════════════════════════════════════
+//  DOWNLOAD BUTTON
+// ═══════════════════════════════════════════════
+const dlBtn = document.getElementById('downloadBtn');
+if (dlBtn) {
+  dlBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    if (this.classList.contains('is-loading')) return;
+    this.classList.add('is-loading');
+    // Open link mid-animation
+    setTimeout(() => window.open('https://modrinth.com/modpack/frost-client', '_blank'), 500);
+    // Reset after ~3 seconds total
+    setTimeout(() => this.classList.remove('is-loading'), 3000);
+  });
+}
 </script>
 </body>
 </html>
