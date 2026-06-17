@@ -10,6 +10,7 @@
 <style>
   :root {
     --bg: #080c10;
+    --red: #d41212;
     --bg2: #0d1520;
     --surface: #111d2b;
     --surface2: #162233;
@@ -25,7 +26,6 @@
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Disable native scroll — we drive it with JS */
   html, body { overflow: hidden; height: 100%; }
   body {
     background: var(--bg);
@@ -33,7 +33,6 @@
     font-family: 'Space Grotesk', sans-serif;
   }
 
-  /* ── SCROLL CONTAINER ── */
   #scroll-container {
     position: fixed;
     top: 0; left: 0;
@@ -42,7 +41,6 @@
     will-change: transform;
   }
 
-  /* ── CURSOR GLOW ── */
   #cursor-glow {
     position: fixed;
     left: 0; top: 0;
@@ -60,7 +58,6 @@
     mix-blend-mode: screen;
   }
 
-  /* ── SCROLL PROGRESS BAR ── */
   #scroll-progress {
     position: fixed;
     top: 68px; left: 0; right: 0;
@@ -76,13 +73,11 @@
     will-change: width;
   }
 
-  /* ── TOPO BACKGROUND ── */
   .topo-bg {
     position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
   }
   .topo-bg svg { width: 100%; height: 100%; opacity: 0.07; }
 
-  /* ── NAV ── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
@@ -119,7 +114,6 @@
   }
   .nav-cta:hover { box-shadow: 0 0 32px rgba(79,200,248,0.6); transform: translateY(-1px); }
 
-  /* ── HERO ── */
   .hero {
     position: relative; z-index: 1;
     min-height: 100vh;
@@ -202,7 +196,6 @@
     position: relative;
     isolation: isolate;
   }
-  /* Cursor-direction border glow — JS sets --mx/--my relative to button */
   .btn-primary::before {
     content: '';
     position: absolute;
@@ -220,6 +213,30 @@
   }
   .btn-primary:hover::before { opacity: 1; }
   .btn-primary:hover { box-shadow: 0 0 44px rgba(61,255,114,0.6); transform: translateY(-2px); }
+
+  .coming-soon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .coming-soon-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--muted);
+  }
+  .coming-soon-countdown {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(44px, 9vw, 80px);
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--frost-blue);
+    text-shadow: 0 0 36px rgba(79,200,248,0.5);
+  }
+
   .btn-secondary {
     background: transparent;
     border: 1px solid var(--border);
@@ -232,7 +249,6 @@
   .btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.06); }
   .hero-version { font-size: 12px; color: var(--muted); margin-top: 20px; font-family: 'Space Mono', monospace; }
 
-  /* ── SCREENSHOT PREVIEW ── */
   .preview-section {
     position: relative; z-index: 1;
     padding: 0 24px 120px;
@@ -260,7 +276,6 @@
     filter: blur(20px);
   }
 
-  /* ── STATS BAR ── */
   .stats-bar {
     position: relative; z-index: 1;
     display: flex; justify-content: center; gap: 0;
@@ -284,7 +299,6 @@
   }
   .stat-label { font-size: 13px; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.8px; }
 
-  /* ── SECTIONS ── */
   section { position: relative; z-index: 1; }
   .section-eyebrow {
     font-family: 'Space Mono', monospace;
@@ -299,7 +313,6 @@
   h2 .accent { color: var(--frost-blue); }
   .section-desc { font-size: 17px; color: var(--muted); line-height: 1.65; max-width: 480px; }
 
-  /* ── FEATURES GRID ── */
   .features-section { padding: 0 24px 120px; max-width: 1160px; margin: 0 auto; }
   .features-header { text-align: center; margin-bottom: 72px; }
   .features-header .section-desc { margin: 0 auto; }
@@ -337,7 +350,6 @@
   .feature-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
   .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
 
-  /* ── SPLIT SECTIONS ── */
   .split-section {
     padding: 100px 48px;
     max-width: 1160px; margin: 0 auto;
@@ -376,10 +388,8 @@
   }
   .mock-badge.green { background: rgba(61,255,114,0.15); color: var(--green); }
 
-  /* ── DIVIDER (kept for reference) ── */
   .divider { height: 1px; background: var(--border); margin: 0 48px; }
 
-  /* ── SECTION GAP — blank breathing room between sections ── */
   .section-gap {
     height: 80vh;
     min-height: 200px;
@@ -390,7 +400,6 @@
     min-height: 200px;
   }
 
-  /* ── DOWNLOAD CTA ── */
   .cta-section {
     padding: 160px 24px;
     text-align: center;
@@ -401,7 +410,6 @@
   .cta-section h2 { font-size: clamp(40px, 6vw, 72px); margin-bottom: 20px; }
   .cta-section p { color: var(--muted); font-size: 18px; max-width: 480px; margin: 0 auto 48px; }
 
-  /* ── FOOTER ── */
   footer {
     border-top: 1px solid var(--border);
     padding: 60px 48px 40px;
@@ -428,12 +436,6 @@
     font-size: 13px; color: var(--muted);
   }
 
-  /* ── SCROLL-DRIVEN REVEAL ──
-     --p is set by JS (0..1) directly from scroll position.
-     No CSS transitions — the value tracks scroll 1:1.
-     Fast scroll → big --p jumps → animation appears fast.
-     Slow scroll → small --p changes → animation appears slow.
-  */
   .reveal {
     opacity: var(--p, 0);
     transform: translateY(calc((1 - var(--p, 0)) * 40px));
@@ -454,52 +456,6 @@
     transform: scale(calc(0.93 + var(--p, 0) * 0.07)) translateY(calc((1 - var(--p, 0)) * 24px));
     will-change: opacity, transform;
   }
-  /* delay classes are consumed by JS to stagger; no CSS rules needed */
-
-  /* ── DOWNLOAD BUTTON ── */
-  .btn-download {
-    position: relative;
-    overflow: hidden;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-  .btn-inner {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    pointer-events: none;
-    transition: transform 0.42s cubic-bezier(0.4,0,0.2,1), opacity 0.36s ease;
-  }
-  .btn-inner--loading {
-    position: absolute; inset: 0;
-    transform: translateY(110%);
-    opacity: 0;
-  }
-  .btn-download.is-loading .btn-inner--default {
-    transform: translateY(-110%);
-    opacity: 0;
-  }
-  .btn-download.is-loading .btn-inner--loading {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  .btn-dl-icon {
-    font-size: 1.1em;
-    display: inline-block;
-    transition: transform 0.25s ease;
-  }
-  .btn-download:hover .btn-dl-icon { transform: translateY(3px); }
-  .btn-spinner {
-    width: 17px; height: 17px;
-    border: 2.5px solid rgba(0,0,0,0.28);
-    border-top-color: #000;
-    border-radius: 50%;
-    animation: spin 0.65s linear infinite;
-    flex-shrink: 0;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── FPS BARS ── */
   .fps-entry { margin-bottom: 24px; }
   .fps-entry:last-of-type { margin-bottom: 0; }
   .fps-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
@@ -511,9 +467,7 @@
     height: 100%; border-radius: 4px; width: 0;
     transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  /* Muted bars: static colour, no gradient animation */
   .fps-fill--muted { background: #2a404f; }
-  /* Frost bar: animated sliding gradient */
   .fps-fill--frost {
     background: linear-gradient(90deg,
       var(--frost-deep) 0%,
@@ -530,9 +484,6 @@
   }
   .fps-fill.active { width: var(--w); }
   .fps-fill--frost.active { animation: gradientSlide 6s linear infinite; }
-  /* No animation on .fps-fill--muted.active — intentionally left plain */
-
-  /* ── ICE PARTICLES ── */
   #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
   @media(max-width:900px){
@@ -552,7 +503,6 @@
 </head>
 <body>
 
-<!-- FIXED BACKGROUND LAYERS (outside scroll container) -->
 <div class="topo-bg">
   <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
     <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
@@ -573,10 +523,8 @@
 <canvas id="particles"></canvas>
 <div id="cursor-glow"></div>
 
-<!-- THIN SCROLL PROGRESS BAR (below nav) -->
 <div id="scroll-progress"><div id="scroll-bar"></div></div>
 
-<!-- NAV (fixed, outside scroll container) -->
 <nav>
   <a class="nav-logo" href="#top">❄ <span>FROST</span></a>
   <ul class="nav-links">
@@ -588,10 +536,8 @@
   <a href="#download" class="nav-cta">Download Free</a>
 </nav>
 
-<!-- ═══ SCROLL CONTAINER — all page content lives here ═══ -->
 <div id="scroll-container">
 
-<!-- HERO -->
 <div>
 <section class="hero" id="top">
   <div class="hero-glow"></div>
@@ -616,7 +562,6 @@
 
 <div class="section-gap-small"></div>
 
-<!-- SCREENSHOT PREVIEW -->
 <div class="preview-section">
   <div class="preview-frame reveal">
     <img src="./screenshot.png" alt="Frost Client Preview" id="heroImg"/>
@@ -624,7 +569,6 @@
   </div>
 </div>
 
-<!-- STATS BAR -->
 <div class="stats-bar reveal-scale">
   <div class="stat-item">
     <div class="stat-num">60+</div>
@@ -646,7 +590,6 @@
 
 <div class="section-gap"></div>
 
-<!-- FEATURES SECTION -->
 <div>
 <section class="features-section" id="features">
   <div class="features-header reveal">
@@ -692,7 +635,6 @@
 <div class="section-gap"></div>
 
 
-<!-- SPLIT SECTION: MODS -->
 <div>
 <section id="mods">
 <div class="split-section">
@@ -736,7 +678,6 @@
 
 <div>
 
-<!-- SPLIT SECTION: PERFORMANCE -->
 <section id="performance">
 <div class="split-section reverse">
   <div class="split-text reveal-right">
@@ -796,42 +737,18 @@
 </div>
 <div class="section-gap"></div>
 
-<!-- DOWNLOAD CTA -->
 <div>
 <section class="cta-section" id="download">
   <div class="section-eyebrow reveal" style="text-align:center;">Free download</div>
   <h2 class="reveal">Ready to play<br/><span class="accent">differently?</span></h2>
   <p class="reveal">Download Frost for free and experience Minecraft the way it was meant to feel — fast, personal, and yours.</p>
 <div class="hero-actions reveal reveal-delay-1">
-  <a id="downloadBtn"
-     href="#"
-     class="btn-primary btn-download"
-     style="font-size:18px;padding:20px 56px;">
-    <span class="btn-inner btn-inner--default">
-      <span class="btn-dl-icon">↓</span>
-      <span>Download Frost</span>
-    </span>
-    <span class="btn-inner btn-inner--loading">
-      <div class="btn-spinner"></div>
-      <span>Downloading...</span>
-    </span>
-  </a>
+  <div class="coming-soon">
+    <div class="coming-soon-label">Coming In</div>
+    <div class="coming-soon-countdown" id="countdownText">72:00:00</div>
+  </div>
 </div>
 
-<script>
-document.getElementById("downloadBtn").addEventListener("click", function(e) {
-    e.preventDefault();
-
-    this.classList.add("loading");
-
-    setTimeout(() => {
-        window.open(
-            "https://modrinth.com/modpack/frost-client",
-            "_blank"
-        );
-    }, 2000);
-});
-</script>
   <p class="hero-version reveal reveal-delay-2" style="margin-top:24px;">v1.21.11 · Windows · macOS · Linux</p>
 </section>
 </div>
@@ -839,7 +756,6 @@ document.getElementById("downloadBtn").addEventListener("click", function(e) {
 <div class="section-gap"></div>
 <div class="section-gap"></div>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
@@ -867,12 +783,9 @@ document.getElementById("downloadBtn").addEventListener("click", function(e) {
   </div>
 </footer>
 
-</div><!-- /#scroll-container -->
+</div>
 
 <script>
-// ═══════════════════════════════════════════════
-//  ICE PARTICLE CANVAS
-// ═══════════════════════════════════════════════
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
 let W, H, particles = [];
@@ -908,13 +821,6 @@ for (let i = 0; i < 100; i++) particles.push({
   requestAnimationFrame(animateParticles);
 })();
 
-// ═══════════════════════════════════════════════
-//  SMOOTH SCROLL ENGINE
-//  — wheel/touch/keyboard all update scrollTarget
-//  — rAF lerps scrollCurrent toward scrollTarget
-//  — lerpFactor increases with wheel velocity so
-//    fast scrolling = snappier, slow = floaty
-// ═══════════════════════════════════════════════
 const scroller   = document.getElementById('scroll-container');
 const scrollBar  = document.getElementById('scroll-bar');
 const navEl      = document.querySelector('nav');
@@ -923,16 +829,13 @@ const perfSect   = document.getElementById('performance');
 
 let scrollTarget  = 0;
 let scrollCurrent = 0;
-let scrollVel     = 0;   // momentum velocity — px/frame, decays each tick
-// navAnimTarget: when set, tick() slowly advances scrollTarget toward it
-// so nav-link scrolls are cinematic and let reveal animations play
+let scrollVel     = 0;
 let navAnimTarget = null;
 
 function maxScroll() {
   return Math.max(0, scroller.offsetHeight - window.innerHeight);
 }
 
-// — Wheel — accumulate into momentum velocity; tick() applies it gradually
 window.addEventListener('wheel', (e) => {
   e.preventDefault();
   navAnimTarget = null;
@@ -941,7 +844,6 @@ window.addEventListener('wheel', (e) => {
   scrollVel = Math.max(-500, Math.min(500, scrollVel));
 }, { passive: false });
 
-// — Touch —
 let touchY = 0;
 window.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
 window.addEventListener('touchmove',  (e) => {
@@ -952,7 +854,6 @@ window.addEventListener('touchmove',  (e) => {
   scrollVel = Math.max(-500, Math.min(500, scrollVel));
 }, { passive: true });
 
-// — Keyboard — direct jump, no momentum (precision navigation)
 window.addEventListener('keydown', (e) => {
   const map = {
     ArrowDown: 80, ArrowUp: -80,
@@ -968,7 +869,6 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// — Anchor links — slow animated scroll so reveal animations play along the way
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', (e) => {
     const id = link.getAttribute('href').slice(1);
@@ -977,22 +877,15 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     if (!target) return;
     e.preventDefault();
     const layoutY = target.getBoundingClientRect().top + scrollCurrent - 80;
-    // Set navAnimTarget — tick() will slowly advance scrollTarget toward it
     navAnimTarget = Math.max(0, Math.min(layoutY, maxScroll()));
     scrollVel = 0;
   });
 });
 
-// ═══════════════════════════════════════════════
-//  SCROLL-DRIVEN REVEAL
-//  Each .reveal* element gets --p (0–1) set live.
-//  No CSS transitions — the change tracks scroll.
-// ═══════════════════════════════════════════════
 const revealEls = [...document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale')];
 const DELAY_MAP = { 'reveal-delay-1': 80, 'reveal-delay-2': 160, 'reveal-delay-3': 240,
                     'reveal-delay-4': 340, 'reveal-delay-5': 440 };
 
-// Pre-compute delay per element (in px, used as start offset)
 revealEls.forEach(el => {
   el._delayPx = 0;
   for (const [cls, px] of Object.entries(DELAY_MAP)) {
@@ -1000,18 +893,12 @@ revealEls.forEach(el => {
   }
 });
 
-// Piecewise reveal — tuned for blank-background breathing room:
-//  • Bottom 22% of viewport: dead zone — nothing appears here
-//  • 78%→30% from top:       entering (ramps 0→1 over 48% vh)
-//  • 30%→16% from top:       fully visible
-//  • 16%→ -14% from top:     exiting quickly (ramps 1→0 over 30% vh)
-//  • Above −14%:             gone
 function getRevealP(rect, delayPx) {
   const vh         = window.innerHeight;
-  const enterStart = vh * 0.78 - delayPx;        // dead zone: nothing below this threshold
-  const enterEnd   = vh * 0.30;                  // fully visible once top clears 30% from top
-  const exitStart  = vh * 0.16;                  // start disappearing at 16% from top
-  const exitEnd    = -vh * 0.14;                 // fully gone 14% above viewport
+  const enterStart = vh * 0.78 - delayPx;
+  const enterEnd   = vh * 0.30;
+  const exitStart  = vh * 0.16;
+  const exitEnd    = -vh * 0.14;
 
   if (rect.top > enterStart) return 0;
   if (rect.top < exitEnd)    return 0;
@@ -1027,9 +914,6 @@ function updateReveal() {
   });
 }
 
-// ═══════════════════════════════════════════════
-//  FPS BAR ACTIVATION
-// ═══════════════════════════════════════════════
 function updateFps() {
   if (!perfSect) return;
   const r  = perfSect.getBoundingClientRect();
@@ -1038,12 +922,8 @@ function updateFps() {
   fpsFills.forEach(f => f.classList.toggle('active', on));
 }
 
-// ═══════════════════════════════════════════════
-//  MAIN ANIMATION LOOP
-// ═══════════════════════════════════════════════
 function tick() {
   if (navAnimTarget !== null) {
-    // Cinematic nav scroll: slowly ease scrollTarget toward the destination
     scrollVel = 0;
     const remaining = navAnimTarget - scrollTarget;
     if (Math.abs(remaining) < 1) {
@@ -1054,23 +934,19 @@ function tick() {
       scrollTarget = Math.max(0, Math.min(scrollTarget, maxScroll()));
     }
   } else {
-    // Momentum scroll: apply velocity then decay (ease-in / coast / ease-out)
     scrollTarget = Math.max(0, Math.min(scrollTarget + scrollVel, maxScroll()));
     scrollVel *= 0.88;
     if (Math.abs(scrollVel) < 0.4) scrollVel = 0;
   }
 
-  // Smooth lerp from current toward target (adds a soft visual follow)
   const diff = scrollTarget - scrollCurrent;
   if (Math.abs(diff) > 0.05) {
     scrollCurrent += diff * 0.10;
     scroller.style.transform = `translateY(${-scrollCurrent}px)`;
 
-    // Scroll progress bar
     const pct = maxScroll() > 0 ? (scrollCurrent / maxScroll()) * 100 : 0;
     scrollBar.style.width = pct.toFixed(2) + '%';
 
-    // Nav tint
     navEl.style.background = scrollCurrent > 40
       ? 'rgba(8,12,16,0.95)'
       : 'rgba(8,12,16,0.75)';
@@ -1082,27 +958,20 @@ function tick() {
   requestAnimationFrame(tick);
 }
 
-// Recalculate on resize
 window.addEventListener('resize', () => {
   scrollTarget = Math.min(scrollTarget, maxScroll());
   updateReveal();
 });
 
-// Kick off — updateReveal first so elements in view get correct --p on load
 updateReveal();
 tick();
 
-// ═══════════════════════════════════════════════
-//  CURSOR GLOW
-//  Follows mouse, hides over interactive elements
-// ═══════════════════════════════════════════════
 const cursorGlow = document.getElementById('cursor-glow');
-const HALF = 280; // half of 560px glow size
+const HALF = 280;
 
 document.addEventListener('mousemove', (e) => {
   cursorGlow.style.transform = `translate(${e.clientX - HALF}px,${e.clientY - HALF}px)`;
 
-  // elementFromPoint ignores pointer-events:none elements
   const under = document.elementFromPoint(e.clientX, e.clientY);
   const isInteractive = under && under.closest(
     'a, button, nav, [class*="btn"], .feature-card, .mock-row, .stat-item, .footer-col'
@@ -1112,11 +981,6 @@ document.addEventListener('mousemove', (e) => {
 
 document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
 
-// ═══════════════════════════════════════════════
-//  BUTTON BORDER GLOW — tracks cursor direction
-//  Updates --mx/--my (percentage of button size)
-//  so the ::before radial-gradient follows the cursor
-// ═══════════════════════════════════════════════
 document.querySelectorAll('.btn-primary').forEach(btn => {
   btn.addEventListener('mousemove', (e) => {
     const r = btn.getBoundingClientRect();
@@ -1129,21 +993,27 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   });
 });
 
-// ═══════════════════════════════════════════════
-//  DOWNLOAD BUTTON
-// ═══════════════════════════════════════════════
-const dlBtn = document.getElementById('downloadBtn');
-if (dlBtn) {
-  dlBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    if (this.classList.contains('is-loading')) return;
-    this.classList.add('is-loading');
-    // Open link mid-animation
-    setTimeout(() => window.open('https://modrinth.com/modpack/frost-client', '_blank'), 500);
-    // Reset after ~3 seconds total
-    setTimeout(() => this.classList.remove('is-loading'), 3000);
-  });
-}
+(function () {
+  const countdownEl = document.getElementById('countdownText');
+  if (!countdownEl) return;
+
+  const RELEASE_DATE = new Date('2026-06-20T10:00:00Z').getTime();
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function updateCountdown() {
+    const remaining = Math.max(0, RELEASE_DATE - Date.now());
+    const totalSeconds = Math.floor(remaining / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    countdownEl.textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    if (remaining <= 0) clearInterval(timerId);
+  }
+
+  updateCountdown();
+  const timerId = setInterval(updateCountdown, 1000);
+})();
 </script>
 </body>
 </html>
