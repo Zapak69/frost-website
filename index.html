@@ -266,7 +266,7 @@
   .preview-frame::after {
     content: '';
     position: absolute; inset: 0;
-    background: linear-gradient(to bottom, transparent 70%, var(--bg));
+    background: linear-gradient(to bottom, transparent 85%, var(--bg));
     pointer-events: none;
   }
   .preview-glow {
@@ -895,10 +895,10 @@ revealEls.forEach(el => {
 
 function getRevealP(rect, delayPx) {
   const vh         = window.innerHeight;
-  const enterStart = vh * 0.78 - delayPx;
-  const enterEnd   = vh * 0.30;
-  const exitStart  = vh * 0.16;
-  const exitEnd    = -vh * 0.14;
+  const enterStart = vh * 0.95 - delayPx;
+  const enterEnd   = vh * 0.55;
+  const exitStart  = -vh * 0.05;
+  const exitEnd    = -vh * 0.55;
 
   if (rect.top > enterStart) return 0;
   if (rect.top < exitEnd)    return 0;
