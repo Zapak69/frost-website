@@ -25,19 +25,10 @@
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html, body { overflow: hidden; height: 100%; }
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'Space Grotesk', sans-serif;
-  }
-
-  #scroll-container {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    z-index: 1;
-    will-change: transform;
   }
 
   #cursor-glow {
@@ -535,7 +526,6 @@
   </ul>
   <a href="#download" class="nav-cta">Download Free</a>
 </nav>
-<div id="scroll-container">
 <div>
 <section class="hero" id="top">
   <div class="hero-glow"></div>
@@ -783,7 +773,6 @@ document.getElementById("downloadBtn").addEventListener("click", function(e) {
     <span>Not affiliated with Minecraft or Mojang.</span>
   </div>
 </footer>
-</div>
 <script>
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
@@ -817,49 +806,10 @@ for (let i = 0; i < 100; i++) particles.push({
   }
   requestAnimationFrame(animateParticles);
 })();
-const scroller   = document.getElementById('scroll-container');
 const scrollBar  = document.getElementById('scroll-bar');
 const navEl      = document.querySelector('nav');
 const fpsFills   = document.querySelectorAll('.fps-fill');
 const perfSect   = document.getElementById('performance');
-let scrollTarget  = 0;
-let scrollCurrent = 0;
-let scrollVel     = 0;
-let navAnimTarget = null;
-function maxScroll() {
-  return Math.max(0, scroller.offsetHeight - window.innerHeight);
-}
-window.addEventListener('wheel', (e) => {
-  e.preventDefault();
-  navAnimTarget = null;
-  const delta = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY;
-  scrollVel += delta * 0.13;
-  scrollVel = Math.max(-500, Math.min(500, scrollVel));
-}, { passive: false });
-let touchY = 0;
-window.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
-window.addEventListener('touchmove',  (e) => {
-  navAnimTarget = null;
-  const dy = (touchY - e.touches[0].clientY) * 2;
-  touchY = e.touches[0].clientY;
-  scrollVel += dy * 0.18;
-  scrollVel = Math.max(-500, Math.min(500, scrollVel));
-}, { passive: true });
-
-window.addEventListener('keydown', (e) => {
-  const map = {
-    ArrowDown: 80, ArrowUp: -80,
-    PageDown:  window.innerHeight * 0.9,
-    PageUp:   -window.innerHeight * 0.9,
-    End:  Infinity, Home: -Infinity
-  };
-  if (e.key in map) {
-    e.preventDefault();
-    navAnimTarget = null;
-    scrollVel = 0;
-    scrollTarget = Math.max(0, Math.min(scrollTarget + map[e.key], maxScroll()));
-  }
-});
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', (e) => {
     const id = link.getAttribute('href').slice(1);
@@ -867,9 +817,8 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     const target = document.getElementById(id);
     if (!target) return;
     e.preventDefault();
-    const layoutY = target.getBoundingClientRect().top + scrollCurrent - 80;
-    navAnimTarget = Math.max(0, Math.min(layoutY, maxScroll()));
-    scrollVel = 0;
+    const top = target.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top, behavior: 'smooth' });
   });
 });
 const revealEls = [...document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale')];
@@ -906,42 +855,19 @@ function updateFps() {
   const on = r.top < vh * 0.72 && r.bottom > 0;
   fpsFills.forEach(f => f.classList.toggle('active', on));
 }
-function tick() {
-  if (navAnimTarget !== null) {
-    scrollVel = 0;
-    const remaining = navAnimTarget - scrollTarget;
-    if (Math.abs(remaining) < 1) {
-      scrollTarget = navAnimTarget;
-      navAnimTarget = null;
-    } else {
-      scrollTarget += Math.sign(remaining) * Math.max(Math.abs(remaining) * 0.025, 3);
-      scrollTarget = Math.max(0, Math.min(scrollTarget, maxScroll()));
-    }
-  } else {
-    scrollTarget = Math.max(0, Math.min(scrollTarget + scrollVel, maxScroll()));
-    scrollVel *= 0.88;
-    if (Math.abs(scrollVel) < 0.4) scrollVel = 0;
-  }
-  const diff = scrollTarget - scrollCurrent;
-  if (Math.abs(diff) > 0.05) {
-    scrollCurrent += diff * 0.10;
-    scroller.style.transform = `translateY(${-scrollCurrent}px)`;
-    const pct = maxScroll() > 0 ? (scrollCurrent / maxScroll()) * 100 : 0;
-    scrollBar.style.width = pct.toFixed(2) + '%';
-    navEl.style.background = scrollCurrent > 40
-      ? 'rgba(8,12,16,0.95)'
-      : 'rgba(8,12,16,0.75)';
-    updateReveal();
-    updateFps();
-  }
-  requestAnimationFrame(tick);
-}
-window.addEventListener('resize', () => {
-  scrollTarget = Math.min(scrollTarget, maxScroll());
+function onScroll() {
+  const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  const pct = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
+  scrollBar.style.width = pct.toFixed(2) + '%';
+  navEl.style.background = window.scrollY > 40
+    ? 'rgba(8,12,16,0.95)'
+    : 'rgba(8,12,16,0.75)';
   updateReveal();
-});
-updateReveal();
-tick();
+  updateFps();
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('resize', onScroll);
+onScroll();
 const cursorGlow = document.getElementById('cursor-glow');
 const HALF = 280;
 document.addEventListener('mousemove', (e) => {
