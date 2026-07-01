@@ -4,21 +4,10 @@
 <meta charset="UTF-8"/>
 <script>
 (function () {
-  // Same Apps Script deployment as the early-access modal (see apps-script/Code.gs).
   var GATE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
-  // Apps Script can be slow on a cold start (occasionally several seconds),
-  // so this is intentionally generous — it only bounds the worst case for
-  // normal visitors if the ban-check API is genuinely unreachable.
   var GATE_TIMEOUT_MS = 6000;
-
   var html = document.documentElement;
   html.classList.add('gate-pending');
-
-  // Fail-open (reveal) is allowed to fire on a slow response, but a real
-  // "banned" verdict always wins even if it arrives late — it must never
-  // be silently dropped just because the timeout already revealed the
-  // page. That's what previously caused bans to intermittently appear
-  // not to apply on refresh.
   function reveal() {
     html.classList.remove('gate-pending');
   }
@@ -1327,7 +1316,7 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     clearTimeout(verifyErrorTimer);
     if (msg) {
       codeInput.classList.remove('shake');
-      void codeInput.offsetWidth; // restart animation
+      void codeInput.offsetWidth;
       codeInput.classList.add('shake');
       verifyBtn.classList.remove('loading');
       verifyBtn.classList.add('error');
