@@ -1,9 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8"/>
+<script>
+(function () {
+  // Same Apps Script deployment as the early-access modal (see apps-script/Code.gs).
+  var GATE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  var GATE_TIMEOUT_MS = 3000;
+
+  var html = document.documentElement;
+  html.classList.add('gate-pending');
+
+  var settled = false;
+  function reveal() {
+    if (settled) return;
+    settled = true;
+    html.classList.remove('gate-pending');
+  }
+  function showBanned() {
+    if (settled) return;
+    settled = true;
+    html.classList.remove('gate-pending');
+    html.classList.add('gate-banned');
+  }
+
+  var timeoutId = setTimeout(reveal, GATE_TIMEOUT_MS);
+
+  window.__frostIpPromise = fetch('https://api.ipify.org?format=json')
+    .then(function (r) { return r.json(); })
+    .then(function (d) { return (d && d.ip) || ''; })
+    .catch(function () { return ''; });
+
+  window.__frostIpPromise.then(function (ip) {
+    if (!ip || GATE_API_URL.indexOf('REPLACE_WITH_YOUR_DEPLOYMENT_ID') !== -1) {
+      clearTimeout(timeoutId);
+      reveal();
+      return;
+    }
+    fetch(GATE_API_URL + '?action=checkban&ip=' + encodeURIComponent(ip))
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        clearTimeout(timeoutId);
+        if (res && res.banned) showBanned(); else reveal();
+      })
+      .catch(function () { clearTimeout(timeoutId); reveal(); });
+  });
+})();
+</script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3626371893020075"
      crossorigin="anonymous"></script>
-<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Frost | Minecraft Client</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -33,6 +78,51 @@
     color: var(--text);
     font-family: 'Space Grotesk', sans-serif;
   }
+
+  html.gate-pending body, html.gate-banned body { visibility: hidden; }
+
+  #gateScreen {
+    visibility: visible;
+    position: fixed; inset: 0; z-index: 999;
+    background: var(--bg);
+    display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 18px;
+    text-align: center;
+    padding: 24px;
+  }
+  html.gate-pending #gateScreen, html.gate-banned #gateScreen { display: flex; }
+
+  .gate-spinner {
+    width: 34px; height: 34px;
+    border: 3px solid rgba(79,200,248,0.25);
+    border-top-color: var(--frost-blue);
+    border-radius: 50%;
+    animation: eaSpin 0.8s linear infinite;
+  }
+  html.gate-banned .gate-spinner { display: none; }
+
+  .gate-pending-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  html.gate-banned .gate-pending-text { display: none; }
+
+  .gate-banned-content { display: none; flex-direction: column; align-items: center; gap: 14px; max-width: 420px; }
+  html.gate-banned .gate-banned-content { display: flex; }
+  .gate-banned-icon { font-size: 40px; }
+  .gate-banned-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 26px; font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--red);
+  }
+  .gate-banned-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
 
   #cursor-glow {
     position: fixed;
@@ -101,6 +191,8 @@
     background: var(--frost-blue); color: #000;
     padding: 10px 24px; border-radius: 8px;
     font-weight: 700; font-size: 14px;
+    border: none; cursor: pointer;
+    font-family: 'Space Mono', monospace;
     text-decoration: none; letter-spacing: 0.3px;
     transition: box-shadow 0.2s, transform 0.15s;
     box-shadow: 0 0 20px rgba(79,200,248,0.3);
@@ -228,6 +320,195 @@
     letter-spacing: 2px;
     color: var(--frost-blue);
     text-shadow: 0 0 36px rgba(79,200,248,0.5);
+  }
+
+  .btn-ea {
+    background: var(--frost-blue); color: #000;
+    padding: 18px 48px; border-radius: 10px;
+    font-weight: 700; font-size: 17px;
+    border: none; cursor: pointer;
+    letter-spacing: 0.3px;
+    font-family: 'Space Mono', monospace;
+    box-shadow: 0 0 28px rgba(79,200,248,0.35);
+    transition: box-shadow 0.2s, transform 0.15s;
+    animation: eaPulse 2.6s ease-in-out infinite;
+  }
+  .btn-ea:hover { box-shadow: 0 0 44px rgba(79,200,248,0.6); transform: translateY(-2px); animation-play-state: paused; }
+  .btn-ea:active { transform: translateY(0) scale(0.97); }
+  @keyframes eaPulse {
+    0%, 100% { box-shadow: 0 0 28px rgba(79,200,248,0.35); }
+    50%      { box-shadow: 0 0 42px rgba(79,200,248,0.6); }
+  }
+
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    background: rgba(4,6,9,0.65);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
+                visibility 0s linear 0.35s;
+  }
+  .modal-overlay.active {
+    opacity: 1; visibility: visible; pointer-events: auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
+                visibility 0s linear 0s;
+  }
+  .modal-box {
+    position: relative;
+    width: 100%; max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 40px;
+    box-shadow: 0 30px 100px rgba(0,0,0,0.65), 0 0 60px rgba(0,200,255,0.08);
+    transform: scale(0.88) translateY(28px);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease,
+                max-width 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .modal-overlay.active .modal-box {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1) 0.05s, opacity 0.35s ease 0.05s,
+                max-width 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .modal-box.wide { max-width: 480px; }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 32px; height: 32px; border-radius: 8px;
+    background: transparent; border: none;
+    color: var(--muted); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s, transform 0.25s ease;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text); transform: rotate(90deg); }
+  .modal-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 20px; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .modal-desc { font-size: 14px; color: var(--muted); line-height: 1.55; margin-bottom: 24px; }
+  .code-input {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 26px;
+    letter-spacing: 6px;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--frost-blue);
+    margin-bottom: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .code-input:focus { outline: none; border-color: var(--frost-blue); box-shadow: 0 0 0 4px rgba(79,200,248,0.12); }
+  .code-input.shake { animation: eaShake 0.4s ease; border-color: var(--red); }
+  @keyframes eaShake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(3px); }
+    30%, 50%, 70% { transform: translateX(-6px); }
+    40%, 60% { transform: translateX(6px); }
+  }
+  .modal-error {
+    color: var(--red); font-size: 13px;
+    min-height: 18px; margin-bottom: 14px;
+    text-align: center;
+    opacity: 0; transform: translateY(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .modal-error.visible { opacity: 1; transform: translateY(0); }
+  .btn-modal {
+    position: relative;
+    width: 100%; padding: 15px; border-radius: 10px;
+    font-weight: 700; font-size: 15px;
+    border: none; cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.3px;
+    transition: opacity 0.15s, transform 0.15s, box-shadow 0.2s,
+                background-color 0.35s ease, color 0.35s ease;
+  }
+  .btn-modal:hover:not(:disabled) { transform: translateY(-1px); }
+  .btn-modal:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+  .btn-modal:disabled { cursor: not-allowed; transform: none; }
+
+  .btn-state {
+    display: none;
+    align-items: center; justify-content: center;
+    gap: 8px; width: 100%;
+    animation: eaStateIn 0.25s ease;
+  }
+  @keyframes eaStateIn {
+    from { opacity: 0; transform: scale(0.88); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .btn-state-icon { font-size: 1em; line-height: 1; }
+  .btn-spinner {
+    width: 15px; height: 15px;
+    border: 2px solid rgba(0,0,0,0.25);
+    border-top-color: #000;
+    border-radius: 50%;
+    display: inline-block;
+    animation: eaSpin 0.7s linear infinite;
+  }
+  @keyframes eaSpin { to { transform: rotate(360deg); } }
+
+  .btn-verify { background: var(--frost-blue); color: #000; }
+  .btn-verify:hover:not(:disabled) { box-shadow: 0 0 24px rgba(79,200,248,0.4); }
+  .btn-verify:not(.loading):not(.error) .btn-state--verify-default { display: flex; }
+  .btn-verify.loading .btn-state--verify-loading { display: flex; }
+  .btn-verify.loading { cursor: wait; }
+  .btn-verify.error { background: var(--red); color: #fff; }
+  .btn-verify.error .btn-state--verify-error { display: flex; }
+
+  .btn-download-final {
+    position: relative;
+    background: var(--surface2); color: var(--muted);
+    cursor: not-allowed;
+  }
+  .btn-download-final.unlocked {
+    background: var(--green); color: #000; cursor: pointer;
+    box-shadow: 0 0 26px rgba(61,255,114,0.35);
+  }
+  .btn-download-final.unlocked:hover:not(.loading) { box-shadow: 0 0 36px rgba(61,255,114,0.55); }
+  .btn-download-final.loading { cursor: wait; }
+  .btn-download-final:not(.unlocked):not(.loading) .btn-state--dl-locked { display: flex; }
+  .btn-download-final.unlocked:not(.loading) .btn-state--dl-default { display: flex; }
+  .btn-download-final.loading .btn-state--dl-loading { display: flex; }
+
+  .tos-box {
+    border: 1px solid var(--red);
+    background: rgba(212,18,18,0.08);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    font-size: 13px; line-height: 1.6;
+    color: var(--text);
+  }
+  .tos-box strong { color: var(--red); }
+  .tos-check {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-bottom: 20px; font-size: 13px; color: var(--muted);
+    cursor: pointer; user-select: none;
+  }
+  .tos-check input { margin-top: 3px; accent-color: var(--frost-blue); width: 16px; height: 16px; flex-shrink: 0; }
+
+  .modal-step { display: none; }
+  .modal-step.active { display: block; animation: eaStepIn 0.4s cubic-bezier(0.16,1,0.3,1); }
+  .modal-step.step-leaving { display: block; animation: eaStepOut 0.2s ease forwards; }
+  @keyframes eaStepIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes eaStepOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(-10px) scale(0.98); }
   }
 
   .btn-secondary {
@@ -496,6 +777,15 @@
 </head>
 <body>
 
+<div id="gateScreen">
+  <div class="gate-spinner"></div>
+  <div class="gate-pending-text">Verifying you're not a robot...</div>
+  <div class="gate-banned-content">
+    <div class="gate-banned-title">You Have Been Banned</div>
+    <p class="gate-banned-desc">Your access to Frost has been revoked for violating the Frost access terms. If you believe this is a mistake, contact us on Discord.</p>
+  </div>
+</div>
+
 <div class="topo-bg">
   <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
     <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
@@ -526,7 +816,7 @@
     <li><a href="#performance">Performance</a></li>
     <li><a href="#download">Download</a></li>
   </ul>
-  <a href="#download" class="nav-cta">Download Free</a>
+  <button type="button" class="nav-cta js-ea-trigger" id="eaOpenBtnNav">EA CODE</button>
 </nav>
 
 <div>
@@ -734,14 +1024,48 @@
   <h2 class="reveal">Ready to play<br/><span class="accent">differently?</span></h2>
   <p class="reveal">Download Frost for free and experience Minecraft the way it was meant to feel — fast, personal, and yours.</p>
 <div class="hero-actions reveal reveal-delay-1">
-  <div class="coming-soon">
-    <div class="coming-soon-countdown">COMING SOON</div>
-        <div class="coming-soon-label">More info on discord</div>
-  </div>
+  <button type="button" class="btn-ea js-ea-trigger" id="eaOpenBtn">Early Access Code</button>
 </div>
 
   <p class="hero-version reveal reveal-delay-2" style="margin-top:24px;">v1.21.11 · Windows · macOS · Linux</p>
 </section>
+</div>
+
+<div class="modal-overlay" id="eaModal">
+  <div class="modal-box" id="eaModalBox">
+    <button type="button" class="modal-close" id="eaCloseBtn" aria-label="Close">✕</button>
+
+    <div class="modal-step active" id="eaStepCode">
+      <div class="modal-title">Early Access</div>
+      <p class="modal-desc">Enter your early access code to unlock the download.</p>
+      <input type="text" class="code-input" id="eaCodeInput" placeholder="XXX-XXX" maxlength="7" autocomplete="off" spellcheck="false"/>
+      <div class="modal-error" id="eaCodeError"></div>
+      <button type="button" class="btn-modal btn-verify" id="eaVerifyBtn">
+        <span class="btn-state btn-state--verify-default">Verify Code</span>
+        <span class="btn-state btn-state--verify-loading"><span class="btn-spinner"></span>Checking...</span>
+        <span class="btn-state btn-state--verify-error"><span class="btn-state-icon">✕</span>Invalid Code</span>
+      </button>
+    </div>
+
+    <div class="modal-step" id="eaStepTos">
+      <div class="modal-title">Before you continue</div>
+      <div class="tos-box">
+        <strong>⚠ Early Access Notice —</strong> This build is private and provided for testing purposes only.
+        Sharing, redistributing, or leaking this version, its download link
+        <strong>will result in an immediate and permanent ban</strong> from the Discord server
+        and Frost client. Access may be revoked at any time without notice.
+      </div>
+      <label class="tos-check">
+        <input type="checkbox" id="eaAgreeCheck"/>
+        <span>I have read and agree to the terms above.</span>
+      </label>
+      <button type="button" class="btn-modal btn-download-final" id="eaDownloadBtn" disabled>
+        <span class="btn-state btn-state--dl-locked">Download Frost</span>
+        <span class="btn-state btn-state--dl-default"><span class="btn-state-icon">↓</span>Download Frost</span>
+        <span class="btn-state btn-state--dl-loading"><span class="btn-spinner"></span>Redirecting...</span>
+      </button>
+    </div>
+  </div>
 </div>
 
 <div class="section-gap"></div>
@@ -931,6 +1255,156 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
 
   updateCountdown();
   const timerId = setInterval(updateCountdown, 1000);
+})();
+
+(function () {
+  const EA_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const modal       = document.getElementById('eaModal');
+  const modalBox    = document.getElementById('eaModalBox');
+  const openBtns    = document.querySelectorAll('.js-ea-trigger');
+  const closeBtn    = document.getElementById('eaCloseBtn');
+  const stepCode    = document.getElementById('eaStepCode');
+  const stepTos     = document.getElementById('eaStepTos');
+  const codeInput   = document.getElementById('eaCodeInput');
+  const codeError   = document.getElementById('eaCodeError');
+  const verifyBtn   = document.getElementById('eaVerifyBtn');
+  const agreeCheck  = document.getElementById('eaAgreeCheck');
+  const downloadBtn = document.getElementById('eaDownloadBtn');
+
+  if (!modal) return;
+
+  const STEP_TRANSITION_MS = 200;
+  let verifyErrorTimer = null;
+  let downloadTimer = null;
+  let downloadUrl = null;
+
+  function showError(msg) {
+    codeError.textContent = msg;
+    codeError.classList.toggle('visible', !!msg);
+    clearTimeout(verifyErrorTimer);
+    if (msg) {
+      codeInput.classList.remove('shake');
+      void codeInput.offsetWidth; // restart animation
+      codeInput.classList.add('shake');
+      verifyBtn.classList.remove('loading');
+      verifyBtn.classList.add('error');
+      verifyErrorTimer = setTimeout(() => verifyBtn.classList.remove('error'), 1800);
+    } else {
+      verifyBtn.classList.remove('error');
+    }
+  }
+
+  function switchStep(fromEl, toEl) {
+    modalBox.classList.toggle('wide', toEl === stepTos);
+    fromEl.classList.add('step-leaving');
+    setTimeout(() => {
+      fromEl.classList.remove('active', 'step-leaving');
+      toEl.classList.add('active');
+    }, STEP_TRANSITION_MS);
+  }
+
+  function openModal() {
+    resetModal();
+    modal.classList.add('active');
+    setTimeout(() => codeInput.focus(), 300);
+  }
+  function closeModal() {
+    modal.classList.remove('active');
+    clearTimeout(downloadTimer);
+  }
+  function resetModal() {
+    clearTimeout(verifyErrorTimer);
+    clearTimeout(downloadTimer);
+    stepCode.classList.add('active');
+    stepCode.classList.remove('step-leaving');
+    stepTos.classList.remove('active', 'step-leaving');
+    modalBox.classList.remove('wide');
+    codeInput.value = '';
+    codeInput.classList.remove('shake');
+    codeError.textContent = '';
+    codeError.classList.remove('visible');
+    verifyBtn.disabled = false;
+    verifyBtn.classList.remove('loading', 'error');
+    agreeCheck.checked = false;
+    downloadBtn.disabled = true;
+    downloadBtn.classList.remove('unlocked', 'loading');
+    downloadUrl = null;
+  }
+
+  openBtns.forEach(btn => btn.addEventListener('click', openModal));
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
+
+  codeInput.addEventListener('input', () => {
+    let v = codeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    if (v.length > 3) v = v.slice(0, 3) + '-' + v.slice(3);
+    codeInput.value = v;
+    showError('');
+  });
+  codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') verifyBtn.click(); });
+
+  verifyBtn.addEventListener('click', async () => {
+    if (verifyBtn.classList.contains('loading')) return;
+
+    const code = codeInput.value.trim();
+    if (!/^[A-Z0-9]{3}-[A-Z0-9]{3}$/.test(code)) {
+      showError('Enter a code in the format XXX-XXX.');
+      return;
+    }
+    if (EA_API_URL.includes('REPLACE_WITH_YOUR_DEPLOYMENT_ID')) {
+      showError('Backend not configured yet.');
+      return;
+    }
+
+    verifyBtn.disabled = true;
+    verifyBtn.classList.remove('error');
+    verifyBtn.classList.add('loading');
+    showError('');
+
+    try {
+      const ip = await (window.__frostIpPromise || Promise.resolve(''));
+      const res = await fetch(`${EA_API_URL}?code=${encodeURIComponent(code)}&ip=${encodeURIComponent(ip)}`);
+      const data = await res.json();
+
+      if (data.valid) {
+        try {
+          downloadUrl = data.dl ? atob(data.dl) : null;
+        } catch (decodeErr) {
+          downloadUrl = null;
+        }
+        verifyBtn.classList.remove('loading');
+        switchStep(stepCode, stepTos);
+      } else {
+        const msgs = {
+          already_used: 'This code has already been used.',
+          not_found: 'Invalid code. Please check and try again.',
+          banned: 'This code cannot be redeemed from your network.'
+        };
+        showError(msgs[data.error] || 'Invalid code. Please check and try again.');
+      }
+    } catch (err) {
+      showError('Could not verify code. Please try again.');
+    } finally {
+      verifyBtn.disabled = false;
+      verifyBtn.classList.remove('loading');
+    }
+  });
+
+  agreeCheck.addEventListener('change', () => {
+    const checked = agreeCheck.checked;
+    downloadBtn.disabled = !checked;
+    downloadBtn.classList.toggle('unlocked', checked);
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    if (downloadBtn.disabled || downloadBtn.classList.contains('loading') || !downloadUrl) return;
+    downloadBtn.classList.add('loading');
+    downloadTimer = setTimeout(() => {
+      window.open(downloadUrl, '_blank');
+      closeModal();
+    }, 1000);
+  });
 })();
 </script>
 </body>
