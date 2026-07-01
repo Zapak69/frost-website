@@ -6,27 +6,44 @@
 (function () {
   // Same Apps Script deployment as the early-access modal (see apps-script/Code.gs).
   var GATE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
-  var GATE_TIMEOUT_MS = 3000;
+  // Apps Script can be slow on a cold start (occasionally several seconds),
+  // so this is intentionally generous — it only bounds the worst case for
+  // normal visitors if the ban-check API is genuinely unreachable.
+  var GATE_TIMEOUT_MS = 6000;
 
   var html = document.documentElement;
   html.classList.add('gate-pending');
 
-  var settled = false;
+  // Fail-open (reveal) is allowed to fire on a slow response, but a real
+  // "banned" verdict always wins even if it arrives late — it must never
+  // be silently dropped just because the timeout already revealed the
+  // page. That's what previously caused bans to intermittently appear
+  // not to apply on refresh.
   function reveal() {
-    if (settled) return;
-    settled = true;
     html.classList.remove('gate-pending');
   }
-  function showBanned() {
-    if (settled) return;
-    settled = true;
+  function applyBanReason() {
+    var reasonEl = document.getElementById('gateBannedReason');
+    if (reasonEl && window.__frostBanReason) reasonEl.textContent = window.__frostBanReason;
+    var idEl = document.getElementById('gateBannedId');
+    if (idEl && window.__frostBanId) {
+      idEl.textContent = 'ID: ' + window.__frostBanId;
+      idEl.classList.add('visible');
+    }
+  }
+  document.addEventListener('DOMContentLoaded', applyBanReason);
+  function showBanned(reason, id) {
+    clearTimeout(timeoutId);
+    window.__frostBanReason = reason || 'Violation of TOS';
+    window.__frostBanId = id || '';
     html.classList.remove('gate-pending');
     html.classList.add('gate-banned');
+    applyBanReason();
   }
 
   var timeoutId = setTimeout(reveal, GATE_TIMEOUT_MS);
 
-  window.__frostIpPromise = fetch('https://api.ipify.org?format=json')
+  window.__frostIpPromise = fetch('https://api.ipify.org?format=json', { cache: 'no-store' })
     .then(function (r) { return r.json(); })
     .then(function (d) { return (d && d.ip) || ''; })
     .catch(function () { return ''; });
@@ -37,11 +54,15 @@
       reveal();
       return;
     }
-    fetch(GATE_API_URL + '?action=checkban&ip=' + encodeURIComponent(ip))
+    fetch(GATE_API_URL + '?action=checkban&ip=' + encodeURIComponent(ip), { cache: 'no-store' })
       .then(function (r) { return r.json(); })
       .then(function (res) {
-        clearTimeout(timeoutId);
-        if (res && res.banned) showBanned(); else reveal();
+        if (res && res.banned) {
+          showBanned(res.reason, res.id);
+        } else {
+          clearTimeout(timeoutId);
+          reveal();
+        }
       })
       .catch(function () { clearTimeout(timeoutId); reveal(); });
   });
@@ -123,6 +144,23 @@
     color: var(--red);
   }
   .gate-banned-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .gate-banned-reason {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--red);
+    background: rgba(212,18,18,0.08);
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    padding: 10px 18px;
+  }
+  .gate-banned-id {
+    display: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+  }
+  .gate-banned-id.visible { display: block; }
 
   #cursor-glow {
     position: fixed;
@@ -478,9 +516,11 @@
   }
   .btn-download-final.unlocked:hover:not(.loading) { box-shadow: 0 0 36px rgba(61,255,114,0.55); }
   .btn-download-final.loading { cursor: wait; }
-  .btn-download-final:not(.unlocked):not(.loading) .btn-state--dl-locked { display: flex; }
-  .btn-download-final.unlocked:not(.loading) .btn-state--dl-default { display: flex; }
+  .btn-download-final.error { background: var(--red); color: #fff; cursor: not-allowed; box-shadow: none; }
+  .btn-download-final:not(.unlocked):not(.loading):not(.error) .btn-state--dl-locked { display: flex; }
+  .btn-download-final.unlocked:not(.loading):not(.error) .btn-state--dl-default { display: flex; }
   .btn-download-final.loading .btn-state--dl-loading { display: flex; }
+  .btn-download-final.error .btn-state--dl-error { display: flex; }
 
   .tos-box {
     border: 1px solid var(--red);
@@ -782,7 +822,9 @@
   <div class="gate-pending-text">Verifying you're not a robot...</div>
   <div class="gate-banned-content">
     <div class="gate-banned-title">You Have Been Banned</div>
-    <p class="gate-banned-desc">Your access to Frost has been revoked for violating the Frost access terms. If you believe this is a mistake, contact us on Discord.</p>
+    <p class="gate-banned-desc">Your access to Frost has been revoked. If you believe this is a mistake, contact us on Discord.</p>
+    <div class="gate-banned-reason" id="gateBannedReason">Violation of TOS</div>
+    <div class="gate-banned-id" id="gateBannedId"></div>
   </div>
 </div>
 
@@ -1063,7 +1105,9 @@
         <span class="btn-state btn-state--dl-locked">Download Frost</span>
         <span class="btn-state btn-state--dl-default"><span class="btn-state-icon">↓</span>Download Frost</span>
         <span class="btn-state btn-state--dl-loading"><span class="btn-spinner"></span>Downloading...</span>
+        <span class="btn-state btn-state--dl-error"><span class="btn-state-icon">✕</span>Claim Failed</span>
       </button>
+      <div class="modal-error" id="eaClaimError"></div>
     </div>
   </div>
 </div>
@@ -1270,13 +1314,12 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   const verifyBtn   = document.getElementById('eaVerifyBtn');
   const agreeCheck  = document.getElementById('eaAgreeCheck');
   const downloadBtn = document.getElementById('eaDownloadBtn');
+  const claimError  = document.getElementById('eaClaimError');
 
   if (!modal) return;
 
   const STEP_TRANSITION_MS = 200;
   let verifyErrorTimer = null;
-  let downloadTimer = null;
-  let downloadUrl = null;
 
   function showError(msg) {
     codeError.textContent = msg;
@@ -1310,11 +1353,9 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   }
   function closeModal() {
     modal.classList.remove('active');
-    clearTimeout(downloadTimer);
   }
   function resetModal() {
     clearTimeout(verifyErrorTimer);
-    clearTimeout(downloadTimer);
     stepCode.classList.add('active');
     stepCode.classList.remove('step-leaving');
     stepTos.classList.remove('active', 'step-leaving');
@@ -1327,8 +1368,9 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     verifyBtn.classList.remove('loading', 'error');
     agreeCheck.checked = false;
     downloadBtn.disabled = true;
-    downloadBtn.classList.remove('unlocked', 'loading');
-    downloadUrl = null;
+    downloadBtn.classList.remove('unlocked', 'loading', 'error');
+    claimError.textContent = '';
+    claimError.classList.remove('visible');
   }
 
   openBtns.forEach(btn => btn.addEventListener('click', openModal));
@@ -1368,18 +1410,14 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
       const data = await res.json();
 
       if (data.valid) {
-        try {
-          downloadUrl = data.dl ? atob(data.dl) : null;
-        } catch (decodeErr) {
-          downloadUrl = null;
-        }
         verifyBtn.classList.remove('loading');
         switchStep(stepCode, stepTos);
       } else {
         const msgs = {
           already_used: 'This code has already been used.',
           not_found: 'Invalid code. Please check and try again.',
-          banned: 'This code cannot be redeemed from your network.'
+          banned: 'This code cannot be redeemed from your network.',
+          ip_already_claimed: "You've already claimed a code from this network."
         };
         showError(msgs[data.error] || 'Invalid code. Please check and try again.');
       }
@@ -1395,15 +1433,57 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     const checked = agreeCheck.checked;
     downloadBtn.disabled = !checked;
     downloadBtn.classList.toggle('unlocked', checked);
+    if (checked) {
+      downloadBtn.classList.remove('error');
+      claimError.textContent = '';
+      claimError.classList.remove('visible');
+    }
   });
 
-  downloadBtn.addEventListener('click', () => {
-    if (downloadBtn.disabled || downloadBtn.classList.contains('loading') || !downloadUrl) return;
+  function showClaimError(msg) {
+    downloadBtn.classList.remove('loading');
+    downloadBtn.classList.add('error');
+    downloadBtn.disabled = true;
+    claimError.textContent = msg;
+    claimError.classList.add('visible');
+  }
+
+  downloadBtn.addEventListener('click', async () => {
+    if (downloadBtn.disabled || downloadBtn.classList.contains('loading') || downloadBtn.classList.contains('error')) return;
+
     downloadBtn.classList.add('loading');
-    downloadTimer = setTimeout(() => {
-      window.open(downloadUrl, '_blank');
-      closeModal();
-    }, 1000);
+    downloadBtn.disabled = true;
+    claimError.textContent = '';
+    claimError.classList.remove('visible');
+
+    try {
+      const ip = await (window.__frostIpPromise || Promise.resolve(''));
+      const code = codeInput.value.trim();
+      const res = await fetch(`${EA_API_URL}?action=claim&code=${encodeURIComponent(code)}&ip=${encodeURIComponent(ip)}`);
+      const data = await res.json();
+
+      if (data.valid) {
+        let url = null;
+        try { url = data.dl ? atob(data.dl) : null; } catch (decodeErr) { url = null; }
+        if (url) {
+          downloadBtn.classList.remove('loading');
+          window.open(url, '_blank');
+          closeModal();
+        } else {
+          showClaimError('Something went wrong. Please try again.');
+        }
+      } else {
+        const msgs = {
+          already_used: 'This code was just claimed by someone else.',
+          ip_already_claimed: 'A code has already been claimed from your network.',
+          banned: 'This code cannot be claimed from your network.',
+          not_found: 'This code is no longer valid.'
+        };
+        showClaimError(msgs[data.error] || 'Could not claim this code. Please try again.');
+      }
+    } catch (err) {
+      showClaimError('Network error. Please try again.');
+    }
   });
 })();
 </script>
