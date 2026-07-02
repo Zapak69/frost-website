@@ -511,6 +511,20 @@
   .btn-download-final.loading .btn-state--dl-loading { display: flex; }
   .btn-download-final.error .btn-state--dl-error { display: flex; }
 
+  .invited-by {
+    display: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--frost-blue);
+    background: rgba(79,200,248,0.08);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  .invited-by.visible { display: block; }
+
   .tos-box {
     border: 1px solid var(--red);
     background: rgba(212,18,18,0.08);
@@ -1080,6 +1094,7 @@
 
     <div class="modal-step" id="eaStepTos">
       <div class="modal-title">Before you continue</div>
+      <div class="invited-by" id="eaInvitedBy"></div>
       <div class="tos-box">
         <strong>⚠ Early Access Notice —</strong> This build is private and provided for testing purposes only.
         Sharing, redistributing, or leaking this version, its download link
@@ -1304,6 +1319,7 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   const agreeCheck  = document.getElementById('eaAgreeCheck');
   const downloadBtn = document.getElementById('eaDownloadBtn');
   const claimError  = document.getElementById('eaClaimError');
+  const invitedByEl = document.getElementById('eaInvitedBy');
 
   if (!modal) return;
 
@@ -1360,6 +1376,8 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     downloadBtn.classList.remove('unlocked', 'loading', 'error');
     claimError.textContent = '';
     claimError.classList.remove('visible');
+    invitedByEl.textContent = '';
+    invitedByEl.classList.remove('visible');
   }
 
   openBtns.forEach(btn => btn.addEventListener('click', openModal));
@@ -1400,6 +1418,10 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
 
       if (data.valid) {
         verifyBtn.classList.remove('loading');
+        if (data.invitedBy) {
+          invitedByEl.textContent = data.invitedBy;
+          invitedByEl.classList.add('visible');
+        }
         switchStep(stepCode, stepTos);
       } else {
         const msgs = {
@@ -1474,6 +1496,25 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
       showClaimError('Network error. Please try again.');
     }
   });
+
+  // Shareable invite links: https://your-site/?code=ABC-123 opens the
+  // modal straight to the code step with that code pre-filled.
+  (function prefillFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('code');
+    if (!raw) return;
+
+    let v = raw.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    if (v.length > 3) v = v.slice(0, 3) + '-' + v.slice(3);
+    if (!v) return;
+
+    openModal();
+    codeInput.value = v;
+
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete('code');
+    window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+  })();
 })();
 </script>
 </body>
