@@ -869,6 +869,37 @@
     opacity: 1;
     transition: transform 0.45s cubic-bezier(0.16,1,0.3,1) 0.05s, opacity 0.35s ease 0.05s;
   }
+
+  .story-status {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 9px 22px;
+    border-radius: 100px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    background: rgba(79,200,248,0.08);
+    color: var(--muted);
+    transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+  .story-status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+  }
+  .story-status.checking .story-status-dot { animation: pulse 1.4s infinite; }
+  .story-status.unsolved {
+    background: rgba(61,255,114,0.1);
+    border-color: rgba(61,255,114,0.4);
+    color: var(--green);
+  }
+  .story-status.solved {
+    background: rgba(212,18,18,0.1);
+    border-color: rgba(212,18,18,0.4);
+    color: #ff6b6b;
+  }
+
   .book {
     position: relative;
     display: flex;
@@ -1219,15 +1250,20 @@
 
 <div class="book-overlay" id="bookOverlay">
   <div class="book-wrap">
+    <div class="story-status checking" id="storyStatus">
+      <span class="story-status-dot"></span>
+      <span id="storyStatusText">Status: Checking...</span>
+    </div>
     <div class="book">
       <button type="button" class="book-close" id="bookCloseBtn" aria-label="Close">✕</button>
       <div class="book-page left">
         <div class="book-header">❄ The Frostbound Vault</div>
         <div class="book-story-title">Chapter I — The Deep Vault</div>
         <div class="book-story">
-          <p>Before Frost ever rendered a single block, a lone builder tunneled far past bedrock, chasing a rumor passed between servers: somewhere below the world lay a vault that opened only for those who read carefully.</p>
-          <p>Torchlight gave out long before the tunnel did. What remained was a chamber carved from solid packed ice, untouched by pistons or explosions. Three guardians stood along the far wall, silent and unmoving — an <span class="key-word">Iron Golem</span> with its arms raised, a <span class="key-word">Creeper</span> frozen mid-hiss, and an <span class="key-word">Enderman</span> staring at some point just past the builder's shoulder.</p>
-          <p>Beneath each guardian, a single rune had been carved into the ice. Only the first mark of each guardian's name still caught the torchlight — the rest had worn away with time.</p>
+          <p>Before Frost ever rendered a single block, a lone builder tunneled far past bedrock, chasing a rumor passed between servers: somewhere below the world lay a vault that opened only for those who calculated carefully. The tunnel ran for nearly four hundred blocks before the last torch gave out, and the builder waited three days of real time for what came next to reset.</p>
+          <p>Three guardians stood watch between the builder and the vault door, each pacing an endless patrol between two fixed points, never straying, never resting.</p>
+          <p>The Iron Golem walked between (114, 71, -283) and (58, 71, -197).<br/>The Creeper circled from (-42, 44, 130) to (-42, 12, 96).<br/>The Enderman blinked endlessly between (301, 90, 12) and (219, 34, -55).</p>
+          <p>An old sign nailed beside the vault door read: <em>"A guardian's rune is not written in the blocks it crosses, but in the land itself — the flat map, not the depth. Fold each point down into the sixteen-block chunk that holds it, and measure chunk to chunk, not block to block. Then let that number stand for as many hearts as the guardian carries into battle. What remains, once you strip away every complete turn of the twenty-six old runes, is the letter the guardian answers to. Should the count land exactly upon the last rune, let it be Z, and not silence."</em></p>
         </div>
       </div>
       <div class="book-spine"></div>
@@ -1235,9 +1271,9 @@
         <div class="book-header">❄ The Frostbound Vault</div>
         <div class="book-story-title">Chapter II — What It Remembers</div>
         <div class="book-story">
-          <p>Further in, half-buried under fresh snow layers, sat three redstone lamps, long since dark. A sign beside them, weathered but legible, explained their purpose: <span class="key-word">one</span> lamp for every ender pearl thrown and lost in the dark, <span class="key-word">two</span> for every gold ingot melted down for nothing, <span class="key-word">one</span> for the diamond that was never mined.</p>
-          <p>The builder counted the lamps twice, just to be sure. One. Two. One.</p>
-          <p>Carved into the vault door itself, beneath a layer of frost, was the final instruction: <em>"Take the first letter of each guardian's name. Take the count of each lamp. Join them with a single line, and the vault remembers you."</em></p>
+          <p>The vault keeper who first found this place was no stranger to these guardians. Records scratched into the stone say they had reached experience level nine by the time the first guardian woke — and level twenty-four by the time the vault door was finally found.</p>
+          <p>Experience, the old texts remind us, is not spent evenly. The points a player carries at each level do not grow in a straight line — they curve, and the curve itself bends again past a certain level. A keeper who wishes to know the truth must work out the total points held at each of those two moments, using the game's own accounting, not a guess.</p>
+          <p>The ledger's final line reads: <em>"Take what was carried at the higher level. Subtract what was carried at the lower. What remains, once every complete thousand is stripped away, is the count the vault remembers. Join the guardians' runes and the ledger's count with a single line, and the vault opens."</em></p>
           <p>No one knows if the builder ever stepped through. But Frost still remembers the vault below — and now, so do you.</p>
         </div>
       </div>
@@ -1688,14 +1724,40 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
 })();
 
 (function () {
-  const bookOverlay  = document.getElementById('bookOverlay');
-  const storyOpenBtn = document.getElementById('storyOpenBtn');
-  const bookCloseBtn = document.getElementById('bookCloseBtn');
-  const whatsKeyBtn  = document.getElementById('bookWhatsKeyBtn');
+  const EA_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const STORY_KEY_CODE = 'HTX-693';
+
+  const bookOverlay   = document.getElementById('bookOverlay');
+  const storyOpenBtn  = document.getElementById('storyOpenBtn');
+  const bookCloseBtn  = document.getElementById('bookCloseBtn');
+  const whatsKeyBtn   = document.getElementById('bookWhatsKeyBtn');
+  const storyStatus     = document.getElementById('storyStatus');
+  const storyStatusText = document.getElementById('storyStatusText');
 
   if (!bookOverlay) return;
 
-  function openBook() { bookOverlay.classList.add('active'); }
+  function refreshStoryStatus() {
+    if (!storyStatus || EA_API_URL.includes('REPLACE_WITH_YOUR_DEPLOYMENT_ID')) return;
+
+    storyStatus.classList.remove('solved', 'unsolved');
+    storyStatus.classList.add('checking');
+    storyStatusText.textContent = 'Status: Checking...';
+
+    fetch(`${EA_API_URL}?action=status&code=${encodeURIComponent(STORY_KEY_CODE)}`, { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((data) => {
+        const solved = !!(data && data.exists && data.used);
+        storyStatus.classList.remove('checking');
+        storyStatus.classList.add(solved ? 'solved' : 'unsolved');
+        storyStatusText.textContent = solved ? 'Status: Solved' : 'Status: Unsolved';
+      })
+      .catch(() => {
+        storyStatus.classList.remove('checking');
+        storyStatusText.textContent = 'Status: Unknown';
+      });
+  }
+
+  function openBook() { bookOverlay.classList.add('active'); refreshStoryStatus(); }
   function closeBook() { bookOverlay.classList.remove('active'); }
 
   storyOpenBtn.addEventListener('click', openBook);
