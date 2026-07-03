@@ -1706,6 +1706,19 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   // "What's the key?" hands off straight to the code-verification modal
   // (opened separately via the shared .js-ea-trigger listener).
   whatsKeyBtn.addEventListener('click', closeBook);
+
+  // Shareable story links: https://your-site/?story opens the book
+  // popup automatically on load.
+  (function openBookFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('story')) return;
+
+    openBook();
+
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete('story');
+    window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+  })();
 })();
 </script>
 </body>
