@@ -297,6 +297,8 @@
     margin-bottom: 48px;
   }
   .hero-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .story-btn-wrap { display: none; }
+  .story-btn-wrap.visible { display: flex; }
   .btn-primary {
     background: var(--green); color: #000;
     padding: 16px 40px; border-radius: 10px;
@@ -1051,7 +1053,7 @@
     <a href="#download" class="btn-primary">▶ Play Now</a>
     <a href="#features" class="btn-secondary">Explore Features</a>
   </div>
-  <div class="hero-actions" style="margin-top:16px;">
+  <div class="hero-actions story-btn-wrap" id="storyBtnWrap" style="margin-top:16px;">
     <button type="button" class="btn-story" id="storyOpenBtn">📖 Read a story...</button>
   </div>
   <p class="hero-version">Supports Minecraft 1.21.11 · Free forever</p>
@@ -1728,6 +1730,7 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   const STORY_KEY_CODE = 'HTX-693';
 
   const bookOverlay   = document.getElementById('bookOverlay');
+  const storyBtnWrap  = document.getElementById('storyBtnWrap');
   const storyOpenBtn  = document.getElementById('storyOpenBtn');
   const bookCloseBtn  = document.getElementById('bookCloseBtn');
   const whatsKeyBtn   = document.getElementById('bookWhatsKeyBtn');
@@ -1736,25 +1739,41 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
 
   if (!bookOverlay) return;
 
+  // Resolves true/false once the code's used state is known, or null if
+  // the check couldn't be completed (backend not configured / network error).
+  function fetchStorySolved() {
+    if (EA_API_URL.includes('REPLACE_WITH_YOUR_DEPLOYMENT_ID')) return Promise.resolve(null);
+    return fetch(`${EA_API_URL}?action=status&code=${encodeURIComponent(STORY_KEY_CODE)}`, { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((data) => !!(data && data.exists && data.used))
+      .catch(() => null);
+  }
+
+  function applyButtonVisibility(solved) {
+    if (!storyBtnWrap) return;
+    // Hide only once we positively know the code is solved; fail open
+    // (keep showing it) if the status check is inconclusive, same as
+    // the ban gate does for network hiccups.
+    storyBtnWrap.classList.toggle('visible', solved !== true);
+  }
+
   function refreshStoryStatus() {
-    if (!storyStatus || EA_API_URL.includes('REPLACE_WITH_YOUR_DEPLOYMENT_ID')) return;
+    if (!storyStatus) return;
 
     storyStatus.classList.remove('solved', 'unsolved');
     storyStatus.classList.add('checking');
     storyStatusText.textContent = 'Status: Checking...';
 
-    fetch(`${EA_API_URL}?action=status&code=${encodeURIComponent(STORY_KEY_CODE)}`, { cache: 'no-store' })
-      .then((r) => r.json())
-      .then((data) => {
-        const solved = !!(data && data.exists && data.used);
-        storyStatus.classList.remove('checking');
-        storyStatus.classList.add(solved ? 'solved' : 'unsolved');
-        storyStatusText.textContent = solved ? 'Status: Solved' : 'Status: Unsolved';
-      })
-      .catch(() => {
-        storyStatus.classList.remove('checking');
+    fetchStorySolved().then((solved) => {
+      storyStatus.classList.remove('checking');
+      if (solved === null) {
         storyStatusText.textContent = 'Status: Unknown';
-      });
+        return;
+      }
+      storyStatus.classList.add(solved ? 'solved' : 'unsolved');
+      storyStatusText.textContent = solved ? 'Status: Solved' : 'Status: Unsolved';
+      applyButtonVisibility(solved);
+    });
   }
 
   function openBook() { bookOverlay.classList.add('active'); refreshStoryStatus(); }
@@ -1769,17 +1788,23 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   // (opened separately via the shared .js-ea-trigger listener).
   whatsKeyBtn.addEventListener('click', closeBook);
 
-  // Shareable story links: https://your-site/?story opens the book
-  // popup automatically on load.
+  // Decide whether the hero button should ever appear, independent of
+  // whether the book gets opened this visit.
+  fetchStorySolved().then(applyButtonVisibility);
+
+  // Shareable story links: https://your-site/?story opens the book popup
+  // automatically on load — but only while the riddle is still unsolved.
   (function openBookFromUrl() {
     const params = new URLSearchParams(window.location.search);
     if (!params.has('story')) return;
 
-    openBook();
-
     const cleanUrl = new URL(window.location.href);
     cleanUrl.searchParams.delete('story');
     window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+
+    fetchStorySolved().then((solved) => {
+      if (solved !== true) openBook();
+    });
   })();
 })();
 </script>
