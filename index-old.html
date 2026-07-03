@@ -63,7 +63,7 @@
 <title>Frost | Minecraft Client</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
   :root {
     --bg: #080c10;
@@ -816,144 +816,6 @@
   @media(max-width:600px){
     .features-grid { grid-template-columns: 1fr; }
   }
-
-  /* ---- Read a story button ---- */
-  .btn-story {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: rgba(232,184,79,0.08);
-    border: 1px solid rgba(232,184,79,0.4);
-    color: #e8b84f;
-    padding: 16px 36px; border-radius: 10px;
-    font-weight: 700; font-size: 16px;
-    cursor: pointer;
-    font-family: 'Space Mono', monospace;
-    letter-spacing: 0.3px;
-    transition: box-shadow 0.2s, transform 0.15s, background 0.2s;
-    animation: storyPulse 2.8s ease-in-out infinite;
-  }
-  .btn-story:hover { background: rgba(232,184,79,0.14); box-shadow: 0 0 32px rgba(232,184,79,0.3); transform: translateY(-2px); animation-play-state: paused; }
-  .btn-story:active { transform: translateY(0) scale(0.97); }
-  @keyframes storyPulse {
-    0%, 100% { box-shadow: 0 0 0 rgba(232,184,79,0); }
-    50%      { box-shadow: 0 0 22px rgba(232,184,79,0.25); }
-  }
-
-  /* ---- Book popup ---- */
-  .book-overlay {
-    position: fixed; inset: 0; z-index: 210;
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px;
-    background: rgba(4,6,9,0.75);
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
-    opacity: 0; visibility: hidden; pointer-events: none;
-    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
-                visibility 0s linear 0.35s;
-  }
-  .book-overlay.active {
-    opacity: 1; visibility: visible; pointer-events: auto;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
-                visibility 0s linear 0s;
-  }
-  .book-wrap {
-    display: flex; flex-direction: column; align-items: center; gap: 26px;
-    max-width: 920px; width: 100%;
-    transform: scale(0.9) translateY(24px);
-    opacity: 0;
-    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
-  }
-  .book-overlay.active .book-wrap {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1) 0.05s, opacity 0.35s ease 0.05s;
-  }
-  .book {
-    position: relative;
-    display: flex;
-    width: 100%;
-    min-height: 460px;
-    border-radius: 8px;
-    box-shadow: 0 40px 110px rgba(0,0,0,0.7), 0 0 70px rgba(232,184,79,0.08);
-    overflow: hidden;
-  }
-  .book-close {
-    position: absolute; top: 14px; right: 14px; z-index: 5;
-    width: 34px; height: 34px; border-radius: 8px;
-    background: rgba(0,0,0,0.25); border: none;
-    color: #6b5a3f; font-size: 18px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s, color 0.15s, transform 0.25s ease;
-  }
-  .book-close:hover { background: rgba(0,0,0,0.4); color: #241b12; transform: rotate(90deg); }
-  .book-page {
-    flex: 1;
-    padding: 52px 44px;
-    position: relative;
-    min-width: 0;
-  }
-  .book-page.left {
-    background: linear-gradient(120deg, #ecdfc2, #f6eeda);
-    box-shadow: inset -22px 0 44px -26px rgba(0,0,0,0.4);
-    overflow-y: auto;
-    max-height: 70vh;
-  }
-  .book-page.right {
-    background: linear-gradient(120deg, #f6eeda, #ecdfc2);
-    box-shadow: inset 22px 0 44px -26px rgba(0,0,0,0.4);
-    overflow-y: auto;
-    max-height: 70vh;
-  }
-  .book-spine {
-    width: 16px; flex-shrink: 0;
-    background: linear-gradient(90deg, rgba(0,0,0,0.4), rgba(0,0,0,0.08) 35%, rgba(0,0,0,0.08) 65%, rgba(0,0,0,0.4));
-  }
-  .book-header {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; text-transform: uppercase; letter-spacing: 2.5px;
-    color: #8a6a2f;
-    margin-bottom: 24px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid rgba(138,106,47,0.25);
-  }
-  .book-story-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 27px; font-weight: 700; margin-bottom: 20px; color: #241b12;
-  }
-  .book-story p {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px; line-height: 1.75; margin-bottom: 16px; color: #35291c;
-  }
-  .book-page.left .book-story p:first-of-type::first-letter,
-  .book-page.right .book-story p:first-of-type::first-letter {
-    font-size: 48px; font-weight: 700; float: left; line-height: 0.8;
-    padding: 6px 8px 0 0; color: #8a6a2f;
-    font-family: 'Cormorant Garamond', serif;
-  }
-  .book-story .key-word {
-    font-style: italic;
-    color: #6b4f27;
-  }
-  .btn-whats-key {
-    background: linear-gradient(135deg, #e8b84f, #c98f2b);
-    color: #201404;
-    padding: 16px 40px; border-radius: 10px;
-    font-weight: 700; font-size: 15px;
-    border: none; cursor: pointer;
-    font-family: 'Space Mono', monospace;
-    letter-spacing: 0.3px;
-    box-shadow: 0 0 26px rgba(232,184,79,0.35);
-    transition: box-shadow 0.2s, transform 0.15s;
-  }
-  .btn-whats-key:hover { box-shadow: 0 0 40px rgba(232,184,79,0.55); transform: translateY(-2px); }
-  .btn-whats-key:active { transform: translateY(0) scale(0.97); }
-
-  @media(max-width:760px){
-    .book { flex-direction: column; min-height: 0; }
-    .book-spine { width: 100%; height: 10px; }
-    .book-page.left, .book-page.right { box-shadow: none; max-height: 50vh; }
-  }
 </style>
 </head>
 <body>
@@ -1019,9 +881,6 @@
   <div class="hero-actions">
     <a href="#download" class="btn-primary">▶ Play Now</a>
     <a href="#features" class="btn-secondary">Explore Features</a>
-  </div>
-  <div class="hero-actions" style="margin-top:16px;">
-    <button type="button" class="btn-story" id="storyOpenBtn">📖 Read a story...</button>
   </div>
   <p class="hero-version">Supports Minecraft 1.21.11 · Free forever</p>
 </section>
@@ -1215,35 +1074,6 @@
 
   <p class="hero-version reveal reveal-delay-2" style="margin-top:24px;">v1.21.11 · Windows · macOS · Linux</p>
 </section>
-</div>
-
-<div class="book-overlay" id="bookOverlay">
-  <div class="book-wrap">
-    <div class="book">
-      <button type="button" class="book-close" id="bookCloseBtn" aria-label="Close">✕</button>
-      <div class="book-page left">
-        <div class="book-header">❄ The Frostbound Vault</div>
-        <div class="book-story-title">Chapter I — The Deep Vault</div>
-        <div class="book-story">
-          <p>Before Frost ever rendered a single block, a lone builder tunneled far past bedrock, chasing a rumor passed between servers: somewhere below the world lay a vault that opened only for those who read carefully.</p>
-          <p>Torchlight gave out long before the tunnel did. What remained was a chamber carved from solid packed ice, untouched by pistons or explosions. Three guardians stood along the far wall, silent and unmoving — an <span class="key-word">Iron Golem</span> with its arms raised, a <span class="key-word">Creeper</span> frozen mid-hiss, and an <span class="key-word">Enderman</span> staring at some point just past the builder's shoulder.</p>
-          <p>Beneath each guardian, a single rune had been carved into the ice. Only the first mark of each guardian's name still caught the torchlight — the rest had worn away with time.</p>
-        </div>
-      </div>
-      <div class="book-spine"></div>
-      <div class="book-page right">
-        <div class="book-header">❄ The Frostbound Vault</div>
-        <div class="book-story-title">Chapter II — What It Remembers</div>
-        <div class="book-story">
-          <p>Further in, half-buried under fresh snow layers, sat three redstone lamps, long since dark. A sign beside them, weathered but legible, explained their purpose: <span class="key-word">one</span> lamp for every ender pearl thrown and lost in the dark, <span class="key-word">two</span> for every gold ingot melted down for nothing, <span class="key-word">one</span> for the diamond that was never mined.</p>
-          <p>The builder counted the lamps twice, just to be sure. One. Two. One.</p>
-          <p>Carved into the vault door itself, beneath a layer of frost, was the final instruction: <em>"Take the first letter of each guardian's name. Take the count of each lamp. Join them with a single line, and the vault remembers you."</em></p>
-          <p>No one knows if the builder ever stepped through. But Frost still remembers the vault below — and now, so do you.</p>
-        </div>
-      </div>
-    </div>
-    <button type="button" class="btn-whats-key js-ea-trigger" id="bookWhatsKeyBtn">What's the key?</button>
-  </div>
 </div>
 
 <div class="modal-overlay" id="eaModal">
@@ -1685,27 +1515,6 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     cleanUrl.searchParams.delete('code');
     window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
   })();
-})();
-
-(function () {
-  const bookOverlay  = document.getElementById('bookOverlay');
-  const storyOpenBtn = document.getElementById('storyOpenBtn');
-  const bookCloseBtn = document.getElementById('bookCloseBtn');
-  const whatsKeyBtn  = document.getElementById('bookWhatsKeyBtn');
-
-  if (!bookOverlay) return;
-
-  function openBook() { bookOverlay.classList.add('active'); }
-  function closeBook() { bookOverlay.classList.remove('active'); }
-
-  storyOpenBtn.addEventListener('click', openBook);
-  bookCloseBtn.addEventListener('click', closeBook);
-  bookOverlay.addEventListener('click', (e) => { if (e.target === bookOverlay) closeBook(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && bookOverlay.classList.contains('active')) closeBook(); });
-
-  // "What's the key?" hands off straight to the code-verification modal
-  // (opened separately via the shared .js-ea-trigger listener).
-  whatsKeyBtn.addEventListener('click', closeBook);
 })();
 </script>
 </body>
