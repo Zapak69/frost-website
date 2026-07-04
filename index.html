@@ -63,7 +63,7 @@
 <title>Frost | Minecraft Client</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
   :root {
     --bg: #080c10;
@@ -297,8 +297,6 @@
     margin-bottom: 48px;
   }
   .hero-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; justify-content: center; }
-  .story-btn-wrap { display: none; }
-  .story-btn-wrap.visible { display: flex; }
   .btn-primary {
     background: var(--green); color: #000;
     padding: 16px 40px; border-radius: 10px;
@@ -818,175 +816,6 @@
   @media(max-width:600px){
     .features-grid { grid-template-columns: 1fr; }
   }
-
-  /* ---- Read a story button ---- */
-  .btn-story {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: rgba(232,184,79,0.08);
-    border: 1px solid rgba(232,184,79,0.4);
-    color: #e8b84f;
-    padding: 16px 36px; border-radius: 10px;
-    font-weight: 700; font-size: 16px;
-    cursor: pointer;
-    font-family: 'Space Mono', monospace;
-    letter-spacing: 0.3px;
-    transition: box-shadow 0.2s, transform 0.15s, background 0.2s;
-    animation: storyPulse 2.8s ease-in-out infinite;
-  }
-  .btn-story:hover { background: rgba(232,184,79,0.14); box-shadow: 0 0 32px rgba(232,184,79,0.3); transform: translateY(-2px); animation-play-state: paused; }
-  .btn-story:active { transform: translateY(0) scale(0.97); }
-  @keyframes storyPulse {
-    0%, 100% { box-shadow: 0 0 0 rgba(232,184,79,0); }
-    50%      { box-shadow: 0 0 22px rgba(232,184,79,0.25); }
-  }
-
-  /* ---- Book popup ---- */
-  .book-overlay {
-    position: fixed; inset: 0; z-index: 210;
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px;
-    background: rgba(4,6,9,0.75);
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
-    opacity: 0; visibility: hidden; pointer-events: none;
-    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
-                visibility 0s linear 0.35s;
-  }
-  .book-overlay.active {
-    opacity: 1; visibility: visible; pointer-events: auto;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
-                visibility 0s linear 0s;
-  }
-  .book-wrap {
-    display: flex; flex-direction: column; align-items: center; gap: 26px;
-    max-width: 920px; width: 100%;
-    transform: scale(0.9) translateY(24px);
-    opacity: 0;
-    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
-  }
-  .book-overlay.active .book-wrap {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1) 0.05s, opacity 0.35s ease 0.05s;
-  }
-
-  .story-status {
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 9px 22px;
-    border-radius: 100px;
-    font-family: 'Space Mono', monospace;
-    font-size: 12px; font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    border: 1px solid var(--border);
-    background: rgba(79,200,248,0.08);
-    color: var(--muted);
-    transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-  }
-  .story-status-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: currentColor;
-    box-shadow: 0 0 8px currentColor;
-  }
-  .story-status.checking .story-status-dot { animation: pulse 1.4s infinite; }
-  .story-status.unsolved {
-    background: rgba(61,255,114,0.1);
-    border-color: rgba(61,255,114,0.4);
-    color: var(--green);
-  }
-  .story-status.solved {
-    background: rgba(212,18,18,0.1);
-    border-color: rgba(212,18,18,0.4);
-    color: #ff6b6b;
-  }
-
-  .book {
-    position: relative;
-    display: flex;
-    width: 100%;
-    min-height: 460px;
-    border-radius: 8px;
-    box-shadow: 0 40px 110px rgba(0,0,0,0.7), 0 0 70px rgba(232,184,79,0.08);
-    overflow: hidden;
-  }
-  .book-close {
-    position: absolute; top: 14px; right: 14px; z-index: 5;
-    width: 34px; height: 34px; border-radius: 8px;
-    background: rgba(0,0,0,0.25); border: none;
-    color: #6b5a3f; font-size: 18px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s, color 0.15s, transform 0.25s ease;
-  }
-  .book-close:hover { background: rgba(0,0,0,0.4); color: #241b12; transform: rotate(90deg); }
-  .book-page {
-    flex: 1;
-    padding: 52px 44px;
-    position: relative;
-    min-width: 0;
-  }
-  .book-page.left {
-    background: linear-gradient(120deg, #ecdfc2, #f6eeda);
-    box-shadow: inset -22px 0 44px -26px rgba(0,0,0,0.4);
-    overflow-y: auto;
-    max-height: 70vh;
-  }
-  .book-page.right {
-    background: linear-gradient(120deg, #f6eeda, #ecdfc2);
-    box-shadow: inset 22px 0 44px -26px rgba(0,0,0,0.4);
-    overflow-y: auto;
-    max-height: 70vh;
-  }
-  .book-spine {
-    width: 16px; flex-shrink: 0;
-    background: linear-gradient(90deg, rgba(0,0,0,0.4), rgba(0,0,0,0.08) 35%, rgba(0,0,0,0.08) 65%, rgba(0,0,0,0.4));
-  }
-  .book-header {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; text-transform: uppercase; letter-spacing: 2.5px;
-    color: #8a6a2f;
-    margin-bottom: 24px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid rgba(138,106,47,0.25);
-  }
-  .book-story-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 27px; font-weight: 700; margin-bottom: 20px; color: #241b12;
-  }
-  .book-story p {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px; line-height: 1.75; margin-bottom: 16px; color: #35291c;
-  }
-  .book-page.left .book-story p:first-of-type::first-letter,
-  .book-page.right .book-story p:first-of-type::first-letter {
-    font-size: 48px; font-weight: 700; float: left; line-height: 0.8;
-    padding: 6px 8px 0 0; color: #8a6a2f;
-    font-family: 'Cormorant Garamond', serif;
-  }
-  .book-story .key-word {
-    font-style: italic;
-    color: #6b4f27;
-  }
-  .btn-whats-key {
-    background: linear-gradient(135deg, #e8b84f, #c98f2b);
-    color: #201404;
-    padding: 16px 40px; border-radius: 10px;
-    font-weight: 700; font-size: 15px;
-    border: none; cursor: pointer;
-    font-family: 'Space Mono', monospace;
-    letter-spacing: 0.3px;
-    box-shadow: 0 0 26px rgba(232,184,79,0.35);
-    transition: box-shadow 0.2s, transform 0.15s;
-  }
-  .btn-whats-key:hover { box-shadow: 0 0 40px rgba(232,184,79,0.55); transform: translateY(-2px); }
-  .btn-whats-key:active { transform: translateY(0) scale(0.97); }
-
-  @media(max-width:760px){
-    .book { flex-direction: column; min-height: 0; }
-    .book-spine { width: 100%; height: 10px; }
-    .book-page.left, .book-page.right { box-shadow: none; max-height: 50vh; }
-  }
 </style>
 </head>
 <body>
@@ -1052,9 +881,6 @@
   <div class="hero-actions">
     <a href="#download" class="btn-primary">▶ Play Now</a>
     <a href="#features" class="btn-secondary">Explore Features</a>
-  </div>
-  <div class="hero-actions story-btn-wrap" id="storyBtnWrap" style="margin-top:16px;">
-    <button type="button" class="btn-story" id="storyOpenBtn">📖 Read a story...</button>
   </div>
   <p class="hero-version">Supports Minecraft 1.21.11 · Free forever</p>
 </section>
@@ -1248,40 +1074,6 @@
 
   <p class="hero-version reveal reveal-delay-2" style="margin-top:24px;">v1.21.11 · Windows · macOS · Linux</p>
 </section>
-</div>
-
-<div class="book-overlay" id="bookOverlay">
-  <div class="book-wrap">
-    <div class="story-status checking" id="storyStatus">
-      <span class="story-status-dot"></span>
-      <span id="storyStatusText">Status: Checking...</span>
-    </div>
-    <div class="book">
-      <button type="button" class="book-close" id="bookCloseBtn" aria-label="Close">✕</button>
-      <div class="book-page left">
-        <div class="book-header">❄ The Frostbound Vault</div>
-        <div class="book-story-title">Chapter I — The Deep Vault</div>
-        <div class="book-story">
-          <p>Before Frost ever rendered a single block, a lone builder tunneled far past bedrock, chasing a rumor passed between servers: somewhere below the world lay a vault that opened only for those who calculated carefully. The tunnel ran for nearly four hundred blocks before the last torch gave out, and the builder waited three days of real time for what came next to reset.</p>
-          <p>Three guardians stood watch between the builder and the vault door, each pacing an endless patrol between two fixed points, never straying, never resting.</p>
-          <p>The Iron Golem walked between (114, 71, -283) and (58, 71, -197).<br/>The Creeper circled from (-42, 44, 130) to (-42, 12, 96).<br/>The Enderman blinked endlessly between (301, 90, 12) and (219, 34, -55).</p>
-          <p>An old sign nailed beside the vault door read: <em>"A guardian's rune is not written in the blocks it crosses, but in the land itself — the flat map, not the depth. Fold each point down into the sixteen-block chunk that holds it, and measure chunk to chunk, not block to block. Then let that number stand for as many hearts as the guardian carries into battle. What remains, once you strip away every complete turn of the twenty-six old runes, is the letter the guardian answers to. Should the count land exactly upon the last rune, let it be Z, and not silence."</em></p>
-        </div>
-      </div>
-      <div class="book-spine"></div>
-      <div class="book-page right">
-        <div class="book-header">❄ The Frostbound Vault</div>
-        <div class="book-story-title">Chapter II — What It Remembers</div>
-        <div class="book-story">
-          <p>The vault keeper who first found this place was no stranger to these guardians. Records scratched into the stone say they had reached experience level nine by the time the first guardian woke — and level twenty-four by the time the vault door was finally found.</p>
-          <p>Experience, the old texts remind us, is not spent evenly. The points a player carries at each level do not grow in a straight line — they curve, and the curve itself bends again past a certain level. A keeper who wishes to know the truth must work out the total points held at each of those two moments, using the game's own accounting, not a guess.</p>
-          <p>The ledger's final line reads: <em>"Take what was carried at the higher level. Subtract what was carried at the lower. What remains, once every complete thousand is stripped away, is the count the vault remembers. Join the guardians' runes and the ledger's count with a single line, and the vault opens."</em></p>
-          <p>No one knows if the builder ever stepped through. But Frost still remembers the vault below — and now, so do you.</p>
-        </div>
-      </div>
-    </div>
-    <button type="button" class="btn-whats-key js-ea-trigger" id="bookWhatsKeyBtn">What's the key?</button>
-  </div>
 </div>
 
 <div class="modal-overlay" id="eaModal">
@@ -1722,89 +1514,6 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     const cleanUrl = new URL(window.location.href);
     cleanUrl.searchParams.delete('code');
     window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
-  })();
-})();
-
-(function () {
-  const EA_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
-  const STORY_KEY_CODE = 'HTX-693';
-
-  const bookOverlay   = document.getElementById('bookOverlay');
-  const storyBtnWrap  = document.getElementById('storyBtnWrap');
-  const storyOpenBtn  = document.getElementById('storyOpenBtn');
-  const bookCloseBtn  = document.getElementById('bookCloseBtn');
-  const whatsKeyBtn   = document.getElementById('bookWhatsKeyBtn');
-  const storyStatus     = document.getElementById('storyStatus');
-  const storyStatusText = document.getElementById('storyStatusText');
-
-  if (!bookOverlay) return;
-
-  // Resolves true/false once the code's used state is known, or null if
-  // the check couldn't be completed (backend not configured / network error).
-  function fetchStorySolved() {
-    if (EA_API_URL.includes('REPLACE_WITH_YOUR_DEPLOYMENT_ID')) return Promise.resolve(null);
-    return fetch(`${EA_API_URL}?action=status&code=${encodeURIComponent(STORY_KEY_CODE)}`, { cache: 'no-store' })
-      .then((r) => r.json())
-      .then((data) => !!(data && data.exists && data.used))
-      .catch(() => null);
-  }
-
-  function applyButtonVisibility(solved) {
-    if (!storyBtnWrap) return;
-    // Hide only once we positively know the code is solved; fail open
-    // (keep showing it) if the status check is inconclusive, same as
-    // the ban gate does for network hiccups.
-    storyBtnWrap.classList.toggle('visible', solved !== true);
-  }
-
-  function refreshStoryStatus() {
-    if (!storyStatus) return;
-
-    storyStatus.classList.remove('solved', 'unsolved');
-    storyStatus.classList.add('checking');
-    storyStatusText.textContent = 'Status: Checking...';
-
-    fetchStorySolved().then((solved) => {
-      storyStatus.classList.remove('checking');
-      if (solved === null) {
-        storyStatusText.textContent = 'Status: Unknown';
-        return;
-      }
-      storyStatus.classList.add(solved ? 'solved' : 'unsolved');
-      storyStatusText.textContent = solved ? 'Status: Solved' : 'Status: Unsolved';
-      applyButtonVisibility(solved);
-    });
-  }
-
-  function openBook() { bookOverlay.classList.add('active'); refreshStoryStatus(); }
-  function closeBook() { bookOverlay.classList.remove('active'); }
-
-  storyOpenBtn.addEventListener('click', openBook);
-  bookCloseBtn.addEventListener('click', closeBook);
-  bookOverlay.addEventListener('click', (e) => { if (e.target === bookOverlay) closeBook(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && bookOverlay.classList.contains('active')) closeBook(); });
-
-  // "What's the key?" hands off straight to the code-verification modal
-  // (opened separately via the shared .js-ea-trigger listener).
-  whatsKeyBtn.addEventListener('click', closeBook);
-
-  // Decide whether the hero button should ever appear, independent of
-  // whether the book gets opened this visit.
-  fetchStorySolved().then(applyButtonVisibility);
-
-  // Shareable story links: https://your-site/?story opens the book popup
-  // automatically on load — but only while the riddle is still unsolved.
-  (function openBookFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('story')) return;
-
-    const cleanUrl = new URL(window.location.href);
-    cleanUrl.searchParams.delete('story');
-    window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
-
-    fetchStorySolved().then((solved) => {
-      if (solved !== true) openBook();
-    });
   })();
 })();
 </script>
