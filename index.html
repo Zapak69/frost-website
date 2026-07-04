@@ -1469,13 +1469,11 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
         applyVersionCardState(btnEl, url, true);
         closeVersionModal();
       } else {
-        // Already downloaded (or no longer allowed) — lock it in as
-        // downloaded either way rather than leaving it in limbo.
         applyVersionCardState(btnEl, url, true);
       }
     } catch (err) {
       btnEl.classList.remove('loading');
-      btnEl.disabled = false; // network hiccup — let them retry
+      btnEl.disabled = false;
     }
   }
 
@@ -1545,14 +1543,6 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     invitedByEl.textContent = '';
     invitedByEl.classList.remove('visible');
   }
-
-  // Quietly prefetched on page load (right alongside the ban check) so
-  // it's ready the instant someone clicks an Early Access trigger — but
-  // nothing is shown until they actually click. If this IP already
-  // activated a code before, that click jumps straight to the
-  // version-choice popup instead of the code-entry screen. To make
-  // someone re-enter a code from scratch, clear their IP out of column D
-  // for that row in the Keys sheet.
   const myClaimPromise = EA_API_URL.includes('REPLACE_WITH_YOUR_DEPLOYMENT_ID')
     ? Promise.resolve(null)
     : (window.__frostIpPromise || Promise.resolve('')).then((ip) => {
@@ -1576,7 +1566,7 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
           return;
         }
       }
-    } catch (err) { /* fall through to the normal code-entry flow */ }
+    } catch (err) {}
     openModal();
   }
 
@@ -1699,9 +1689,6 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
       showClaimError('Network error. Please try again.');
     }
   });
-
-  // Shareable invite links: https://your-site/?code=ABC-123 opens the
-  // modal straight to the code step with that code pre-filled.
   (function prefillFromUrl() {
     const params = new URLSearchParams(window.location.search);
     const raw = params.get('code');
