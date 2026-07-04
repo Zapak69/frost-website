@@ -554,6 +554,91 @@
     to   { opacity: 0; transform: translateY(-10px) scale(0.98); }
   }
 
+  .version-modal-box { max-width: 460px; }
+  .version-choices {
+    display: flex; gap: 16px;
+    margin: 28px 0 22px;
+  }
+  .version-card {
+    position: relative;
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px;
+    aspect-ratio: 1 / 1;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    padding: 20px 12px;
+    transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .version-card:hover { transform: translateY(-3px); background: var(--bg2); }
+  .version-card:active { transform: translateY(-1px) scale(0.98); }
+  .version-icon { font-size: 40px; line-height: 1; }
+  .version-label {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700; font-size: 15px; letter-spacing: 0.3px;
+    color: var(--text);
+  }
+  .version-card--vulkan {
+    border-color: rgba(61,255,114,0.5);
+    box-shadow: 0 0 24px rgba(61,255,114,0.15);
+  }
+  .version-card--vulkan:hover { box-shadow: 0 0 38px rgba(61,255,114,0.35); border-color: var(--green); }
+  .version-badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--green); color: #000;
+    font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 100px; letter-spacing: 0.3px;
+    white-space: nowrap;
+    box-shadow: 0 0 14px rgba(61,255,114,0.5);
+  }
+  .version-card--opengl:hover { border-color: var(--frost-blue); }
+  .version-note { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.5; }
+  .version-card:disabled { opacity: 0.4; cursor: not-allowed; }
+  .version-card:disabled:hover { transform: none; box-shadow: none; background: var(--surface2); }
+  .version-downloaded-tag {
+    display: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    color: var(--green);
+    letter-spacing: 0.3px;
+  }
+  .version-card.downloaded { opacity: 0.55; cursor: not-allowed; }
+  .version-card.downloaded:hover { transform: none; box-shadow: none; background: var(--surface2); }
+  .version-card.downloaded .version-downloaded-tag { display: block; }
+
+  .version-loading-tag {
+    display: none;
+    align-items: center; justify-content: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.3px;
+  }
+  .version-spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.15);
+    border-top-color: var(--frost-blue);
+    border-radius: 50%;
+    display: inline-block;
+    animation: eaSpin 0.7s linear infinite;
+  }
+  .version-card.loading { cursor: wait; opacity: 1; }
+  .version-card.loading:hover { transform: none; box-shadow: none; }
+  .version-card.loading .version-icon,
+  .version-card.loading .version-label,
+  .version-card.loading .version-badge,
+  .version-card.loading .version-downloaded-tag { display: none; }
+  .version-card.loading .version-loading-tag { display: flex; }
+
+  @media(max-width:480px){
+    .version-choices { gap: 12px; }
+    .version-icon { font-size: 32px; }
+    .version-label { font-size: 13px; }
+  }
+
   .btn-secondary {
     background: transparent;
     border: 1px solid var(--border);
@@ -1106,13 +1191,37 @@
         <span>I have read and agree to the terms above.</span>
       </label>
       <button type="button" class="btn-modal btn-download-final" id="eaDownloadBtn" disabled>
-        <span class="btn-state btn-state--dl-locked">Download Frost</span>
-        <span class="btn-state btn-state--dl-default"><span class="btn-state-icon">↓</span>Download Frost</span>
-        <span class="btn-state btn-state--dl-loading"><span class="btn-spinner"></span>Downloading...</span>
+        <span class="btn-state btn-state--dl-locked">Choose your version</span>
+        <span class="btn-state btn-state--dl-default"><span class="btn-state-icon">→</span>Choose your version</span>
+        <span class="btn-state btn-state--dl-loading"><span class="btn-spinner"></span>Loading...</span>
         <span class="btn-state btn-state--dl-error"><span class="btn-state-icon">✕</span>Claim Failed</span>
       </button>
       <div class="modal-error" id="eaClaimError"></div>
     </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="versionModal">
+  <div class="modal-box version-modal-box" id="versionModalBox">
+    <button type="button" class="modal-close" id="versionCloseBtn" aria-label="Close">✕</button>
+    <div class="modal-title" style="text-align:center;">Choose Your Version</div>
+    <p class="modal-desc" style="text-align:center;">Pick the renderer that fits your setup.</p>
+    <div class="version-choices">
+      <button type="button" class="version-card version-card--vulkan" id="versionVulkanBtn">
+        <span class="version-badge">Best Performance</span>
+        <span class="version-icon">⚡</span>
+        <span class="version-label">Vulkan</span>
+        <span class="version-downloaded-tag">✓ Downloaded</span>
+        <span class="version-loading-tag"><span class="version-spinner"></span>Downloading...</span>
+      </button>
+      <button type="button" class="version-card version-card--opengl" id="versionOpenglBtn">
+        <span class="version-icon">🔷</span>
+        <span class="version-label">OpenGL</span>
+        <span class="version-downloaded-tag">✓ Downloaded</span>
+        <span class="version-loading-tag"><span class="version-spinner"></span>Downloading...</span>
+      </button>
+    </div>
+    <p class="version-note">Vulkan gives the biggest FPS boost, but isn't fully supported on every device — if it won't launch, try OpenGL instead.</p>
   </div>
 </div>
 
@@ -1321,6 +1430,63 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   const claimError  = document.getElementById('eaClaimError');
   const invitedByEl = document.getElementById('eaInvitedBy');
 
+  const versionModal     = document.getElementById('versionModal');
+  const versionCloseBtn  = document.getElementById('versionCloseBtn');
+  const versionVulkanBtn = document.getElementById('versionVulkanBtn');
+  const versionOpenglBtn = document.getElementById('versionOpenglBtn');
+  let pendingVulkanUrl = null;
+  let pendingOpenglUrl = null;
+
+  function closeVersionModal() { versionModal.classList.remove('active'); }
+
+  function applyVersionCardState(cardEl, url, downloaded) {
+    cardEl.classList.toggle('downloaded', !!downloaded);
+    cardEl.disabled = !url || !!downloaded;
+  }
+
+  function openVersionModal(vulkanUrl, openglUrl, vulkanDownloaded, openglDownloaded) {
+    pendingVulkanUrl = vulkanUrl;
+    pendingOpenglUrl = openglUrl;
+    applyVersionCardState(versionVulkanBtn, vulkanUrl, vulkanDownloaded);
+    applyVersionCardState(versionOpenglBtn, openglUrl, openglDownloaded);
+    versionModal.classList.add('active');
+  }
+
+  async function claimVariant(variant, url, btnEl) {
+    if (!url || btnEl.disabled) return;
+    btnEl.disabled = true;
+    btnEl.classList.add('loading');
+
+    try {
+      const ip = await (window.__frostIpPromise || Promise.resolve(''));
+      const code = codeInput.value.trim();
+      const res = await fetch(`${EA_API_URL}?action=downloadVariant&code=${encodeURIComponent(code)}&ip=${encodeURIComponent(ip)}&variant=${variant}`);
+      const data = await res.json();
+
+      btnEl.classList.remove('loading');
+      if (data && data.allowed) {
+        window.open(url, '_blank');
+        applyVersionCardState(btnEl, url, true);
+        closeVersionModal();
+      } else {
+        // Already downloaded (or no longer allowed) — lock it in as
+        // downloaded either way rather than leaving it in limbo.
+        applyVersionCardState(btnEl, url, true);
+      }
+    } catch (err) {
+      btnEl.classList.remove('loading');
+      btnEl.disabled = false; // network hiccup — let them retry
+    }
+  }
+
+  if (versionCloseBtn) versionCloseBtn.addEventListener('click', closeVersionModal);
+  if (versionModal) versionModal.addEventListener('click', (e) => { if (e.target === versionModal) closeVersionModal(); });
+  if (versionVulkanBtn) versionVulkanBtn.addEventListener('click', () => claimVariant('vulkan', pendingVulkanUrl, versionVulkanBtn));
+  if (versionOpenglBtn) versionOpenglBtn.addEventListener('click', () => claimVariant('opengl', pendingOpenglUrl, versionOpenglBtn));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && versionModal && versionModal.classList.contains('active')) closeVersionModal();
+  });
+
   if (!modal) return;
 
   const STEP_TRANSITION_MS = 200;
@@ -1380,7 +1546,41 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     invitedByEl.classList.remove('visible');
   }
 
-  openBtns.forEach(btn => btn.addEventListener('click', openModal));
+  // Quietly prefetched on page load (right alongside the ban check) so
+  // it's ready the instant someone clicks an Early Access trigger — but
+  // nothing is shown until they actually click. If this IP already
+  // activated a code before, that click jumps straight to the
+  // version-choice popup instead of the code-entry screen. To make
+  // someone re-enter a code from scratch, clear their IP out of column D
+  // for that row in the Keys sheet.
+  const myClaimPromise = EA_API_URL.includes('REPLACE_WITH_YOUR_DEPLOYMENT_ID')
+    ? Promise.resolve(null)
+    : (window.__frostIpPromise || Promise.resolve('')).then((ip) => {
+        if (!ip) return null;
+        return fetch(`${EA_API_URL}?action=myClaim&ip=${encodeURIComponent(ip)}`, { cache: 'no-store' })
+          .then((r) => r.json())
+          .catch(() => null);
+      });
+
+  async function handleEaTriggerClick() {
+    try {
+      const data = await myClaimPromise;
+      if (data && data.claimed) {
+        let vulkanUrl = null;
+        let openglUrl = null;
+        try { vulkanUrl = data.dlVulkan ? atob(data.dlVulkan) : null; } catch (err) { vulkanUrl = null; }
+        try { openglUrl = data.dlOpenGL ? atob(data.dlOpenGL) : null; } catch (err) { openglUrl = null; }
+        if (vulkanUrl || openglUrl) {
+          codeInput.value = data.code || '';
+          openVersionModal(vulkanUrl, openglUrl, data.vulkanDownloaded, data.openglDownloaded);
+          return;
+        }
+      }
+    } catch (err) { /* fall through to the normal code-entry flow */ }
+    openModal();
+  }
+
+  openBtns.forEach(btn => btn.addEventListener('click', handleEaTriggerClick));
   closeBtn.addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
@@ -1428,7 +1628,7 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
           already_used: 'This code has already been used.',
           not_found: 'Invalid code. Please check and try again.',
           banned: 'This code cannot be redeemed from your network.',
-          ip_already_claimed: "You've already claimed a code from this network."
+          ip_already_claimed: "You've already claimed a different code from this network."
         };
         showError(msgs[data.error] || 'Invalid code. Please check and try again.');
       }
@@ -1474,19 +1674,22 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
       const data = await res.json();
 
       if (data.valid) {
-        let url = null;
-        try { url = data.dl ? atob(data.dl) : null; } catch (decodeErr) { url = null; }
-        if (url) {
+        let vulkanUrl = null;
+        let openglUrl = null;
+        try { vulkanUrl = data.dlVulkan ? atob(data.dlVulkan) : null; } catch (decodeErr) { vulkanUrl = null; }
+        try { openglUrl = data.dlOpenGL ? atob(data.dlOpenGL) : null; } catch (decodeErr) { openglUrl = null; }
+
+        if (vulkanUrl || openglUrl) {
           downloadBtn.classList.remove('loading');
-          window.open(url, '_blank');
           closeModal();
+          openVersionModal(vulkanUrl, openglUrl, data.vulkanDownloaded, data.openglDownloaded);
         } else {
           showClaimError('Something went wrong. Please try again.');
         }
       } else {
         const msgs = {
           already_used: 'This code was just claimed by someone else.',
-          ip_already_claimed: 'A code has already been claimed from your network.',
+          ip_already_claimed: "You've already claimed a different code from this network.",
           banned: 'This code cannot be claimed from your network.',
           not_found: 'This code is no longer valid.'
         };

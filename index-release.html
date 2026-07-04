@@ -2,6 +2,71 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<script>
+(function () {
+  // Same Apps Script deployment as index.html (see apps-script/Code.gs).
+  var GATE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  // Apps Script can be slow on a cold start (occasionally several seconds),
+  // so this is intentionally generous — it only bounds the worst case for
+  // normal visitors if the ban-check API is genuinely unreachable.
+  var GATE_TIMEOUT_MS = 6000;
+
+  var html = document.documentElement;
+  html.classList.add('gate-pending');
+
+  // Fail-open (reveal) is allowed to fire on a slow response, but a real
+  // "banned" verdict always wins even if it arrives late — it must never
+  // be silently dropped just because the timeout already revealed the
+  // page.
+  function reveal() {
+    html.classList.remove('gate-pending');
+  }
+  function applyBanReason() {
+    var reasonEl = document.getElementById('gateBannedReason');
+    if (reasonEl && window.__frostBanReason) reasonEl.textContent = window.__frostBanReason;
+    var idEl = document.getElementById('gateBannedId');
+    if (idEl && window.__frostBanId) {
+      idEl.textContent = 'ID: ' + window.__frostBanId;
+      idEl.classList.add('visible');
+    }
+  }
+  document.addEventListener('DOMContentLoaded', applyBanReason);
+  function showBanned(reason, id) {
+    clearTimeout(timeoutId);
+    window.__frostBanReason = reason || 'Violation of TOS';
+    window.__frostBanId = id || '';
+    html.classList.remove('gate-pending');
+    html.classList.add('gate-banned');
+    applyBanReason();
+  }
+
+  var timeoutId = setTimeout(reveal, GATE_TIMEOUT_MS);
+
+  window.__frostIpPromise = fetch('https://api.ipify.org?format=json', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (d) { return (d && d.ip) || ''; })
+    .catch(function () { return ''; });
+
+  window.__frostIpPromise.then(function (ip) {
+    if (!ip || GATE_API_URL.indexOf('REPLACE_WITH_YOUR_DEPLOYMENT_ID') !== -1) {
+      clearTimeout(timeoutId);
+      reveal();
+      return;
+    }
+    fetch(GATE_API_URL + '?action=checkban&ip=' + encodeURIComponent(ip), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res && res.banned) {
+          showBanned(res.reason, res.id);
+        } else {
+          clearTimeout(timeoutId);
+          reveal();
+        }
+      })
+      .catch(function () { clearTimeout(timeoutId); reveal(); });
+  });
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Frost | Minecraft Client</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -10,6 +75,7 @@
 <style>
   :root {
     --bg: #080c10;
+    --red: #d41212;
     --bg2: #0d1520;
     --surface: #111d2b;
     --surface2: #162233;
@@ -30,6 +96,68 @@
     color: var(--text);
     font-family: 'Space Grotesk', sans-serif;
   }
+
+  html.gate-pending body, html.gate-banned body { visibility: hidden; }
+
+  #gateScreen {
+    visibility: visible;
+    position: fixed; inset: 0; z-index: 999;
+    background: var(--bg);
+    display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 18px;
+    text-align: center;
+    padding: 24px;
+  }
+  html.gate-pending #gateScreen, html.gate-banned #gateScreen { display: flex; }
+
+  .gate-spinner {
+    width: 34px; height: 34px;
+    border: 3px solid rgba(79,200,248,0.25);
+    border-top-color: var(--frost-blue);
+    border-radius: 50%;
+    animation: eaSpin 0.8s linear infinite;
+  }
+  @keyframes eaSpin { to { transform: rotate(360deg); } }
+  html.gate-banned .gate-spinner { display: none; }
+
+  .gate-pending-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  html.gate-banned .gate-pending-text { display: none; }
+
+  .gate-banned-content { display: none; flex-direction: column; align-items: center; gap: 14px; max-width: 420px; }
+  html.gate-banned .gate-banned-content { display: flex; }
+  .gate-banned-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 26px; font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--red);
+  }
+  .gate-banned-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .gate-banned-reason {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--red);
+    background: rgba(212,18,18,0.08);
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    padding: 10px 18px;
+  }
+  .gate-banned-id {
+    display: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+  }
+  .gate-banned-id.visible { display: block; }
 
   #cursor-glow {
     position: fixed;
@@ -497,6 +625,18 @@
 </style>
 </head>
 <body>
+
+<div id="gateScreen">
+  <div class="gate-spinner"></div>
+  <div class="gate-pending-text">Verifying you're not a robot...</div>
+  <div class="gate-banned-content">
+    <div class="gate-banned-title">You Have Been Banned</div>
+    <p class="gate-banned-desc">Your access to Frost has been revoked. If you believe this is a mistake, contact us on Discord.</p>
+    <div class="gate-banned-reason" id="gateBannedReason">Violation of TOS</div>
+    <div class="gate-banned-id" id="gateBannedId"></div>
+  </div>
+</div>
+
 <div class="topo-bg">
   <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
     <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
@@ -531,7 +671,7 @@
   <div class="hero-glow"></div>
   <div class="hero-badge">
     <span class="dot"></span>
-    Now Live — Version 1.21.11
+    Now Live
   </div>
   <h1>
     <span class="frost-word">FROST</span>
@@ -544,7 +684,7 @@
     <a href="#download" class="btn-primary">▶ Play Now</a>
     <a href="#features" class="btn-secondary">Explore Features</a>
   </div>
-  <p class="hero-version">Supports Minecraft 1.21.11 · Free forever</p>
+  <p class="hero-version">Supports Minecraft 1.21+ · Free forever</p>
 </section>
 </div>
 <div class="section-gap-small"></div>
@@ -564,7 +704,7 @@
     <div class="stat-label">FPS Boost</div>
   </div>
   <div class="stat-item">
-    <div class="stat-num">1.21.11</div>
+    <div class="stat-num">26.2</div>
     <div class="stat-label">Latest Version</div>
   </div>
   <div class="stat-item">
@@ -742,7 +882,7 @@ document.getElementById("downloadBtn").addEventListener("click", function(e) {
     }, 2000);
 });
 </script>
-  <p class="hero-version reveal reveal-delay-2" style="margin-top:24px;">v1.21.11 · Windows · macOS · Linux</p>
+  <p class="hero-version reveal reveal-delay-2" style="margin-top:24px;">Windows · macOS · Linux</p>
 </section>
 </div>
 <div class="section-gap"></div>
