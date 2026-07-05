@@ -1,0 +1,53 @@
+Frost FAQ — deep-link IDs
+=========================
+Send these as https://frostclient.eu/faq?<id> to jump straight to
+that question/section (auto-opens if it's a collapsed FAQ item, scrolls
+to it, and briefly highlights it).
+
+General
+-------
+what-is-frost        -> https://frostclient.eu/faq.html?what-is-frost
+                         "What is Frost?"
+is-free              -> https://frostclient.eu/faq.html?is-free
+                         "Is Frost really free?"
+early-access-code    -> https://frostclient.eu/faq.html?early-access-code
+                         "What is the Early Access Code for?"
+why-not-modrinth     -> https://frostclient.eu/faq.html?why-not-modrinth
+                         "Why am I downloading Frost from this website and not from Modrinth?"
+is-trusted           -> https://frostclient.eu/faq.html?is-trusted
+                         "Is Frost Client trusted?"
+banned               -> https://frostclient.eu/faq.html?banned
+                         "Will using Frost get me banned on servers?"
+versions             -> https://frostclient.eu/faq.html?versions
+                         "Can I use other Minecraft versions?"
+lost-code            -> https://frostclient.eu/faq.html?lost-code
+                         "I lost my code or it stopped working — what do I do?"
+
+Vulkan vs. OpenGL
+-----------------
+vulkan-vs-opengl     -> https://frostclient.eu/faq.html?vulkan-vs-opengl
+                         (whole section)
+vulkan-difference    -> https://frostclient.eu/faq.html?vulkan-difference
+                         "What's the difference between Vulkan and OpenGL?"
+which-renderer       -> https://frostclient.eu/faq.html?which-renderer
+                         "Which one should I download?"
+
+Installation
+-------------
+installation         -> https://frostclient.eu/faq.html?installation
+                         (whole section)
+install-modrinth-app -> https://frostclient.eu/faq.html?install-modrinth-app
+                         Step 1: "Install the Modrinth App"
+install-redeem       -> https://frostclient.eu/faq.html?install-redeem
+                         Step 2: "Redeem your Early Access code"
+install-open-mrpack  -> https://frostclient.eu/faq.html?install-open-mrpack
+                         Step 3: "Open the downloaded .mrpack file"
+install-launch       -> https://frostclient.eu/faq.html?install-launch
+                         Step 4: "Launch from the Modrinth App"
+cracked              -> https://frostclient.eu/faq.html?cracked
+                         "Don't own Minecraft?" (AstralRinth note)
+
+Support
+-------
+support              -> https://frostclient.eu/faq.html?support
+                         (Support section)
