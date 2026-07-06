@@ -2,7 +2,7 @@ Frost FAQ — deep-link IDs
 =========================
 Send these as https://frostclient.eu/faq?<id> to jump straight to
 that question/section (auto-opens if it's a collapsed FAQ item, scrolls
-to it, and briefly highlights it).
+to it, and briefly highlights it)
 
 General
 -------
