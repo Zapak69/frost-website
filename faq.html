@@ -27,10 +27,12 @@
     border-bottom: 1px solid var(--border);
   }
   .nav-logo {
+    display: inline-flex; align-items: center; gap: 8px;
     font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
     letter-spacing: -0.5px; color: var(--frost-blue);
     text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none;
   }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
   .nav-logo span { color: var(--text); }
   .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
   .nav-back:hover { color: var(--text); }
@@ -127,7 +129,7 @@
   </svg>
 </div>
 <nav>
-  <a class="nav-logo" href="https://frostclient.eu">❄ <span>FROST</span></a>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
   <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
 </nav>
 
@@ -150,18 +152,6 @@
         <p>Yes. Frost is, and always will be, free to download and use. During Early Access, downloads are gated behind an access code, but the client itself doesn't cost anything.</p>
       </div>
     </details>
-    <details class="faq-item" id="early-access-code">
-      <summary>What is the Early Access Code for?</summary>
-      <div class="faq-item-body">
-        <p>Frost is currently in a private Early Access phase, so downloads are limited to people who have a code. Codes are handed out by the team and through the community — check our <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord server</a> for the latest on how to get one.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="why-not-modrinth">
-      <summary>Why am I downloading Frost from this website and not from Modrinth?</summary>
-      <div class="faq-item-body">
-        <p>Frost is still in a testing phase while we wait for Modrinth to approve the client for public listing. That's exactly why Early Access codes exist for now — they let us control the rollout in the meantime. Once you redeem a code, the download button still takes you straight to the official Modrinth servers, so you're getting the same file you'd get from Modrinth directly either way.</p>
-      </div>
-    </details>
     <details class="faq-item" id="is-trusted">
       <summary>Is Frost Client trusted?</summary>
       <div class="faq-item-body">
@@ -181,12 +171,6 @@
         <p>Yes and no. 1.21.11 (Vulkan) is Frost's main, most stable release right now. Support for other versions — from 1.21 up through 26.2, both Vulkan and OpenGL — already exists, but those builds are held back until Modrinth approves the client. During the current testing phase, only 1.21.11 Vulkan and OpenGL are available to download.</p>
       </div>
     </details>
-    <details class="faq-item" id="lost-code">
-      <summary>I lost my code or it stopped working — what do I do?</summary>
-      <div class="faq-item-body">
-        <p>Reach out on our <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord server</a> and we'll help you sort it out.</p>
-      </div>
-    </details>
   </div>
 
   <h2 id="vulkan-vs-opengl">Vulkan vs. OpenGL</h2>
@@ -201,6 +185,12 @@
       <summary>Which one should I download?</summary>
       <div class="faq-item-body">
         <p>Start with Vulkan for the best performance. If it fails to launch, crashes, or your GPU driver doesn't support it, come back and grab the OpenGL version instead — your Early Access code lets you download each renderer once.</p>
+      </div>
+    </details>
+    <details class="faq-item" id="download-opengl">
+      <summary>How do I download the OpenGL version?</summary>
+      <div class="faq-item-body">
+        <p>On Modrinth, just head to the modpack's <strong>Versions</strong> tab, then pick your Minecraft version and select the OpenGL build from the list — Vulkan and OpenGL are published as separate versions for each supported Minecraft release.</p>
       </div>
     </details>
   </div>
@@ -219,8 +209,8 @@
     <div class="install-step" id="install-redeem">
       <div class="install-step-num">2</div>
       <div class="install-step-content">
-        <h3>Redeem your Early Access code</h3>
-        <p>Head back to the <a href="https://frostclient.eu">homepage</a>, enter your code, and download the Vulkan or OpenGL build.</p>
+        <h3>Download Frost</h3>
+        <p>Click the download button on the <a href="https://frostclient.eu">homepage</a> — you'll be redirected to Modrinth, where you just pick your version and download the <code>.mrpack</code> file.</p>
       </div>
     </div>
     <div class="install-step" id="install-open-mrpack">

@@ -10,18 +10,12 @@ what-is-frost        -> https://frostclient.eu/faq.html?what-is-frost
                          "What is Frost?"
 is-free              -> https://frostclient.eu/faq.html?is-free
                          "Is Frost really free?"
-early-access-code    -> https://frostclient.eu/faq.html?early-access-code
-                         "What is the Early Access Code for?"
-why-not-modrinth     -> https://frostclient.eu/faq.html?why-not-modrinth
-                         "Why am I downloading Frost from this website and not from Modrinth?"
 is-trusted           -> https://frostclient.eu/faq.html?is-trusted
                          "Is Frost Client trusted?"
 banned               -> https://frostclient.eu/faq.html?banned
                          "Will using Frost get me banned on servers?"
 versions             -> https://frostclient.eu/faq.html?versions
                          "Can I use other Minecraft versions?"
-lost-code            -> https://frostclient.eu/faq.html?lost-code
-                         "I lost my code or it stopped working — what do I do?"
 
 Vulkan vs. OpenGL
 -----------------
@@ -31,6 +25,8 @@ vulkan-difference    -> https://frostclient.eu/faq.html?vulkan-difference
                          "What's the difference between Vulkan and OpenGL?"
 which-renderer       -> https://frostclient.eu/faq.html?which-renderer
                          "Which one should I download?"
+download-opengl      -> https://frostclient.eu/faq.html?download-opengl
+                         "How do I download the OpenGL version?"
 
 Installation
 -------------
@@ -39,7 +35,7 @@ installation         -> https://frostclient.eu/faq.html?installation
 install-modrinth-app -> https://frostclient.eu/faq.html?install-modrinth-app
                          Step 1: "Install the Modrinth App"
 install-redeem       -> https://frostclient.eu/faq.html?install-redeem
-                         Step 2: "Redeem your Early Access code"
+                         Step 2: "Download Frost"
 install-open-mrpack  -> https://frostclient.eu/faq.html?install-open-mrpack
                          Step 3: "Open the downloaded .mrpack file"
 install-launch       -> https://frostclient.eu/faq.html?install-launch

@@ -25,7 +25,8 @@
     backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
     border-bottom: 1px solid var(--border);
   }
-  .nav-logo { font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; color: var(--frost-blue); text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none; }
+  .nav-logo { display: inline-flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; color: var(--frost-blue); text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none; }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
   .nav-logo span { color: var(--text); }
   .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
   .nav-back:hover { color: var(--text); }
@@ -59,7 +60,7 @@
   </svg>
 </div>
 <nav>
-  <a class="nav-logo" href="https://frostclient.eu">❄ <span>FROST</span></a>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
   <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
 </nav>
 
