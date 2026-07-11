@@ -14,8 +14,6 @@ is-trusted           -> https://frostclient.eu/faq.html?is-trusted
                          "Is Frost Client trusted?"
 banned               -> https://frostclient.eu/faq.html?banned
                          "Will using Frost get me banned on servers?"
-versions             -> https://frostclient.eu/faq.html?versions
-                         "Can I use other Minecraft versions?"
 
 Vulkan vs. OpenGL
 -----------------
