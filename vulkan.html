@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>FAQ | Frost</title>
+<title>Vulkan Setup | Frost</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
@@ -48,37 +48,6 @@
   .legal-page a { color: var(--frost-blue); text-decoration: none; }
   .legal-page a:hover { text-decoration: underline; }
 
-  .faq-list { margin-bottom: 8px; }
-  .faq-item {
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 12px;
-    background: var(--surface);
-    overflow: hidden;
-  }
-  .faq-item summary {
-    list-style: none;
-    cursor: pointer;
-    padding: 18px 22px;
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    font-weight: 700; font-size: 15px; color: var(--text);
-    transition: background 0.15s ease;
-  }
-  .faq-item summary::-webkit-details-marker { display: none; }
-  .faq-item summary:hover { background: var(--surface2); }
-  .faq-item summary::after {
-    content: '+';
-    flex-shrink: 0;
-    font-size: 20px; font-weight: 400;
-    color: var(--frost-blue);
-    transition: transform 0.25s ease;
-  }
-  .faq-item[open] summary::after { transform: rotate(45deg); }
-  .faq-item[open] summary { border-bottom: 1px solid var(--border); }
-  .faq-item-body { padding: 16px 22px 20px; }
-  .faq-item-body p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
-  .faq-item-body p:last-child { margin-bottom: 0; }
-
   .install-steps { counter-reset: step; margin-bottom: 8px; }
   .install-step { display: flex; gap: 20px; margin-bottom: 28px; }
   .install-step-num {
@@ -103,6 +72,31 @@
   .note-box strong { color: var(--frost-blue); }
   .note-box.amber { border-color: var(--amber); background: rgba(232,184,79,0.08); }
   .note-box.amber strong { color: var(--amber); }
+
+  .code-block {
+    position: relative;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 100px 18px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; line-height: 1.9;
+    color: var(--frost-blue);
+    white-space: pre;
+    overflow-x: auto;
+    margin-bottom: 24px;
+  }
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); font-family: 'Space Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    padding: 7px 12px; border-radius: 6px; cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .copy-btn:hover { border-color: var(--frost-blue); color: var(--text); }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); }
 
   [id] { scroll-margin-top: 96px; }
   @keyframes faqHighlightFlash {
@@ -134,101 +128,64 @@
 </nav>
 
 <div class="legal-page">
-  <div class="legal-eyebrow">Support</div>
-  <h1>Frequently Asked Questions</h1>
-  <p class="legal-meta">Last updated: July 5, 2026</p>
+  <div class="legal-eyebrow">Troubleshooting</div>
+  <h1>Vulkan Arguments</h1>
+  <p class="legal-meta">Last updated: July 11, 2026</p>
 
-  <h2>General</h2>
-  <div class="faq-list">
-    <details class="faq-item" id="what-is-frost">
-      <summary>What is Frost?</summary>
-      <div class="faq-item-body">
-        <p>Frost is a free Minecraft client built around speed, customization, and simplicity. It ships with 60+ built-in mods, a friend list, custom capes, a mod browser, and both Vulkan and OpenGL rendering — no manual file installs or mod manager required.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="is-free">
-      <summary>Is Frost really free?</summary>
-      <div class="faq-item-body">
-        <p>Yes. Frost is, and always will be, free to download and use. During Early Access, downloads are gated behind an access code, but the client itself doesn't cost anything.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="is-trusted">
-      <summary>Is Frost Client trusted?</summary>
-      <div class="faq-item-body">
-        <p>Yes. Our previous client, FoxClient, went through a public legit-check on our Discord — the <strong>legit-check</strong> channel has 600+ reactions from people vouching it was genuinely safe to use, and that same trust carries over to Frost.</p>
-        <p>Right now, during Early Access, we only collect the public IP address used to activate and track Early Access keys — nothing else. Once Frost fully releases, we won't collect any user data at all.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="banned">
-      <summary>Will using Frost get me banned on servers?</summary>
-      <div class="faq-item-body">
-        <p>Frost is a client-side utility mod, similar to other Minecraft clients. Some servers restrict certain mods or clients in their rules, so always check a server's policy before joining. Sharing or leaking Early Access builds is against our own terms and can get your access revoked — see the notice shown when you redeem a code.</p>
-      </div>
-    </details>
+  <p class="section-intro">On some systems, Frost's Vulkan build won't launch correctly out of the box — usually showing up as a crash right on startup, or the game getting stuck on a black screen. This happens because of how certain GPU drivers expose Vulkan support to Java, and it isn't something that can be detected or fixed automatically. The fix is to manually add a few Java arguments to your instance in the Modrinth App.</p>
+
+  <div class="note-box">
+    <strong>Do I need to do this?</strong> Only if Frost's Vulkan build fails to launch or crashes immediately after pressing Play. If Vulkan already works fine for you, there's nothing else to do. If you'd rather not deal with this at all, the OpenGL build works out of the box on every system — see the <a href="https://frostclient.eu/faq?vulkan-vs-opengl">FAQ</a> for the difference.
   </div>
 
-  <h2 id="vulkan-vs-opengl">Vulkan vs. OpenGL</h2>
-  <div class="faq-list">
-    <details class="faq-item" id="vulkan-difference">
-      <summary>What's the difference between Vulkan and OpenGL?</summary>
-      <div class="faq-item-body">
-        <p>Both are graphics renderers Frost can run on. Vulkan is the newer, lower-overhead option and gives the biggest FPS boost on most modern systems. OpenGL is the older, more broadly compatible option — it runs on more hardware and drivers, just with less of a performance gain.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="which-renderer">
-      <summary>Which one should I download?</summary>
-      <div class="faq-item-body">
-        <p>Start with Vulkan for the best performance. If it fails to launch or crashes on startup, that's usually fixable — see our <a href="vulkan.html">Vulkan setup guide</a> for the Java arguments that solve it on most systems. Prefer not to bother with that at all? Grab the OpenGL build instead, it works with no extra setup.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="download-opengl">
-      <summary>How do I download the OpenGL version?</summary>
-      <div class="faq-item-body">
-        <p>On Modrinth, just head to the modpack's <strong>Versions</strong> tab, then pick your Minecraft version and select the OpenGL build from the list — Vulkan and OpenGL are published as separate versions for each supported Minecraft release.</p>
-      </div>
-    </details>
-  </div>
+  <h2 id="java-args">The Java Arguments</h2>
+  <p>Copy these three arguments — you'll paste them into the Modrinth App in the next step.</p>
+  <div class="code-block">
+<button type="button" class="copy-btn" id="copyArgsBtn">Copy</button><span id="javaArgsText">-Dorg.lwjgl.vulkan.Vulkan.enabled=true
+-Dorg.lwjgl.system.allocator=system
+-Dorg.lwjgl.opengl.Display.preferGPU=0</span></div>
 
-  <h2 id="installation">Installation</h2>
-  <p class="section-intro">Frost is distributed as a <code>.mrpack</code> modpack file through Modrinth. Installing it takes two steps once you have your download.</p>
-
+  <h2 id="how-to">Adding Them in the Modrinth App</h2>
   <div class="install-steps">
-    <div class="install-step" id="install-modrinth-app">
+    <div class="install-step" id="step-open-instance">
       <div class="install-step-num">1</div>
       <div class="install-step-content">
-        <h3>Install the Modrinth App</h3>
-        <p>Frost installs through the <a href="https://modrinth.com/app" target="_blank">Modrinth App</a> — download and install it first if you don't already have it.</p>
+        <h3>Open your Frost instance</h3>
+        <p>In the Modrinth App, go to your Library and click on your Frost instance to open it.</p>
       </div>
     </div>
-    <div class="install-step" id="install-redeem">
+    <div class="install-step" id="step-open-settings">
       <div class="install-step-num">2</div>
       <div class="install-step-content">
-        <h3>Download Frost</h3>
-        <p>Click the download button on the <a href="https://frostclient.eu">homepage</a> — you'll be redirected to Modrinth, where you just pick your version and download the <code>.mrpack</code> file.</p>
+        <h3>Open its settings</h3>
+        <p>Click the gear/Settings icon for that instance (or right-click it in your Library and choose Settings).</p>
       </div>
     </div>
-    <div class="install-step" id="install-open-mrpack">
+    <div class="install-step" id="step-override-java">
       <div class="install-step-num">3</div>
       <div class="install-step-content">
-        <h3>Open the downloaded .mrpack file</h3>
-        <p>That's it — just double-click the downloaded file. The Modrinth App picks it up automatically and installs Frost Client for you, no manual setup required.</p>
+        <h3>Find the Java section</h3>
+        <p>Scroll down to <strong>Java and Memory Settings</strong> and turn on "Custom Java arguments" if it isn't already enabled — this unlocks a per-instance <strong>Java Arguments</strong> field.</p>
       </div>
     </div>
-    <div class="install-step" id="install-launch">
+    <div class="install-step" id="step-paste-args">
       <div class="install-step-num">4</div>
       <div class="install-step-content">
-        <h3>Launch from the Modrinth App</h3>
-        <p>Once the install finishes, you'll find Frost listed as an instance in the Modrinth App — select it and press Play.</p>
+        <h3>Paste the arguments</h3>
+        <p>Paste the three arguments from above into the <strong>Java Arguments</strong> field, then close the settings — the Modrinth App saves automatically.</p>
+      </div>
+    </div>
+    <div class="install-step" id="step-relaunch">
+      <div class="install-step-num">5</div>
+      <div class="install-step-content">
+        <h3>Launch Frost again</h3>
+        <p>Press Play. Vulkan should now start correctly. If it still doesn't, use the OpenGL build instead — it needs no extra setup.</p>
       </div>
     </div>
   </div>
 
-  <div class="note-box amber" id="cracked">
-    <strong>Don't own Minecraft?</strong> The official Modrinth App requires a premium (Microsoft-authenticated) Minecraft account. If you want to play on a cracked/offline account, use <a href="https://git.astralium.su/didirus/AstralRinth/releases" target="_blank">AstralRinth</a> instead — a fork of the Modrinth App with offline account support. Install it the same way as the Modrinth App above, then follow the same steps: open the downloaded <code>.mrpack</code> file and Frost installs itself inside AstralRinth too.
-  </div>
-
-  <h2 id="support">Support</h2>
-  <p>Still stuck, or found a bug? Come find us on <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord</a> — that's where the team and community hang out and where support happens fastest.</p>
+  <h2 id="support">Still stuck?</h2>
+  <p>Come find us on <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord</a> — the team and community are there and can help you sort it out.</p>
 </div>
 
 <footer>
@@ -246,20 +203,27 @@
 
 <script>
 (function () {
+  const copyBtn = document.getElementById('copyArgsBtn');
+  const argsEl = document.getElementById('javaArgsText');
+  copyBtn.addEventListener('click', () => {
+    const text = argsEl.textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      const original = copyBtn.textContent;
+      copyBtn.textContent = 'Copied!';
+      copyBtn.classList.add('copied');
+      setTimeout(() => { copyBtn.textContent = original; copyBtn.classList.remove('copied'); }, 1500);
+    });
+  });
+
   const params = new URLSearchParams(window.location.search);
   let target = null;
-
   for (const key of params.keys()) {
     const el = document.getElementById(key);
     if (el) { target = el; break; }
   }
   if (!target) return;
-
-  if (target.tagName === 'DETAILS') target.open = true;
-
   target.classList.add('faq-highlight');
   setTimeout(() => target.classList.remove('faq-highlight'), 1800);
-
   setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 })();
 </script>
