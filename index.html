@@ -163,6 +163,8 @@
     background: var(--frost-blue); color: #000;
     padding: 10px 24px; border-radius: 8px;
     font-weight: 700; font-size: 14px;
+    border: none; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
     text-decoration: none; letter-spacing: 0.3px;
     transition: box-shadow 0.2s, transform 0.15s;
     box-shadow: 0 0 20px rgba(79,200,248,0.3);
@@ -439,6 +441,7 @@
   .footer-inner {
     max-width: 1160px; margin: 0 auto;
     display: flex; gap: 80px;
+    position: relative;
   }
   .footer-brand { flex: 1.5; }
   .footer-logo {
@@ -450,6 +453,24 @@
   .footer-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; }
   .footer-col a { display: block; color: var(--text); font-size: 14px; text-decoration: none; margin-bottom: 10px; opacity: 0.7; transition: opacity 0.2s; }
   .footer-col a:hover { opacity: 1; }
+  .footer-social {
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .footer-social-icons { display: flex; align-items: center; gap: 16px; }
+  .footer-social-icons a {
+    display: flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    margin-bottom: 0; opacity: 1;
+    transition: border-color 0.2s, transform 0.15s, background 0.2s;
+  }
+  .footer-social-icons a:hover { border-color: var(--frost-blue); background: var(--bg2); transform: translateY(-2px); }
+  .footer-social-icons img { width: 20px; height: 20px; object-fit: contain; opacity: 0.85; transition: opacity 0.2s; }
+  .footer-social-icons a:hover img { opacity: 1; }
   .footer-bottom {
     max-width: 1160px; margin: 48px auto 0;
     display: flex; justify-content: space-between; align-items: center;
@@ -555,10 +576,144 @@
     .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
     .stat-item:last-child { border-bottom: none; }
     .footer-inner { flex-direction: column; gap: 40px; }
+    .footer-social { position: static; transform: none; }
   }
   @media(max-width:600px){
     .features-grid { grid-template-columns: 1fr; }
   }
+
+  /* ---- Version picker popup ---- */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    background: rgba(4,6,9,0.65);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
+                visibility 0s linear 0.35s;
+  }
+  .modal-overlay.active {
+    opacity: 1; visibility: visible; pointer-events: auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
+                visibility 0s linear 0s;
+  }
+  .modal-box {
+    position: relative;
+    width: 100%; max-width: 460px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 40px;
+    box-shadow: 0 30px 100px rgba(0,0,0,0.65), 0 0 60px rgba(0,200,255,0.08);
+    transform: scale(0.88) translateY(28px);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
+  }
+  .modal-overlay.active .modal-box {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1) 0.05s, opacity 0.35s ease 0.05s;
+  }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 32px; height: 32px; border-radius: 8px;
+    background: transparent; border: none;
+    color: var(--muted); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s, transform 0.25s ease;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text); transform: rotate(90deg); }
+  .modal-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 20px; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .modal-desc { font-size: 14px; color: var(--muted); line-height: 1.55; margin-bottom: 24px; }
+
+  .version-choices { display: flex; gap: 12px; margin-bottom: 10px; }
+  .version-card {
+    position: relative;
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    padding: 16px 12px;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700; font-size: 15px; letter-spacing: 0.3px;
+    color: var(--text);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .version-card:active { transform: scale(0.98); }
+  .version-card--vulkan {
+    border-color: rgba(61,255,114,0.25);
+  }
+  .version-card--vulkan.selected {
+    border-color: rgba(61,255,114,0.6);
+    box-shadow: 0 0 24px rgba(61,255,114,0.18);
+    background: rgba(61,255,114,0.06);
+    color: var(--green);
+  }
+  .version-card--vulkan:hover { border-color: var(--green); }
+  .version-card--opengl.selected {
+    border-color: rgba(79,200,248,0.6);
+    box-shadow: 0 0 24px rgba(79,200,248,0.15);
+    background: rgba(79,200,248,0.06);
+    color: var(--frost-blue);
+  }
+  .version-card--opengl:hover { border-color: var(--frost-blue); }
+  .version-perf-note {
+    font-size: 12px; color: var(--green);
+    text-align: center;
+    margin: 0 0 20px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .version-select-wrap { position: relative; margin-bottom: 22px; }
+  .version-select {
+    width: 100%;
+    appearance: none; -webkit-appearance: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 40px 14px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px; font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  .version-select:hover, .version-select:focus { border-color: var(--frost-blue); outline: none; }
+  .version-select-wrap::after {
+    content: '▾';
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+    color: var(--frost-blue); pointer-events: none; font-size: 13px;
+  }
+
+  .btn-version-download {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%;
+    opacity: 0.4; pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .btn-version-download.unlocked { opacity: 1; pointer-events: auto; }
+  @keyframes versionUnlockPop {
+    0%   { transform: scale(0.9); box-shadow: 0 0 0 rgba(61,255,114,0); }
+    55%  { transform: scale(1.05); box-shadow: 0 0 34px rgba(61,255,114,0.6); }
+    100% { transform: scale(1); box-shadow: 0 0 28px rgba(61,255,114,0.35); }
+  }
+  .btn-version-download.just-unlocked { animation: versionUnlockPop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes versionDownloadPulse {
+    0%   { transform: scale(1); box-shadow: 0 0 28px rgba(61,255,114,0.35); }
+    45%  { transform: scale(1.04); box-shadow: 0 0 50px rgba(61,255,114,0.85); }
+    100% { transform: scale(1); box-shadow: 0 0 28px rgba(61,255,114,0.35); }
+  }
+  .btn-version-download.clicked { animation: versionDownloadPulse 0.4s ease; }
 </style>
 </head>
 <body>
@@ -602,7 +757,7 @@
     <li><a href="#download">Download</a></li>
     <li><a href="https://frostclient.eu/faq">FAQ</a></li>
   </ul>
-  <a href="https://modrinth.com/modpack/frost-client" class="nav-cta">Download Free</a>
+  <button type="button" id="navDownloadBtn" class="nav-cta js-download-trigger">Download Free</button>
 </nav>
 <div>
 <section class="hero" id="top">
@@ -792,37 +947,144 @@
   <h2 class="reveal">Ready to play<br/><span class="accent">differently?</span></h2>
   <p class="reveal">Download Frost for free and experience Minecraft the way it was meant to feel — fast, personal, and yours.</p>
 <div class="hero-actions reveal reveal-delay-1">
-  <a id="downloadBtn"
-     href="#"
-     class="btn-primary btn-download"
-     style="font-size:18px;padding:20px 56px;">
-    <span class="btn-inner btn-inner--default">
-      <span class="btn-dl-icon">↓</span>
-      <span>Download Frost</span>
-    </span>
-    <span class="btn-inner btn-inner--loading">
-      <div class="btn-spinner"></div>
-      <span>Downloading...</span>
-    </span>
-  </a>
+  <button type="button" id="downloadBtn" class="btn-primary js-download-trigger" style="font-size:18px;padding:20px 56px;">
+    <span class="btn-dl-icon">↓</span>
+    <span>Download Frost</span>
+  </button>
 </div>
-<script>
-document.getElementById("downloadBtn").addEventListener("click", function(e) {
-    e.preventDefault();
-
-    this.classList.add("loading");
-
-    setTimeout(() => {
-        window.open(
-            "https://modrinth.com/modpack/frost-client",
-            "_blank"
-        );
-    }, 2000);
-});
-</script>
   <p class="hero-version reveal reveal-delay-2" style="margin-top:24px;">Windows · macOS · Linux</p>
 </section>
 </div>
+
+<div class="modal-overlay" id="versionModal">
+  <div class="modal-box" id="versionModalBox">
+    <button type="button" class="modal-close" id="versionCloseBtn" aria-label="Close">✕</button>
+    <div class="modal-title" style="text-align:center;">Choose Your Version</div>
+    <p class="modal-desc" style="text-align:center;">Pick your renderer, then your Minecraft version.</p>
+
+    <div class="version-choices">
+      <button type="button" class="version-card version-card--vulkan" id="rendererVulkanBtn" data-renderer="vulkan">Vulkan</button>
+      <button type="button" class="version-card version-card--opengl" id="rendererOpenglBtn" data-renderer="opengl">OpenGL</button>
+    </div>
+    <p class="version-perf-note" id="versionPerfNote">Vulkan offers the highest performance</p>
+
+    <div class="version-select-wrap">
+      <select class="version-select" id="versionSelect"></select>
+    </div>
+
+    <a href="#" target="_blank" id="finalDownloadBtn" class="btn-primary btn-version-download">
+      <span class="btn-dl-icon">↓</span>
+      <span id="finalDownloadLabel">Select a version</span>
+    </a>
+  </div>
+</div>
+
+<script>
+(function () {
+  const VERSION_PAGE = 'https://modrinth.com/modpack/frost-client/version/';
+  const VERSIONS = {
+    vulkan: [
+      { label: '26.1.2',  url: VERSION_PAGE + '26.1.2_Vulkan' },
+      { label: '1.21.11', url: VERSION_PAGE + '1.21.11_Vulkan' },
+      { label: '1.21.10', url: VERSION_PAGE + '1.21.10_Vulkan' },
+      { label: '1.21.5',  url: VERSION_PAGE + '1.21.5_Vulkan' },
+      { label: '1.21.4',  url: VERSION_PAGE + '1.21.4_Vulkan' },
+      { label: '1.21.1',  url: VERSION_PAGE + '1.21.1_Vulkan' }
+    ],
+    opengl: [
+      { label: '26.2',    url: VERSION_PAGE + '26.2_OpenGL' },
+      { label: '26.1.2',  url: VERSION_PAGE + '26.1.2_OpenGL' },
+      { label: '1.21.11', url: VERSION_PAGE + '1.21.11_OpenGL' },
+      { label: '1.21.10', url: VERSION_PAGE + '1.21.10_OpenGL' },
+      { label: '1.21.8',  url: VERSION_PAGE + '1.21.8_OpenGL' },
+      { label: '1.21.5',  url: VERSION_PAGE + '1.21.5_OpenGL' },
+      { label: '1.21.4',  url: VERSION_PAGE + '1.21.4_OpenGL' },
+      { label: '1.21.1',  url: VERSION_PAGE + '1.21.1_OpenGL' }
+    ]
+  };
+
+  const openBtns     = document.querySelectorAll('.js-download-trigger');
+  const modal         = document.getElementById('versionModal');
+  const closeBtn      = document.getElementById('versionCloseBtn');
+  const vulkanBtn      = document.getElementById('rendererVulkanBtn');
+  const openglBtn       = document.getElementById('rendererOpenglBtn');
+  const perfNote       = document.getElementById('versionPerfNote');
+  const versionSelect  = document.getElementById('versionSelect');
+  const finalBtn       = document.getElementById('finalDownloadBtn');
+  const finalLabel     = document.getElementById('finalDownloadLabel');
+
+  let renderer = 'vulkan';
+  let selectedVersion = null;
+
+  function renderVersionSelect() {
+    const list = VERSIONS[renderer];
+    const keepSelected = selectedVersion && list.some(v => v.label === selectedVersion.label);
+    if (!keepSelected) selectedVersion = null;
+
+    versionSelect.innerHTML = '';
+    const placeholder = document.createElement('option');
+    placeholder.textContent = 'Select a version...';
+    placeholder.value = '';
+    versionSelect.appendChild(placeholder);
+
+    list.forEach((v) => {
+      const opt = document.createElement('option');
+      opt.value = v.label;
+      opt.textContent = v.label;
+      versionSelect.appendChild(opt);
+    });
+    versionSelect.value = selectedVersion ? selectedVersion.label : '';
+  }
+
+  function updateFinalButton() {
+    if (selectedVersion) {
+      finalBtn.classList.add('unlocked');
+      finalBtn.href = selectedVersion.url;
+      finalLabel.textContent = 'Download Frost (' + selectedVersion.label + ')';
+      finalBtn.classList.remove('just-unlocked');
+      void finalBtn.offsetWidth;
+      finalBtn.classList.add('just-unlocked');
+    } else {
+      finalBtn.classList.remove('unlocked', 'just-unlocked');
+      finalBtn.href = '#';
+      finalLabel.textContent = 'Select a version';
+    }
+  }
+
+  function selectRenderer(next) {
+    renderer = next;
+    vulkanBtn.classList.toggle('selected', renderer === 'vulkan');
+    openglBtn.classList.toggle('selected', renderer === 'opengl');
+    perfNote.style.visibility = renderer === 'vulkan' ? 'visible' : 'hidden';
+    renderVersionSelect();
+    updateFinalButton();
+  }
+
+  function openModal() {
+    finalBtn.classList.remove('clicked', 'just-unlocked');
+    selectRenderer('vulkan');
+    modal.classList.add('active');
+  }
+  function closeModal() { modal.classList.remove('active'); }
+
+  openBtns.forEach(btn => btn.addEventListener('click', openModal));
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
+  vulkanBtn.addEventListener('click', () => selectRenderer('vulkan'));
+  openglBtn.addEventListener('click', () => selectRenderer('opengl'));
+  versionSelect.addEventListener('change', () => {
+    const list = VERSIONS[renderer];
+    selectedVersion = list.find(v => v.label === versionSelect.value) || null;
+    updateFinalButton();
+  });
+  finalBtn.addEventListener('click', (e) => {
+    if (!finalBtn.classList.contains('unlocked')) { e.preventDefault(); return; }
+    finalBtn.classList.add('clicked');
+    setTimeout(() => { closeModal(); finalBtn.classList.remove('clicked'); }, 420);
+  });
+})();
+</script>
 <div class="section-gap"></div>
 <footer>
   <div class="footer-inner">
@@ -830,18 +1092,19 @@ document.getElementById("downloadBtn").addEventListener("click", function(e) {
       <div class="footer-logo">❄ FROST</div>
       <p class="footer-tagline">A fast, free Minecraft client<br/>built for players who care.</p>
     </div>
-    <div class="footer-col">
-      <h4>Community</h4>
-      <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord</a>
-      <a href="https://www.youtube.com/@zippoun" target="_blank">YouTube</a>
-      <a href="https://www.tiktok.com/@zippoun" target="_blank">TikTok</a>
+    <div class="footer-col footer-social">
+      <div class="footer-social-icons">
+        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
+        <a href="https://www.youtube.com/@frost-client" target="_blank" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
+        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
+      </div>
     </div>
     <div class="footer-col">
       <h4>Legal</h4>
-      <a href="https://forstclient.eu/faq">FAQ</a>
-      <a href="https://forstclient.eu/privacy">Privacy Policy</a>
-      <a href="https://forstclient.eu/terms">Terms of Service</a>
-      <a href="https://forstclient.eu/imprint">Imprint</a>
+      <a href="https://frostclient.eu/faq">FAQ</a>
+      <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+      <a href="https://frostclient.eu/terms">Terms of Service</a>
+      <a href="https://frostclient.eu/imprint">Imprint</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -967,16 +1230,6 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     btn.style.removeProperty('--my');
   });
 });
-const dlBtn = document.getElementById('downloadBtn');
-if (dlBtn) {
-  dlBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    if (this.classList.contains('is-loading')) return;
-    this.classList.add('is-loading');
-    setTimeout(() => window.open('https://modrinth.com/modpack/frost-client', '_blank'), 500);
-    setTimeout(() => this.classList.remove('is-loading'), 3000);
-  });
-}
 </script>
 </body>
 </html>
