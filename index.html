@@ -1083,6 +1083,19 @@
     finalBtn.classList.add('clicked');
     setTimeout(() => { closeModal(); finalBtn.classList.remove('clicked'); }, 420);
   });
+
+  // Shareable link: https://frostclient.eu/download opens straight to this
+  // popup (see /download/index.html, which redirects here with this flag).
+  (function openFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('openDownload')) return;
+
+    openModal();
+
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete('openDownload');
+    window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+  })();
 })();
 </script>
 <div class="section-gap"></div>
