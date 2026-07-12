@@ -966,7 +966,7 @@
       <button type="button" class="version-card version-card--vulkan" id="rendererVulkanBtn" data-renderer="vulkan">Vulkan</button>
       <button type="button" class="version-card version-card--opengl" id="rendererOpenglBtn" data-renderer="opengl">OpenGL</button>
     </div>
-    <p class="version-perf-note" id="versionPerfNote">Vulkan offers the highest performance — <a href="vulkan.html" target="_blank" style="color:inherit;text-decoration:underline;">crashing?</a></p>
+    <p class="version-perf-note" id="versionPerfNote">Vulkan offers the highest performance — <a href="https://frostclient.eu/vulkan" target="_blank" style="color:inherit;text-decoration:underline;">crashing?</a></p>
 
     <div class="version-select-wrap">
       <select class="version-select" id="versionSelect"></select>
@@ -1084,8 +1084,6 @@
     setTimeout(() => { closeModal(); finalBtn.classList.remove('clicked'); }, 420);
   });
 
-  // Shareable link: https://frostclient.eu/download opens straight to this
-  // popup (see /download/index.html, which redirects here with this flag).
   (function openFromUrl() {
     const params = new URLSearchParams(window.location.search);
     if (!params.has('openDownload')) return;
