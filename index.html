@@ -1060,14 +1060,14 @@
     updateFinalButton();
   }
 
-  function openModal() {
+  function openModal(initialRenderer) {
     finalBtn.classList.remove('clicked', 'just-unlocked');
-    selectRenderer('vulkan');
+    selectRenderer(initialRenderer || 'vulkan');
     modal.classList.add('active');
   }
   function closeModal() { modal.classList.remove('active'); }
 
-  openBtns.forEach(btn => btn.addEventListener('click', openModal));
+  openBtns.forEach(btn => btn.addEventListener('click', () => openModal()));
   closeBtn.addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
@@ -1088,7 +1088,8 @@
     const params = new URLSearchParams(window.location.search);
     if (!params.has('openDownload')) return;
 
-    openModal();
+    const requested = (params.get('openDownload') || '').toLowerCase();
+    openModal(requested === 'opengl' ? 'opengl' : 'vulkan');
 
     const cleanUrl = new URL(window.location.href);
     cleanUrl.searchParams.delete('openDownload');
