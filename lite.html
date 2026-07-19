@@ -350,8 +350,9 @@
       <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Open the Discord server</a>
     </div>
 
-    <div id="gameReturnNote" class="state-note" style="display:none; margin-top:28px; font-size:14px; color:var(--frost-blue);">
-      ↩ You can close this tab now — Frost Client Lite is waiting for you.
+    <div id="gameReturnNote" style="display:none; margin-top:28px;">
+      <p style="color:var(--frost-blue); font-size:14px; margin-bottom:12px;">↩ You can close this tab now — Frost Client Lite is waiting for you.</p>
+      <button type="button" class="btn-secondary" id="gameReturnRetryBtn" style="font-size:13px; padding:9px 20px;">Didn't return to the game? Click here</button>
     </div>
   </div>
 </div>
@@ -387,23 +388,37 @@
   function gamePort() {
     try { return sessionStorage.getItem(GAME_PORT_KEY) || ''; } catch (e) { return ''; }
   }
+  let lastGameNotify = null; // { status, extra } — replayed by the "didn't work?" fallback button
   function notifyGame(status, extra) {
     const session = gameSession();
     const port = gamePort();
     if (!session || !port) return;
+    lastGameNotify = { status: status, extra: extra };
     let url = 'http://127.0.0.1:' + port + '/result?session=' + encodeURIComponent(session) + '&status=' + encodeURIComponent(status);
     if (extra) {
       Object.keys(extra).forEach(function (k) {
         if (extra[k] !== undefined && extra[k] !== null) url += '&' + k + '=' + encodeURIComponent(extra[k]);
       });
     }
+    // Some browsers require explicit permission for a page to reach a loopback address
+    // (Private Network Access) and may silently refuse this if the user declines that
+    // prompt — the "didn't work?" button below lets them retry the exact same call.
     fetch(url, { mode: 'no-cors', cache: 'no-store' }).catch(function () {});
+  }
+  function retryNotifyGame() {
+    if (lastGameNotify) notifyGame(lastGameNotify.status, lastGameNotify.extra);
   }
   function afterResult(status, data, daysLeft) {
     if (!gameSession()) return;
     notifyGame(status, { token: data && data.token, daysLeft: daysLeft });
     const note = document.getElementById('gameReturnNote');
     if (note) note.style.display = 'block';
+    // Signed in from the game (Lite is already installed there) — the manual download
+    // button on this page would be confusing/redundant, so hide it in that context.
+    if (status === 'eligible') {
+      const dlBtn = document.getElementById('liteDownloadBtn');
+      if (dlBtn) dlBtn.style.display = 'none';
+    }
   }
 
   const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateTooNew', 'stateEligible', 'stateError', 'stateUpdating'];
@@ -572,6 +587,9 @@
   }));
 
   document.getElementById('retryBtn').addEventListener('click', () => show('stateLogin'));
+
+  const gameReturnRetryBtn = document.getElementById('gameReturnRetryBtn');
+  if (gameReturnRetryBtn) gameReturnRetryBtn.addEventListener('click', retryNotifyGame);
 
   const dlBtn = document.getElementById('liteDownloadBtn');
   dlBtn.addEventListener('click', () => {
