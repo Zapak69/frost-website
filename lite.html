@@ -368,9 +368,8 @@
 <script>
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
-  const SESSION_KEY = 'frostLiteSession';
+  const TOKEN_KEY = 'frostLiteToken';
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
-  const SESSION_TTL = 30 * 60 * 1000;
 
   const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateTooNew', 'stateEligible', 'stateError', 'stateUpdating'];
 
@@ -397,20 +396,16 @@
     chip.querySelector('.user-tag').textContent = tag || ('@' + (user.username || ''));
   }
 
-  function saveSession(data) {
-    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
+  // Only the Discord token is stored — never the access result. Every
+  // page load re-verifies booster status live via action=liteCheck.
+  function saveToken(t) {
+    try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
   }
-  function loadSession() {
-    try {
-      const raw = sessionStorage.getItem(SESSION_KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      if (!parsed.ts || Date.now() - parsed.ts > SESSION_TTL) return null;
-      return parsed.data;
-    } catch (e) { return null; }
+  function loadToken() {
+    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
   }
-  function clearSession() {
-    try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+  function clearToken() {
+    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
   }
 
   function showError(msg, detail) {
@@ -478,7 +473,25 @@
             : "Discord didn't respond correctly. Please try again.", data.detail);
           return;
         }
-        saveSession(data);
+        if (data.token) saveToken(data.token);
+        render(data);
+      })
+      .catch(() => showError('Network error while contacting the server. Please try again.'));
+  }
+
+  // Fresh access check on every page load with a stored token.
+  function recheck(token) {
+    show('stateLoading');
+    fetch(LITE_API_URL + '?action=liteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if (!data.ok) {
+          clearToken();
+          if (data.error === 'token_expired') { show('stateLogin'); return; }
+          showError("Discord didn't respond correctly. Please try again.", data.detail);
+          return;
+        }
+        if (data.token) saveToken(data.token);
         render(data);
       })
       .catch(() => showError('Network error while contacting the server. Please try again.'));
@@ -516,7 +529,7 @@
   });
 
   document.querySelectorAll('.js-signout').forEach(btn => btn.addEventListener('click', () => {
-    clearSession();
+    clearToken();
     show('stateLogin');
   }));
 
@@ -568,8 +581,8 @@
       return;
     }
 
-    const cached = loadSession();
-    if (cached) { render(cached); return; }
+    const token = loadToken();
+    if (token) { recheck(token); return; }
 
     show('stateLogin');
   })();
