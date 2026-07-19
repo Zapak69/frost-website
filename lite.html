@@ -199,6 +199,19 @@
   }
   .btn-lite-download.clicked { animation: liteDownloadPulse 0.4s ease; }
 
+  .update-icon {
+    width: 54px; height: 54px; margin: 0 auto 18px;
+    color: var(--frost-blue);
+    filter: drop-shadow(0 0 14px rgba(79,200,248,0.5));
+    animation: updateSpin 2.8s cubic-bezier(0.55,0.1,0.45,0.9) infinite;
+  }
+  .update-icon svg { width: 100%; height: 100%; display: block; }
+  @keyframes updateSpin {
+    0%   { transform: rotate(0deg); }
+    65%  { transform: rotate(360deg); }
+    100% { transform: rotate(360deg); }
+  }
+
   .sparkle {
     position: absolute; font-size: 14px; color: var(--boost); pointer-events: none;
     animation: twinkle 2.8s ease-in-out infinite; opacity: 0;
@@ -326,7 +339,16 @@
     <div class="state" id="stateError">
       <div class="state-title">Something went wrong</div>
       <p class="state-text" id="errorText">We couldn't verify your Discord account. Please try again.</p>
+      <p class="state-note" id="errorDetail" style="display:none; font-family:'Space Mono',monospace; word-break:break-all;"></p>
       <button type="button" class="btn-secondary" id="retryBtn">Try again</button>
+    </div>
+    <div class="state" id="stateUpdating">
+      <div class="update-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.95 7.95 0 0 0 12 4c-4.42 0-7.99 3.58-8 8s3.57 8 8 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+      </div>
+      <div class="state-title">Lite is being updated</div>
+      <p class="state-text">FrostClient Lite is currently being updated, so the download is temporarily unavailable. As soon as the new build is ready, we'll announce it on our <strong style="color:var(--frost-blue);">Discord server</strong>.</p>
+      <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Open the Discord server</a>
     </div>
 
   </div>
@@ -351,7 +373,7 @@
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
   const SESSION_TTL = 30 * 60 * 1000;
 
-  const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateTooNew', 'stateEligible', 'stateError'];
+  const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateTooNew', 'stateEligible', 'stateError', 'stateUpdating'];
 
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
@@ -392,8 +414,11 @@
     try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
   }
 
-  function showError(msg) {
+  function showError(msg, detail) {
     document.getElementById('errorText').textContent = msg || "We couldn't verify your Discord account. Please try again.";
+    const detailEl = document.getElementById('errorDetail');
+    detailEl.textContent = detail || '';
+    detailEl.style.display = detail ? 'block' : 'none';
     show('stateError');
   }
 
@@ -448,8 +473,8 @@
       .then(data => {
         if (!data.ok) {
           showError(data.error === 'auth_failed'
-            ? 'Discord sign-in expired or was already used. Please try again.'
-            : "Discord didn't respond correctly. Please try again.");
+            ? 'Discord sign-in failed. Please try again.'
+            : "Discord didn't respond correctly. Please try again.", data.detail);
           return;
         }
         saveSession(data);
@@ -503,6 +528,13 @@
   });
   (function init() {
     const params = new URLSearchParams(window.location.search);
+    if (params.has('update')) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('update');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+      show('stateUpdating');
+      return;
+    }
 
     if (params.has('code')) {
       const code = params.get('code');
