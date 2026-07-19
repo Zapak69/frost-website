@@ -350,6 +350,9 @@
       <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Open the Discord server</a>
     </div>
 
+    <div id="gameReturnNote" class="state-note" style="display:none; margin-top:28px; font-size:14px; color:var(--frost-blue);">
+      ↩ You can close this tab now — Frost Client Lite is waiting for you.
+    </div>
   </div>
 </div>
 
@@ -370,6 +373,38 @@
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
   const TOKEN_KEY = 'frostLiteToken';
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
+  const GAME_SESSION_KEY = 'frostLiteGameSession';
+  const GAME_PORT_KEY = 'frostLiteGamePort';
+
+  // FrostCore Lite (the game mod) opens this page with ?game=1&session=...&port=...
+  // when it needs to verify booster access at launch. We stash those in
+  // sessionStorage (survives the round-trip through Discord's own domain) and, once
+  // this page reaches a final result, ping the mod's local listener with it directly -
+  // the game never talks to Discord itself, it just waits for us to tell it the outcome.
+  function gameSession() {
+    try { return sessionStorage.getItem(GAME_SESSION_KEY) || ''; } catch (e) { return ''; }
+  }
+  function gamePort() {
+    try { return sessionStorage.getItem(GAME_PORT_KEY) || ''; } catch (e) { return ''; }
+  }
+  function notifyGame(status, extra) {
+    const session = gameSession();
+    const port = gamePort();
+    if (!session || !port) return;
+    let url = 'http://127.0.0.1:' + port + '/result?session=' + encodeURIComponent(session) + '&status=' + encodeURIComponent(status);
+    if (extra) {
+      Object.keys(extra).forEach(function (k) {
+        if (extra[k] !== undefined && extra[k] !== null) url += '&' + k + '=' + encodeURIComponent(extra[k]);
+      });
+    }
+    fetch(url, { mode: 'no-cors', cache: 'no-store' }).catch(function () {});
+  }
+  function afterResult(status, data, daysLeft) {
+    if (!gameSession()) return;
+    notifyGame(status, { token: data && data.token, daysLeft: daysLeft });
+    const note = document.getElementById('gameReturnNote');
+    if (note) note.style.display = 'block';
+  }
 
   const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateTooNew', 'stateEligible', 'stateError', 'stateUpdating'];
 
@@ -417,16 +452,18 @@
   }
 
   function render(data) {
-    if (!data || !data.ok) { showError(); return; }
+    if (!data || !data.ok) { showError(); afterResult('error', data); return; }
 
     if (data.status === 'not_member') {
       fillChip('chipNotMember', data.user);
       show('stateNotMember');
+      afterResult('not_member', data);
       return;
     }
     if (data.status === 'not_booster') {
       fillChip('chipNotBooster', data.user);
       show('stateNotBooster');
+      afterResult('not_booster', data);
       return;
     }
     if (data.status === 'too_new') {
@@ -445,6 +482,7 @@
       const bar = document.getElementById('boostProgress');
       bar.style.width = '0%';
       requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = pct + '%'; }));
+      afterResult('too_new', data, left);
       return;
     }
     if (data.status === 'eligible') {
@@ -457,9 +495,11 @@
       btn.classList.remove('just-unlocked');
       void btn.offsetWidth;
       btn.classList.add('just-unlocked');
+      afterResult('eligible', data);
       return;
     }
     showError();
+    afterResult('error', data);
   }
 
   function exchange(code) {
@@ -478,8 +518,6 @@
       })
       .catch(() => showError('Network error while contacting the server. Please try again.'));
   }
-
-  // Fresh access check on every page load with a stored token.
   function recheck(token) {
     show('stateLoading');
     fetch(LITE_API_URL + '?action=liteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
@@ -542,6 +580,19 @@
   });
   (function init() {
     const params = new URLSearchParams(window.location.search);
+
+    if (params.has('game') && params.has('session')) {
+      try {
+        sessionStorage.setItem(GAME_SESSION_KEY, params.get('session'));
+        sessionStorage.setItem(GAME_PORT_KEY, params.get('port') || '41421');
+      } catch (e) {}
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('game');
+      cleanUrl.searchParams.delete('session');
+      cleanUrl.searchParams.delete('port');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+    }
+
     if (params.has('update')) {
       const cleanUrl = new URL(window.location.href);
       cleanUrl.searchParams.delete('update');
