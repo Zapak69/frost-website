@@ -6,42 +6,42 @@ to it, and briefly highlights it)
 
 General
 -------
-what-is-frost        -> https://frostclient.eu/faq.html?what-is-frost
+what-is-frost        -> https://frostclient.eu/faq?what-is-frost
                          "What is Frost?"
-is-free              -> https://frostclient.eu/faq.html?is-free
+is-free              -> https://frostclient.eu/faq?is-free
                          "Is Frost really free?"
-is-trusted           -> https://frostclient.eu/faq.html?is-trusted
+is-trusted           -> https://frostclient.eu/faq?is-trusted
                          "Is Frost Client trusted?"
-banned               -> https://frostclient.eu/faq.html?banned
+banned               -> https://frostclient.eu/faq?banned
                          "Will using Frost get me banned on servers?"
 
 Vulkan vs. OpenGL
 -----------------
-vulkan-vs-opengl     -> https://frostclient.eu/faq.html?vulkan-vs-opengl
+vulkan-vs-opengl     -> https://frostclient.eu/faq?vulkan-vs-opengl
                          (whole section)
-vulkan-difference    -> https://frostclient.eu/faq.html?vulkan-difference
+vulkan-difference    -> https://frostclient.eu/faq?vulkan-difference
                          "What's the difference between Vulkan and OpenGL?"
-which-renderer       -> https://frostclient.eu/faq.html?which-renderer
+which-renderer       -> https://frostclient.eu/faq?which-renderer
                          "Which one should I download?"
-download-opengl      -> https://frostclient.eu/faq.html?download-opengl
+download-opengl      -> https://frostclient.eu/faq?download-opengl
                          "How do I download the OpenGL version?"
 
 Installation
 -------------
-installation         -> https://frostclient.eu/faq.html?installation
+installation         -> https://frostclient.eu/faq?installation
                          (whole section)
-install-modrinth-app -> https://frostclient.eu/faq.html?install-modrinth-app
+install-modrinth-app -> https://frostclient.eu/faq?install-modrinth-app
                          Step 1: "Install the Modrinth App"
-install-redeem       -> https://frostclient.eu/faq.html?install-redeem
+install-redeem       -> https://frostclient.eu/faq?install-redeem
                          Step 2: "Download Frost"
-install-open-mrpack  -> https://frostclient.eu/faq.html?install-open-mrpack
+install-open-mrpack  -> https://frostclient.eu/faq?install-open-mrpack
                          Step 3: "Open the downloaded .mrpack file"
-install-launch       -> https://frostclient.eu/faq.html?install-launch
+install-launch       -> https://frostclient.eu/faq?install-launch
                          Step 4: "Launch from the Modrinth App"
-cracked              -> https://frostclient.eu/faq.html?cracked
+cracked              -> https://frostclient.eu/faq?cracked
                          "Don't own Minecraft?" (AstralRinth note)
 
 Support
 -------
-support              -> https://frostclient.eu/faq.html?support
+support              -> https://frostclient.eu/faq?support
                          (Support section)

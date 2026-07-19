@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FrostClient Lite | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="robots" content="noindex, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+    --boost: #ff73fa; --boost-deep: #b845ff;
+    --blurple: #5865F2;
+    --green: #3dff72;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.05; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue);
+    text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none;
+  }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+
+  .lite-page { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 140px 24px 100px; text-align: center; }
+  .lite-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--boost); margin-bottom: 16px;
+    animation: fadeDown 0.6s ease both;
+  }
+  .lite-page h1 {
+    font-family: 'Space Mono', monospace; font-size: clamp(34px, 6vw, 54px);
+    font-weight: 700; letter-spacing: -2px; margin-bottom: 14px;
+    animation: fadeDown 0.6s ease 0.08s both;
+  }
+  .lite-grad {
+    background: linear-gradient(90deg, var(--boost), var(--boost-deep));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 24px rgba(255,115,250,0.35));
+  }
+  .lite-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 460px; margin: 0 auto; animation: fadeDown 0.6s ease 0.16s both; }
+
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(24px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+  .lite-card {
+    margin-top: 44px; position: relative; overflow: hidden;
+    background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 44px 36px;
+    animation: cardIn 0.7s cubic-bezier(0.22,1,0.36,1) 0.22s both;
+  }
+  .lite-card::before {
+    content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--boost), var(--frost-blue), transparent);
+    opacity: 0.6;
+  }
+
+  .state { display: none; }
+  .state.active { display: block; animation: stateIn 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+  @keyframes stateIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+  .spinner {
+    width: 34px; height: 34px;
+    border: 3px solid rgba(79,200,248,0.2); border-top-color: var(--frost-blue);
+    border-radius: 50%; margin: 0 auto 18px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .state-icon { width: 52px; height: 52px; margin: 0 auto 18px; display: block; }
+  .state-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .state-text { font-size: 14.5px; color: var(--muted); line-height: 1.7; max-width: 420px; margin: 0 auto 24px; }
+  .state-note { font-size: 12px; color: var(--muted); opacity: 0.75; margin-top: 18px; }
+
+  .btn-discord {
+    display: inline-flex; align-items: center; justify-content: center; gap: 11px;
+    background: var(--blurple); color: #fff; border: none; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-size: 15.5px; font-weight: 600;
+    padding: 14px 30px; border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.25s, filter 0.2s;
+    box-shadow: 0 0 0 rgba(88,101,242,0);
+  }
+  .btn-discord img { width: 22px; height: 22px; }
+  .btn-discord:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(88,101,242,0.45); filter: brightness(1.08); }
+  .btn-discord:active { transform: translateY(0) scale(0.98); }
+  .btn-discord.loading { pointer-events: none; opacity: 0.75; }
+  .btn-discord .btn-spinner {
+    width: 17px; height: 17px; border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite; display: none;
+  }
+  .btn-discord.loading .btn-spinner { display: inline-block; }
+  .btn-discord.loading img { display: none; }
+
+  .user-chip {
+    display: inline-flex; align-items: center; gap: 14px;
+    background: rgba(8,12,16,0.5); border: 1px solid var(--border);
+    border-radius: 999px; padding: 8px 22px 8px 8px; margin-bottom: 26px;
+  }
+  .user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--border); display: block; }
+  .user-chip.booster .user-avatar {
+    border-color: var(--boost);
+    animation: avatarGlow 2.4s ease-in-out infinite;
+  }
+  @keyframes avatarGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(255,115,250,0.35); }
+    50% { box-shadow: 0 0 22px rgba(255,115,250,0.7); }
+  }
+  .user-meta { text-align: left; }
+  .user-name { font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .user-tag { font-size: 12px; color: var(--muted); }
+
+  .booster-badge {
+    position: relative; display: inline-flex; align-items: center; gap: 7px;
+    font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; color: #fff;
+    background: linear-gradient(100deg, var(--boost), var(--boost-deep));
+    padding: 6px 14px; border-radius: 999px; margin-bottom: 20px;
+    box-shadow: 0 0 24px rgba(255,115,250,0.35);
+    overflow: hidden;
+  }
+  .booster-badge svg { width: 13px; height: 13px; }
+  .booster-badge::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 40%;
+    background: linear-gradient(105deg, transparent, rgba(255,255,255,0.55), transparent);
+    animation: shimmer 2.6s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0% { left: -60%; } 55% { left: 120%; } 100% { left: 120%; }
+  }
+
+  .progress-wrap { max-width: 380px; margin: 0 auto 10px; }
+  .progress-outer {
+    height: 12px; border-radius: 999px; overflow: hidden;
+    background: rgba(8,12,16,0.7); border: 1px solid var(--border);
+  }
+  .progress-fill {
+    height: 100%; width: 0; border-radius: 999px;
+    background: linear-gradient(90deg, var(--boost-deep), var(--boost));
+    box-shadow: 0 0 16px rgba(255,115,250,0.55);
+    transition: width 1.3s cubic-bezier(0.22,1,0.36,1);
+  }
+  .progress-labels {
+    display: flex; justify-content: space-between; margin-top: 8px;
+    font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted);
+  }
+  .countdown-big {
+    font-family: 'Space Mono', monospace; font-size: 34px; font-weight: 700;
+    letter-spacing: -1px; margin: 18px 0 4px;
+    background: linear-gradient(90deg, var(--boost), var(--frost-blue));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .countdown-sub { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+
+  .btn-lite-download {
+    position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    background: linear-gradient(100deg, var(--boost), var(--boost-deep));
+    color: #fff; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700;
+    padding: 15px 34px; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 0 28px rgba(255,115,250,0.35);
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .btn-lite-download:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(255,115,250,0.55); }
+  .btn-lite-download:active { transform: translateY(0) scale(0.98); }
+  .btn-lite-download::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 40%;
+    background: linear-gradient(105deg, transparent, rgba(255,255,255,0.35), transparent);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  @keyframes liteUnlockPop {
+    0%   { transform: scale(0.85); box-shadow: 0 0 0 rgba(255,115,250,0); }
+    55%  { transform: scale(1.06); box-shadow: 0 0 44px rgba(255,115,250,0.75); }
+    100% { transform: scale(1); box-shadow: 0 0 28px rgba(255,115,250,0.35); }
+  }
+  .btn-lite-download.just-unlocked { animation: liteUnlockPop 0.55s cubic-bezier(0.34,1.56,0.64,1) both; }
+  @keyframes liteDownloadPulse {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.05); box-shadow: 0 0 55px rgba(255,115,250,0.9); }
+    100% { transform: scale(1); }
+  }
+  .btn-lite-download.clicked { animation: liteDownloadPulse 0.4s ease; }
+
+  .sparkle {
+    position: absolute; font-size: 14px; color: var(--boost); pointer-events: none;
+    animation: twinkle 2.8s ease-in-out infinite; opacity: 0;
+    text-shadow: 0 0 10px rgba(255,115,250,0.8);
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: translateY(0) scale(0.7); }
+    50% { opacity: 1; transform: translateY(-8px) scale(1.1); }
+  }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent; color: var(--frost-blue);
+    border: 1px solid var(--border); cursor: pointer; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; font-weight: 600;
+    padding: 13px 28px; border-radius: 12px;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); transform: translateY(-2px); }
+
+  .signout {
+    display: inline-block; margin-top: 24px; background: none; border: none; cursor: pointer;
+    color: var(--muted); font-family: 'Space Grotesk', sans-serif; font-size: 12.5px;
+    text-decoration: underline; text-underline-offset: 3px; transition: color 0.2s;
+  }
+  .signout:hover { color: var(--text); }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 40px 48px; position: relative; z-index: 1;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; color: var(--muted);
+  }
+  .footer-logo-sm { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--frost-blue); font-size: 16px; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+  @media(max-width:600px){
+    nav { padding: 0 20px; }
+    .lite-card { padding: 36px 22px; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
+    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+  </svg>
+</div>
+<nav>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+</nav>
+
+<div class="lite-page">
+  <div class="lite-eyebrow">Booster Exclusive</div>
+  <h1>FrostClient <span class="lite-grad">Lite</span></h1>
+  <p class="lite-sub">A lightweight build of Frost, exclusive to boosters of our Discord server. Sign in with Discord to check your access.</p>
+
+  <div class="lite-card">
+    <div class="state active" id="stateLoading">
+      <div class="spinner"></div>
+      <p class="state-text" style="margin-bottom:0;">Checking your booster status...</p>
+    </div>
+    <div class="state" id="stateLogin">
+      <img class="state-icon" src="icons/discord.webp" alt="Discord"/>
+      <div class="state-title">Sign in with Discord</div>
+      <p class="state-text">We'll check whether you're boosting our Discord server. Boosters who have been boosting for at least <strong style="color:var(--text);">1 month</strong> unlock the FrostClient Lite download.</p>
+      <button type="button" class="btn-discord" id="loginBtn">
+        <span class="btn-spinner"></span>
+        <img src="icons/discord.webp" alt=""/>
+        Continue with Discord
+      </button>
+      <p class="state-note" id="loginNote">We only read your username and your membership of our server. Nothing else.</p>
+    </div>
+    <div class="state" id="stateNotMember">
+      <div class="user-chip" id="chipNotMember"></div>
+      <div class="state-title">You're not on our server</div>
+      <p class="state-text">FrostClient Lite is a perk for boosters of the Frost Discord server. Join the server, boost it, and come back here.</p>
+      <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Join the Discord server</a>
+      <br/><button type="button" class="signout js-signout">Sign out</button>
+    </div>
+    <div class="state" id="stateNotBooster">
+      <div class="user-chip" id="chipNotBooster"></div>
+      <div class="state-title">Boost the server to unlock</div>
+      <p class="state-text">You're on our server, but FrostClient Lite is exclusive to <strong style="color:var(--boost);">server boosters</strong>. Boost the Frost Discord server, keep the boost for 1 month, and the download unlocks right here.</p>
+      <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Open the Discord server</a>
+      <br/><button type="button" class="signout js-signout">Sign out</button>
+    </div>
+    <div class="state" id="stateTooNew">
+      <div class="user-chip booster" id="chipTooNew"></div>
+      <br/>
+      <span class="booster-badge">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.6 19 8l-7 14.4L5 8l7-6.4Zm0 3.1L8.1 8.3 12 16.5l3.9-8.2L12 4.7Z"/></svg>
+        Server Booster
+      </span>
+      <div class="state-title">Almost there!</div>
+      <p class="state-text">Thanks for boosting! FrostClient Lite unlocks after <strong style="color:var(--text);">1 month</strong> of boosting.</p>
+      <div class="countdown-big" id="daysLeftBig">–</div>
+      <div class="countdown-sub" id="unlockDateSub"></div>
+      <div class="progress-wrap">
+        <div class="progress-outer"><div class="progress-fill" id="boostProgress"></div></div>
+        <div class="progress-labels"><span id="boostDaysLabel">0 days</span><span id="boostGoalLabel">30 days</span></div>
+      </div>
+      <button type="button" class="signout js-signout">Sign out</button>
+    </div>
+    <div class="state" id="stateEligible">
+      <span class="sparkle" style="top:18px; left:14%;">✦</span>
+      <span class="sparkle" style="top:44px; right:12%; animation-delay:0.9s;">✦</span>
+      <span class="sparkle" style="bottom:120px; left:8%; animation-delay:1.7s;">✦</span>
+      <div class="user-chip booster" id="chipEligible"></div>
+      <br/>
+      <span class="booster-badge">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.6 19 8l-7 14.4L5 8l7-6.4Zm0 3.1L8.1 8.3 12 16.5l3.9-8.2L12 4.7Z"/></svg>
+        Server Booster
+      </span>
+      <div class="state-title">Access unlocked 🎉</div>
+      <p class="state-text" id="eligibleText">Thanks for supporting Frost! Your exclusive FrostClient Lite build is ready.</p>
+      <a class="btn-lite-download" id="liteDownloadBtn" href="#" rel="noopener">Download FrostClient Lite</a>
+      <br/><button type="button" class="signout js-signout">Sign out</button>
+    </div>
+    <div class="state" id="stateError">
+      <div class="state-title">Something went wrong</div>
+      <p class="state-text" id="errorText">We couldn't verify your Discord account. Please try again.</p>
+      <button type="button" class="btn-secondary" id="retryBtn">Try again</button>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <span class="footer-logo-sm">❄ FROST</span>
+  <div class="footer-links">
+    <a href="https://frostclient.eu/faq">FAQ</a>
+    <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+    <a href="https://frostclient.eu/terms">Terms of Service</a>
+    <a href="https://frostclient.eu/imprint">Imprint</a>
+    <a href="https://frostclient.eu">Home</a>
+  </div>
+  <span>© Frost 2026</span>
+</footer>
+
+<script>
+(function () {
+  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const SESSION_KEY = 'frostLiteSession';
+  const OAUTH_STATE_KEY = 'frostLiteOauthState';
+  const SESSION_TTL = 30 * 60 * 1000;
+
+  const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateTooNew', 'stateEligible', 'stateError'];
+
+  function show(id) {
+    states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
+  }
+
+  function avatarUrl(user) {
+    if (user && user.avatar) {
+      return 'https://cdn.discordapp.com/avatars/' + user.id + '/' + user.avatar + '.png?size=128';
+    }
+    let idx = 0;
+    try { idx = Number((BigInt(user.id) >> 22n) % 6n); } catch (e) { idx = 0; }
+    return 'https://cdn.discordapp.com/embed/avatars/' + idx + '.png';
+  }
+
+  function fillChip(chipId, user, tag) {
+    const chip = document.getElementById(chipId);
+    if (!user) { chip.style.display = 'none'; return; }
+    chip.innerHTML =
+      '<img class="user-avatar" src="' + avatarUrl(user) + '" alt=""/>' +
+      '<div class="user-meta"><div class="user-name"></div><div class="user-tag"></div></div>';
+    chip.querySelector('.user-name').textContent = user.name || user.username || 'Discord user';
+    chip.querySelector('.user-tag').textContent = tag || ('@' + (user.username || ''));
+  }
+
+  function saveSession(data) {
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
+  }
+  function loadSession() {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed.ts || Date.now() - parsed.ts > SESSION_TTL) return null;
+      return parsed.data;
+    } catch (e) { return null; }
+  }
+  function clearSession() {
+    try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+  }
+
+  function showError(msg) {
+    document.getElementById('errorText').textContent = msg || "We couldn't verify your Discord account. Please try again.";
+    show('stateError');
+  }
+
+  function render(data) {
+    if (!data || !data.ok) { showError(); return; }
+
+    if (data.status === 'not_member') {
+      fillChip('chipNotMember', data.user);
+      show('stateNotMember');
+      return;
+    }
+    if (data.status === 'not_booster') {
+      fillChip('chipNotBooster', data.user);
+      show('stateNotBooster');
+      return;
+    }
+    if (data.status === 'too_new') {
+      fillChip('chipTooNew', data.user, 'Boosting for ' + data.boostDays + (data.boostDays === 1 ? ' day' : ' days'));
+      const minDays = data.minDays || 30;
+      const left = Math.max(1, data.daysLeft || (minDays - data.boostDays));
+      document.getElementById('daysLeftBig').textContent = left + (left === 1 ? ' day left' : ' days left');
+      if (data.unlockAt) {
+        const d = new Date(data.unlockAt);
+        document.getElementById('unlockDateSub').textContent = 'Unlocks on ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      }
+      document.getElementById('boostDaysLabel').textContent = data.boostDays + (data.boostDays === 1 ? ' day' : ' days');
+      document.getElementById('boostGoalLabel').textContent = minDays + ' days';
+      show('stateTooNew');
+      const pct = Math.min(100, Math.round((data.boostDays / minDays) * 100));
+      const bar = document.getElementById('boostProgress');
+      bar.style.width = '0%';
+      requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = pct + '%'; }));
+      return;
+    }
+    if (data.status === 'eligible') {
+      fillChip('chipEligible', data.user, 'Boosting for ' + data.boostDays + (data.boostDays === 1 ? ' day' : ' days'));
+      const btn = document.getElementById('liteDownloadBtn');
+      try { btn.href = atob(data.dl); } catch (e) { btn.href = '#'; }
+      show('stateEligible');
+      btn.classList.remove('just-unlocked');
+      void btn.offsetWidth;
+      btn.classList.add('just-unlocked');
+      return;
+    }
+    showError();
+  }
+
+  function exchange(code) {
+    show('stateLoading');
+    fetch(LITE_API_URL + '?action=liteAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if (!data.ok) {
+          showError(data.error === 'auth_failed'
+            ? 'Discord sign-in expired or was already used. Please try again.'
+            : "Discord didn't respond correctly. Please try again.");
+          return;
+        }
+        saveSession(data);
+        render(data);
+      })
+      .catch(() => showError('Network error while contacting the server. Please try again.'));
+  }
+  const loginBtn = document.getElementById('loginBtn');
+  loginBtn.addEventListener('click', () => {
+    loginBtn.classList.add('loading');
+    fetch(LITE_API_URL + '?action=liteConfig', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(cfg => {
+        if (!cfg.ok || !cfg.clientId || cfg.clientId.indexOf('PASTE_') === 0) {
+          loginBtn.classList.remove('loading');
+          showError('Discord sign-in is not configured yet. Please check back soon.');
+          return;
+        }
+        let state = '';
+        try {
+          const buf = new Uint8Array(16);
+          crypto.getRandomValues(buf);
+          state = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+          sessionStorage.setItem(OAUTH_STATE_KEY, state);
+        } catch (e) {}
+        const url = 'https://discord.com/oauth2/authorize'
+          + '?client_id=' + encodeURIComponent(cfg.clientId)
+          + '&response_type=code'
+          + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
+          + '&scope=' + encodeURIComponent('identify guilds.members.read')
+          + (state ? '&state=' + state : '');
+        window.location.href = url;
+      })
+      .catch(() => {
+        loginBtn.classList.remove('loading');
+        showError('Network error while contacting the server. Please try again.');
+      });
+  });
+
+  document.querySelectorAll('.js-signout').forEach(btn => btn.addEventListener('click', () => {
+    clearSession();
+    show('stateLogin');
+  }));
+
+  document.getElementById('retryBtn').addEventListener('click', () => show('stateLogin'));
+
+  const dlBtn = document.getElementById('liteDownloadBtn');
+  dlBtn.addEventListener('click', () => {
+    dlBtn.classList.add('clicked');
+    setTimeout(() => dlBtn.classList.remove('clicked'), 450);
+  });
+  (function init() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has('code')) {
+      const code = params.get('code');
+      const returnedState = params.get('state') || '';
+      let storedState = '';
+      try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
+      try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('code');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+
+      if (storedState && returnedState !== storedState) {
+        showError('Sign-in session mismatch. Please try again.');
+        return;
+      }
+      exchange(code);
+      return;
+    }
+
+    if (params.has('error')) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('error');
+      cleanUrl.searchParams.delete('error_description');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+      document.getElementById('loginNote').textContent = 'Sign-in was cancelled. You can try again whenever you like.';
+      show('stateLogin');
+      return;
+    }
+
+    const cached = loadSession();
+    if (cached) { render(cached); return; }
+
+    show('stateLogin');
+  })();
+})();
+</script>
+</body>
+</html>
