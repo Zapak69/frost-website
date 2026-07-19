@@ -282,7 +282,7 @@
     <div class="state" id="stateLogin">
       <img class="state-icon" src="icons/discord.webp" alt="Discord"/>
       <div class="state-title">Sign in with Discord</div>
-      <p class="state-text">We'll check whether you're boosting our Discord server. Boosters who have been boosting for at least <strong style="color:var(--text);">1 month</strong> unlock the FrostClient Lite download.</p>
+      <p class="state-text">We'll check whether you're boosting our Discord server. Members boosting with <strong style="color:var(--boost);">2 boosts</strong> for more than <strong style="color:var(--text);">1 month</strong> unlock the FrostClient Lite download.</p>
       <button type="button" class="btn-discord" id="loginBtn">
         <span class="btn-spinner"></span>
         Continue with Discord
@@ -299,7 +299,7 @@
     <div class="state" id="stateNotBooster">
       <div class="user-chip" id="chipNotBooster"></div>
       <div class="state-title">Boost the server to unlock</div>
-      <p class="state-text">You're on our server, but FrostClient Lite is exclusive to <strong style="color:var(--boost);">server boosters</strong>. Boost the Frost Discord server, keep the boost for 1 month, and the download unlocks right here.</p>
+      <p class="state-text">You're on our server, but FrostClient Lite is exclusive to <strong style="color:var(--boost);">server boosters</strong>. Boost the Frost Discord server with <strong style="color:var(--boost);">2 boosts</strong>, keep them for 1 month, and the download unlocks right here.</p>
       <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Open the Discord server</a>
       <br/><button type="button" class="signout js-signout">Sign out</button>
     </div>
@@ -311,7 +311,7 @@
         Server Booster
       </span>
       <div class="state-title">Almost there!</div>
-      <p class="state-text">Thanks for boosting! FrostClient Lite unlocks after <strong style="color:var(--text);">1 month</strong> of boosting.</p>
+      <p class="state-text">Thanks for boosting! FrostClient Lite unlocks after <strong style="color:var(--text);">1 month</strong> of boosting with <strong style="color:var(--boost);">2 boosts</strong>.</p>
       <div class="countdown-big" id="daysLeftBig">–</div>
       <div class="countdown-sub" id="unlockDateSub"></div>
       <div class="progress-wrap">
@@ -453,7 +453,9 @@
       return;
     }
     if (data.status === 'eligible') {
-      fillChip('chipEligible', data.user, 'Boosting for ' + data.boostDays + (data.boostDays === 1 ? ' day' : ' days'));
+      fillChip('chipEligible', data.user, data.boostDays != null
+        ? 'Boosting for ' + data.boostDays + (data.boostDays === 1 ? ' day' : ' days')
+        : null);
       const btn = document.getElementById('liteDownloadBtn');
       try { btn.href = atob(data.dl); } catch (e) { btn.href = '#'; }
       show('stateEligible');

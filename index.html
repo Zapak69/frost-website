@@ -433,6 +433,75 @@
   .cta-section::before { display: none; }
   .cta-section h2 { font-size: clamp(40px, 6vw, 72px); margin-bottom: 20px; }
   .cta-section p { color: var(--muted); font-size: 18px; max-width: 480px; margin: 0 auto 48px; }
+  .lite-promo { padding: 0 24px 150px; text-align: center; }
+  .lite-promo .section-eyebrow { color: #ff73fa; }
+  .lite-promo h2 { font-size: clamp(34px, 5vw, 58px); margin-bottom: 18px; }
+  .lite-accent {
+    background: linear-gradient(90deg, #ff73fa, #b845ff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 22px rgba(255,115,250,0.35));
+  }
+  .lite-promo-desc { color: var(--muted); font-size: 17px; line-height: 1.65; max-width: 520px; margin: 0 auto 52px; }
+  .lite-compare {
+    max-width: 620px; margin: 0 auto 48px;
+    border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
+    background: linear-gradient(180deg, rgba(17,29,43,0.85), rgba(12,20,30,0.85));
+  }
+  .lite-compare-row {
+    display: grid; grid-template-columns: 1.15fr 1fr 1fr; align-items: stretch;
+    border-bottom: 1px solid var(--border);
+  }
+  .lite-compare-row:last-child { border-bottom: none; }
+  .lite-compare-cell {
+    padding: 16px 18px; font-size: 14.5px; display: flex; align-items: center; justify-content: center;
+  }
+  .lite-compare-cell:first-child { justify-content: flex-start; text-align: left; color: var(--muted); }
+  .lite-col-frost { color: var(--text); }
+  .lite-col-lite {
+    color: #ff73fa; font-weight: 600;
+    background: rgba(255,115,250,0.06);
+    border-left: 1px solid rgba(255,115,250,0.2);
+  }
+  .lite-compare-head .lite-compare-cell {
+    font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.5px; padding: 18px;
+  }
+  .lite-compare-head .lite-col-lite { flex-direction: column; gap: 6px; }
+  .lite-head-badge {
+    font-size: 9.5px; letter-spacing: 1.5px; color: #fff;
+    background: linear-gradient(100deg, #ff73fa, #b845ff);
+    padding: 3px 10px; border-radius: 999px;
+    box-shadow: 0 0 16px rgba(255,115,250,0.45);
+    animation: liteBadgePulse 2.4s ease-in-out infinite;
+  }
+  @keyframes liteBadgePulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(255,115,250,0.35); }
+    50% { box-shadow: 0 0 22px rgba(255,115,250,0.75); }
+  }
+  .btn-lite-promo {
+    position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    background: linear-gradient(100deg, #ff73fa, #b845ff);
+    color: #fff; text-decoration: none; overflow: hidden;
+    font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700;
+    padding: 16px 40px; border-radius: 12px;
+    box-shadow: 0 0 28px rgba(255,115,250,0.3);
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .btn-lite-promo:hover { transform: translateY(-2px); box-shadow: 0 10px 42px rgba(255,115,250,0.55); }
+  .btn-lite-promo:active { transform: translateY(0) scale(0.98); }
+  .btn-lite-promo::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 40%;
+    background: linear-gradient(105deg, transparent, rgba(255,255,255,0.35), transparent);
+    animation: litePromoShimmer 3s ease-in-out infinite;
+  }
+  @keyframes litePromoShimmer {
+    0% { left: -60%; } 55% { left: 120%; } 100% { left: 120%; }
+  }
+  .lite-promo-note { margin-top: 20px; font-size: 13px; color: var(--muted); }
+  @media(max-width:600px){
+    .lite-compare-cell { padding: 13px 10px; font-size: 12.5px; }
+    .lite-compare-head .lite-compare-cell { font-size: 11px; padding: 14px 10px; }
+  }
   footer {
     border-top: 1px solid var(--border);
     padding: 60px 48px 40px;
@@ -955,6 +1024,39 @@
   <p class="hero-version reveal reveal-delay-2" style="margin-top:24px;">Windows · macOS · Linux</p>
 </section>
 </div>
+
+<div class="section-gap-small"></div>
+<section class="lite-promo" id="lite">
+  <div class="section-eyebrow reveal">Booster exclusive</div>
+  <h2 class="reveal">Want even <span class="lite-accent">more?</span></h2>
+  <p class="lite-promo-desc reveal">FrostClient <strong style="color:#ff73fa;">Lite</strong> is a special build that goes beyond the classic client — built for our biggest supporters.</p>
+  <div class="lite-compare reveal">
+    <div class="lite-compare-row lite-compare-head">
+      <div class="lite-compare-cell"></div>
+      <div class="lite-compare-cell lite-col-frost">FROST</div>
+      <div class="lite-compare-cell lite-col-lite">FROST LITE <span class="lite-head-badge">BOOSTER</span></div>
+    </div>
+    <div class="lite-compare-row">
+      <div class="lite-compare-cell">Optimization</div>
+      <div class="lite-compare-cell lite-col-frost">Advanced</div>
+      <div class="lite-compare-cell lite-col-lite">Maximum</div>
+    </div>
+    <div class="lite-compare-row">
+      <div class="lite-compare-cell">FPS</div>
+      <div class="lite-compare-cell lite-col-frost">High</div>
+      <div class="lite-compare-cell lite-col-lite">Even higher</div>
+    </div>
+    <div class="lite-compare-row">
+      <div class="lite-compare-cell">Support</div>
+      <div class="lite-compare-cell lite-col-frost">Standard</div>
+      <div class="lite-compare-cell lite-col-lite">Extended</div>
+    </div>
+  </div>
+  <div class="reveal">
+    <a class="btn-lite-promo" href="lite">Unlock FrostClient Lite</a>
+    <p class="lite-promo-note">Boost our Discord server to unlock FrostClient Lite.</p>
+  </div>
+</section>
 
 <div class="modal-overlay" id="versionModal">
   <div class="modal-box" id="versionModalBox">
