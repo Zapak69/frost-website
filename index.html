@@ -159,6 +159,7 @@
     transition: color 0.2s;
   }
   .nav-links a:hover { color: var(--text); }
+  .nav-actions { display: flex; align-items: center; gap: 12px; }
   .nav-cta {
     background: var(--frost-blue); color: #000;
     padding: 10px 24px; border-radius: 8px;
@@ -170,6 +171,17 @@
     box-shadow: 0 0 20px rgba(79,200,248,0.3);
   }
   .nav-cta:hover { box-shadow: 0 0 32px rgba(79,200,248,0.6); transform: translateY(-1px); }
+  .nav-cta--lite {
+    display: inline-block;
+    background: linear-gradient(100deg, #ff73fa, #b845ff); color: #fff;
+    box-shadow: 0 0 20px rgba(255,115,250,0.3);
+  }
+  .nav-cta--lite:hover { box-shadow: 0 0 32px rgba(255,115,250,0.6); transform: translateY(-1px); }
+  .nav-cta--lite.in-lite { animation: navLiteGlow 1.8s ease-in-out infinite; }
+  @keyframes navLiteGlow {
+    0%, 100% { box-shadow: 0 0 22px rgba(255,115,250,0.55); }
+    50% { box-shadow: 0 0 44px rgba(255,115,250,0.95); }
+  }
 
   .hero {
     position: relative; z-index: 1;
@@ -433,7 +445,21 @@
   .cta-section::before { display: none; }
   .cta-section h2 { font-size: clamp(40px, 6vw, 72px); margin-bottom: 20px; }
   .cta-section p { color: var(--muted); font-size: 18px; max-width: 480px; margin: 0 auto 48px; }
-  .lite-promo { padding: 0 24px 150px; text-align: center; }
+  .lite-promo { padding: 40px 24px 150px; text-align: center; scroll-margin-top: 90px; }
+  .btn-lite-try {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: #ff73fa; text-decoration: none;
+    background: rgba(255,115,250,0.06);
+    border: 1px solid rgba(255,115,250,0.35);
+    font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600;
+    padding: 12px 28px; border-radius: 12px;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.25s, transform 0.2s;
+  }
+  .btn-lite-try:hover {
+    border-color: #ff73fa; background: rgba(255,115,250,0.12);
+    box-shadow: 0 0 26px rgba(255,115,250,0.35); transform: translateY(-2px);
+  }
+  .btn-lite-try:active { transform: translateY(0) scale(0.98); }
   .lite-promo .section-eyebrow { color: #ff73fa; }
   .lite-promo h2 { font-size: clamp(34px, 5vw, 58px); margin-bottom: 18px; }
   .lite-accent {
@@ -826,7 +852,10 @@
     <li><a href="#download">Download</a></li>
     <li><a href="https://frostclient.eu/faq">FAQ</a></li>
   </ul>
-  <button type="button" id="navDownloadBtn" class="nav-cta js-download-trigger">Download Free</button>
+  <div class="nav-actions">
+    <a href="#lite" class="nav-cta nav-cta--lite">LITE</a>
+    <button type="button" id="navDownloadBtn" class="nav-cta js-download-trigger">Download Free</button>
+  </div>
 </nav>
 <div>
 <section class="hero" id="top">
@@ -1021,11 +1050,13 @@
     <span>Download Frost</span>
   </button>
 </div>
+  <div class="reveal reveal-delay-2" style="margin-top:18px;">
+    <a href="#lite" class="btn-lite-try">✦ Try FrostClient Lite</a>
+  </div>
   <p class="hero-version reveal reveal-delay-2" style="margin-top:24px;">Windows · macOS · Linux</p>
 </section>
 </div>
 
-<div class="section-gap-small"></div>
 <section class="lite-promo" id="lite">
   <div class="section-eyebrow reveal">Booster exclusive</div>
   <h2 class="reveal">Want even <span class="lite-accent">more?</span></h2>
@@ -1265,6 +1296,8 @@ const scrollBar  = document.getElementById('scroll-bar');
 const navEl      = document.querySelector('nav');
 const fpsFills   = document.querySelectorAll('.fps-fill');
 const perfSect   = document.getElementById('performance');
+const liteSect   = document.getElementById('lite');
+const navLiteBtn = document.querySelector('.nav-cta--lite');
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', (e) => {
     const id = link.getAttribute('href').slice(1);
@@ -1288,7 +1321,11 @@ revealEls.forEach(el => {
 function getRevealP(rect, delayPx) {
   const vh         = window.innerHeight;
   const enterStart = vh * 0.95 - delayPx;
-  const enterEnd   = vh * 0.55;
+  // Short reveal band relative to enterStart: elements finish appearing
+  // while still in the lower fifth of the viewport, so a section is fully
+  // visible without having to scroll its heading out of view. (Relative
+  // also keeps delayed elements from inverting the band on small screens.)
+  const enterEnd   = enterStart - vh * 0.17;
   const exitStart  = -vh * 0.05;
   const exitEnd    = -vh * 0.55;
   if (rect.top > enterStart) return 0;
@@ -1319,6 +1356,11 @@ function onScroll() {
     : 'rgba(8,12,16,0.75)';
   updateReveal();
   updateFps();
+  if (liteSect && navLiteBtn) {
+    const r = liteSect.getBoundingClientRect();
+    const vh = window.innerHeight;
+    navLiteBtn.classList.toggle('in-lite', r.top < vh * 0.6 && r.bottom > vh * 0.25);
+  }
 }
 window.addEventListener('scroll', onScroll, { passive: true });
 window.addEventListener('resize', onScroll);
