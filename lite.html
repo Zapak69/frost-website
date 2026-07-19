@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>FrostClient Lite | Frost</title>
+<title>Lite | Frost</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <meta name="robots" content="noindex, follow">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -410,7 +410,14 @@
   }
   function afterResult(status, data, daysLeft) {
     if (!gameSession()) return;
-    notifyGame(status, { token: data && data.token, daysLeft: daysLeft });
+    const user = data && data.user;
+    notifyGame(status, {
+      token: data && data.token,
+      daysLeft: daysLeft,
+      uid: user && user.id,
+      avatar: user && user.avatar,
+      name: user && (user.name || user.username),
+    });
     const note = document.getElementById('gameReturnNote');
     if (note) note.style.display = 'block';
     // Signed in from the game (Lite is already installed there) — the manual download
