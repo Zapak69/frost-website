@@ -241,8 +241,11 @@
 
   footer {
     border-top: 1px solid var(--border); padding: 40px 48px; position: relative; z-index: 1;
-    display: flex; justify-content: space-between; align-items: center;
     font-size: 13px; color: var(--muted);
+  }
+  .footer-inner {
+    max-width: 900px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
   }
   .footer-logo-sm { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--frost-blue); font-size: 16px; }
   .footer-links { display: flex; gap: 24px; }
@@ -251,7 +254,7 @@
   @media(max-width:600px){
     nav { padding: 0 20px; }
     .lite-card { padding: 36px 22px; }
-    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
   }
 </style>
 </head>
@@ -358,6 +361,7 @@
 </div>
 
 <footer>
+<div class="footer-inner">
   <span class="footer-logo-sm">❄ FROST</span>
   <div class="footer-links">
     <a href="https://frostclient.eu/faq">FAQ</a>
@@ -367,6 +371,7 @@
     <a href="https://frostclient.eu">Home</a>
   </div>
   <span>© Frost 2026</span>
+</div>
 </footer>
 
 <script>
@@ -376,19 +381,13 @@
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
   const GAME_SESSION_KEY = 'frostLiteGameSession';
   const GAME_PORT_KEY = 'frostLiteGamePort';
-
-  // FrostCore Lite (the game mod) opens this page with ?game=1&session=...&port=...
-  // when it needs to verify booster access at launch. We stash those in
-  // sessionStorage (survives the round-trip through Discord's own domain) and, once
-  // this page reaches a final result, ping the mod's local listener with it directly -
-  // the game never talks to Discord itself, it just waits for us to tell it the outcome.
   function gameSession() {
     try { return sessionStorage.getItem(GAME_SESSION_KEY) || ''; } catch (e) { return ''; }
   }
   function gamePort() {
     try { return sessionStorage.getItem(GAME_PORT_KEY) || ''; } catch (e) { return ''; }
   }
-  let lastGameNotify = null; // { status, extra } — replayed by the "didn't work?" fallback button
+  let lastGameNotify = null;
   function notifyGame(status, extra) {
     const session = gameSession();
     const port = gamePort();
@@ -400,9 +399,6 @@
         if (extra[k] !== undefined && extra[k] !== null) url += '&' + k + '=' + encodeURIComponent(extra[k]);
       });
     }
-    // Some browsers require explicit permission for a page to reach a loopback address
-    // (Private Network Access) and may silently refuse this if the user declines that
-    // prompt — the "didn't work?" button below lets them retry the exact same call.
     fetch(url, { mode: 'no-cors', cache: 'no-store' }).catch(function () {});
   }
   function retryNotifyGame() {
@@ -420,8 +416,6 @@
     });
     const note = document.getElementById('gameReturnNote');
     if (note) note.style.display = 'block';
-    // Signed in from the game (Lite is already installed there) — the manual download
-    // button on this page would be confusing/redundant, so hide it in that context.
     if (status === 'eligible') {
       const dlBtn = document.getElementById('liteDownloadBtn');
       if (dlBtn) dlBtn.style.display = 'none';
@@ -452,9 +446,6 @@
     chip.querySelector('.user-name').textContent = user.name || user.username || 'Discord user';
     chip.querySelector('.user-tag').textContent = tag || ('@' + (user.username || ''));
   }
-
-  // Only the Discord token is stored — never the access result. Every
-  // page load re-verifies booster status live via action=liteCheck.
   function saveToken(t) {
     try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
   }

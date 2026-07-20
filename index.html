@@ -639,6 +639,7 @@
   .fps-label { font-size: 13px; color: var(--muted); }
   .fps-value { font-size: 13px; font-family: 'Space Mono', monospace; color: var(--text); }
   .fps-label.is-frost, .fps-value.is-frost { color: var(--frost-blue); }
+  .fps-label.is-lite, .fps-value.is-lite { color: #ff73fa; }
   .fps-track { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
   .fps-fill {
     height: 100%; border-radius: 4px; width: 0;
@@ -655,12 +656,23 @@
     background-size: 300% 100%;
     box-shadow: 0 0 7px rgba(0,200,255,0.20);
   }
+  .fps-fill--lite {
+    background: linear-gradient(90deg,
+      #b845ff 0%,
+      #ff73fa 30%,
+      #ff9dfc 50%,
+      #ff73fa 70%,
+      #b845ff 100%);
+    background-size: 300% 100%;
+    box-shadow: 0 0 9px rgba(255,115,250,0.35);
+  }
   @keyframes gradientSlide {
     0%   { background-position: 100% 50%; }
     100% { background-position: -100% 50%; }
   }
   .fps-fill.active { width: var(--w); }
   .fps-fill--frost.active { animation: gradientSlide 6s linear infinite; }
+  .fps-fill--lite.active { animation: gradientSlide 5s linear infinite; }
   #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
   @media(max-width:900px){
     nav { padding: 0 20px; }
@@ -1002,7 +1014,7 @@
           <span class="fps-value">85 FPS</span>
         </div>
         <div class="fps-track">
-          <div class="fps-fill fps-fill--muted" style="--w:10%; transition-delay:0.05s;"></div>
+          <div class="fps-fill fps-fill--muted" style="--w:8%; transition-delay:0.05s;"></div>
         </div>
       </div>
       <div class="fps-entry">
@@ -1011,7 +1023,7 @@
           <span class="fps-value">250 FPS</span>
         </div>
         <div class="fps-track">
-          <div class="fps-fill fps-fill--muted" style="--w:20%; transition-delay:0.2s;"></div>
+          <div class="fps-fill fps-fill--muted" style="--w:22%; transition-delay:0.2s;"></div>
         </div>
       </div>
       <div class="fps-entry">
@@ -1020,7 +1032,7 @@
           <span class="fps-value">490 FPS</span>
         </div>
         <div class="fps-track">
-          <div class="fps-fill fps-fill--muted" style="--w:45%; transition-delay:0.35s;"></div>
+          <div class="fps-fill fps-fill--muted" style="--w:43%; transition-delay:0.35s;"></div>
         </div>
       </div>
       <div class="fps-entry">
@@ -1029,7 +1041,16 @@
           <span class="fps-value is-frost">810 FPS</span>
         </div>
         <div class="fps-track">
-          <div class="fps-fill fps-fill--frost" style="--w:100%; transition-delay:0.5s;"></div>
+          <div class="fps-fill fps-fill--frost" style="--w:72%; transition-delay:0.5s;"></div>
+        </div>
+      </div>
+      <div class="fps-entry">
+        <div class="fps-row">
+          <span class="fps-label is-lite">✦ FrostClient Lite</span>
+          <span class="fps-value is-lite">1130 FPS</span>
+        </div>
+        <div class="fps-track">
+          <div class="fps-fill fps-fill--lite" style="--w:100%; transition-delay:0.65s;"></div>
         </div>
       </div>
       <p style="font-size:12px;color:var(--muted);margin-top:20px;">Tested on RTX 3060ti · 2160p · Render distance 20 chunks</p>
