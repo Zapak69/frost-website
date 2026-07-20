@@ -558,13 +558,19 @@
           showError('Discord sign-in is not configured yet. Please check back soon.');
           return;
         }
-        let state = '';
+        let csrfState = '';
         try {
           const buf = new Uint8Array(16);
           crypto.getRandomValues(buf);
-          state = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
-          sessionStorage.setItem(OAUTH_STATE_KEY, state);
+          csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+          sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
         } catch (e) {}
+        // Discord always echoes "state" back verbatim on the redirect, unlike sessionStorage,
+        // which some browsers' anti-bounce-tracking protections (Firefox/Safari) wipe across
+        // the frostclient.eu -> discord.com -> frostclient.eu hop - carry the game context
+        // inside state too, as a fallback for when sessionStorage doesn't survive that hop.
+        const gs = gameSession(), gp = gamePort();
+        const state = csrfState + (gs && gp ? '.g.' + gs + '.' + gp : '');
         const url = 'https://discord.com/oauth2/authorize'
           + '?client_id=' + encodeURIComponent(cfg.clientId)
           + '&response_type=code'
@@ -624,12 +630,26 @@
       try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
       try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
 
+      // Recover game session/port from state if sessionStorage lost them across the
+      // Discord redirect hop (see the loginBtn handler for why they're embedded there).
+      const gIdx = returnedState.indexOf('.g.');
+      const csrfState = gIdx === -1 ? returnedState : returnedState.slice(0, gIdx);
+      if (gIdx !== -1 && !gameSession()) {
+        const gameParts = returnedState.slice(gIdx + 3).split('.');
+        if (gameParts.length === 2 && gameParts[0] && gameParts[1]) {
+          try {
+            sessionStorage.setItem(GAME_SESSION_KEY, gameParts[0]);
+            sessionStorage.setItem(GAME_PORT_KEY, gameParts[1]);
+          } catch (e) {}
+        }
+      }
+
       const cleanUrl = new URL(window.location.href);
       cleanUrl.searchParams.delete('code');
       cleanUrl.searchParams.delete('state');
       window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
 
-      if (storedState && returnedState !== storedState) {
+      if (storedState && csrfState !== storedState) {
         showError('Sign-in session mismatch. Please try again.');
         return;
       }
