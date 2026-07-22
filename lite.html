@@ -118,7 +118,15 @@
     .lite-compare-head .lite-compare-cell { font-size: 11px; padding: 14px 10px; }
   }
 
-  .lite-page { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 140px 24px 100px; text-align: center; }
+  .lite-page {
+    position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 140px 24px 100px; text-align: center;
+    display: flex; flex-direction: column;
+  }
+  .lite-page > .lite-eyebrow, .lite-page > h1, .lite-page > .lite-sub { order: 1; }
+  .lite-page > #compare, .lite-page > .lite-compare { order: 2; }
+  .lite-page > .lite-card { order: 3; }
+  .lite-page.reorder-plans-first > #compare, .lite-page.reorder-plans-first > .lite-compare { order: 4; }
+  .lite-page.reorder-plans-first > .lite-card { order: 2; }
   .lite-eyebrow {
     font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
     letter-spacing: 3px; color: var(--boost); margin-bottom: 16px;
@@ -494,9 +502,20 @@
       <div class="user-chip" id="chipNotBooster"></div>
       <div class="state-title">Unlock FrostClient Lite</div>
       <p class="state-text">You're on our server, but Lite needs <strong style="color:var(--boost);">2 boosts</strong> or an active <strong style="color:var(--frost-blue);">€2.90/month subscription</strong>.</p>
-      <div class="plans-grid" style="margin-bottom:8px;">
-        <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank"><img class="btn-icon" src="icons/discord.webp" alt=""/>Boost the server</a>
-        <a class="btn-lite-download plan-blue" id="whopSubscribeBtnNotBooster" href="#" target="_blank" rel="noopener"><img class="btn-icon" src="icons/whop.webp" alt=""/>Subscribe with Whop</a>
+      <div class="section-label">Plans</div>
+      <div class="plans-grid">
+        <div class="plan-card">
+          <span class="plan-badge">Free</span>
+          <div class="plan-title">2 Boosts</div>
+          <p class="plan-desc">Boost the Frost Discord server with 2 boosts. Lite unlocks automatically and stays unlocked as long as you keep boosting.</p>
+          <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank"><img class="btn-icon" src="icons/discord.webp" alt=""/>Boost the server</a>
+        </div>
+        <div class="plan-card plan-card--sub">
+          <span class="plan-badge plan-badge--sub">Subscription</span>
+          <div class="plan-title">€2.90<span class="plan-period">&nbsp;/ month</span></div>
+          <p class="plan-desc">Subscribe for €2.90/month via Whop. Your Discord role unlocks Lite automatically and stays active while your subscription runs.</p>
+          <a class="btn-lite-download plan-blue" id="whopSubscribeBtnNotBooster" href="#" target="_blank" rel="noopener"><img class="btn-icon" src="icons/whop.webp" alt=""/>Subscribe</a>
+        </div>
       </div>
       <button type="button" class="signout js-signout">Sign out</button>
     </div>
@@ -689,6 +708,7 @@
   const navCenter = document.querySelector('.nav-center');
   const compareLabel = document.getElementById('compare');
   const compareTable = document.querySelector('.lite-compare');
+  const litePageEl = document.querySelector('.lite-page');
   function setCompareVisible(visible, animate) {
     const display = visible ? '' : 'none';
     if (navCenter) navCenter.style.display = display;
@@ -709,6 +729,7 @@
   function setAuthPhase(phase) {
     navAuthBtn.classList.remove('is-logout', 'is-checking');
     navAuthBtnIcon.style.display = phase === 'loggedOut' ? '' : 'none';
+    if (litePageEl) litePageEl.classList.toggle('reorder-plans-first', phase === 'noAccess');
     if (phase === 'checking') {
       navAuthBtn.dataset.mode = 'checking';
       navAuthBtn.classList.add('is-checking');
