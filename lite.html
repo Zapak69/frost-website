@@ -16,6 +16,7 @@
     --boost: #ff73fa; --boost-deep: #b845ff;
     --blurple: #5865F2;
     --green: #3dff72;
+    --red: #d41212;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -79,6 +80,8 @@
   .nav-discord-btn img { width: 16px; height: 16px; display: block; }
   .btn-icon { width: 18px; height: 18px; display: block; border-radius: 22%; }
   .nav-discord-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(88,101,242,0.4); filter: brightness(1.08); }
+  .nav-discord-btn.is-logout { background: var(--red); }
+  .nav-discord-btn.is-logout:hover { box-shadow: 0 4px 16px rgba(212,18,18,0.45); }
   .js-lite-login.loading { opacity: 0.6; pointer-events: none; }
 
   .lite-compare {
@@ -404,7 +407,7 @@
     <a class="nav-anchor" href="#plans">Plans</a>
   </div>
   <div class="nav-right">
-    <button type="button" class="nav-discord-btn js-lite-login"><img src="icons/discord.webp" alt=""/>Login with Discord</button>
+    <button type="button" class="nav-discord-btn js-lite-login" id="navAuthBtn" data-mode="login"><img id="navAuthBtnIcon" src="icons/discord.webp" alt=""/><span id="navAuthBtnText">Login with Discord</span></button>
     <a class="nav-cancel-btn" href="https://frostclient.eu/lite/cancel">Cancel Subscription</a>
     <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
   </div>
@@ -501,7 +504,7 @@
       <br/>
       <span class="booster-badge">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.6 19 8l-7 14.4L5 8l7-6.4Zm0 3.1L8.1 8.3 12 16.5l3.9-8.2L12 4.7Z"/></svg>
-        Server Booster
+        <span id="badgeLabelText">Server Booster</span>
       </span>
       <div class="state-title">Access unlocked 🎉</div>
       <p class="state-text" id="eligibleText">Thanks for supporting Frost! Your exclusive FrostClient Lite build is ready.</p>
@@ -676,6 +679,20 @@
     try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
   }
 
+  const navAuthBtn = document.getElementById('navAuthBtn');
+  const navAuthBtnText = document.getElementById('navAuthBtnText');
+  const navCenter = document.querySelector('.nav-center');
+  const compareLabel = document.getElementById('compare');
+  const compareTable = document.querySelector('.lite-compare');
+  function setNavAuthMode(loggedIn) {
+    navAuthBtn.dataset.mode = loggedIn ? 'logout' : 'login';
+    navAuthBtn.classList.toggle('is-logout', loggedIn);
+    navAuthBtnText.textContent = loggedIn ? 'Logout' : 'Login with Discord';
+    if (navCenter) navCenter.style.display = loggedIn ? 'none' : '';
+    if (compareLabel) compareLabel.style.display = loggedIn ? 'none' : '';
+    if (compareTable) compareTable.style.display = loggedIn ? 'none' : '';
+  }
+
   function showError(msg, detail) {
     document.getElementById('errorText').textContent = msg || "We couldn't verify your Discord account. Please try again.";
     const detailEl = document.getElementById('errorDetail');
@@ -686,6 +703,7 @@
 
   function render(data) {
     if (!data || !data.ok) { showError(); afterResult('error', data); return; }
+    setNavAuthMode(true);
 
     if (data.status === 'not_member') {
       fillChip('chipNotMember', data.user);
@@ -703,6 +721,8 @@
       fillChip('chipEligible', data.user, data.boostDays != null
         ? 'Boosting for ' + data.boostDays + (data.boostDays === 1 ? ' day' : ' days')
         : null);
+      document.getElementById('badgeLabelText').textContent =
+        data.accessVia === 'subscriber' ? 'Lite Subscriber' : 'Server Booster';
       const btn = document.getElementById('liteDownloadBtn');
       try { btn.href = atob(data.dl); } catch (e) { btn.href = '#'; }
       show('stateEligible');
@@ -739,6 +759,7 @@
       .then(data => {
         if (!data.ok) {
           clearToken();
+          setNavAuthMode(false);
           if (data.error === 'token_expired') { show('stateLogin'); return; }
           showError("Discord didn't respond correctly. Please try again.", data.detail);
           return;
@@ -750,6 +771,12 @@
   }
   document.querySelectorAll('.js-lite-login').forEach(loginBtn => {
     loginBtn.addEventListener('click', () => {
+      if (loginBtn.dataset.mode === 'logout') {
+        clearToken();
+        setNavAuthMode(false);
+        show('stateLogin');
+        return;
+      }
       loginBtn.classList.add('loading');
       fetch(LITE_API_URL + '?action=liteConfig', { cache: 'no-store' })
         .then(r => r.json())
@@ -785,6 +812,7 @@
 
   document.querySelectorAll('.js-signout').forEach(btn => btn.addEventListener('click', () => {
     clearToken();
+    setNavAuthMode(false);
     show('stateLogin');
   }));
 
