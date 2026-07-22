@@ -82,6 +82,10 @@
   .nav-discord-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(88,101,242,0.4); filter: brightness(1.08); }
   .nav-discord-btn.is-logout { background: var(--red); }
   .nav-discord-btn.is-logout:hover { box-shadow: 0 4px 16px rgba(212,18,18,0.45); }
+  .nav-discord-btn.is-checking { background: var(--muted); cursor: default; pointer-events: none; }
+  .nav-discord-btn.is-checking:hover { transform: none; box-shadow: none; filter: none; }
+  @keyframes compareIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .compare-animate-in { animation: compareIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
   .js-lite-login.loading { opacity: 0.6; pointer-events: none; }
 
   .lite-compare {
@@ -458,7 +462,7 @@
   <div class="lite-card" id="plans">
     <div class="state active" id="stateLoading">
       <div class="spinner"></div>
-      <p class="state-text" style="margin-bottom:0;">Checking your booster status...</p>
+      <p class="state-text" style="margin-bottom:0;">Checking your account status...</p>
     </div>
     <div class="state" id="stateLogin">
       <div class="section-label">Plans</div>
@@ -506,7 +510,7 @@
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.6 19 8l-7 14.4L5 8l7-6.4Zm0 3.1L8.1 8.3 12 16.5l3.9-8.2L12 4.7Z"/></svg>
         <span id="badgeLabelText">Server Booster</span>
       </span>
-      <div class="state-title">Access unlocked 🎉</div>
+      <div class="state-title">Access unlocked</div>
       <p class="state-text" id="eligibleText">Thanks for supporting Frost! Your exclusive FrostClient Lite build is ready.</p>
       <a class="btn-lite-download" id="liteDownloadBtn" href="#" rel="noopener">Download FrostClient Lite</a>
       <br/><a class="signout" href="https://frostclient.eu/lite/cancel">Subscribed via Whop? Manage / cancel it</a>
@@ -681,16 +685,50 @@
 
   const navAuthBtn = document.getElementById('navAuthBtn');
   const navAuthBtnText = document.getElementById('navAuthBtnText');
+  const navAuthBtnIcon = document.getElementById('navAuthBtnIcon');
   const navCenter = document.querySelector('.nav-center');
   const compareLabel = document.getElementById('compare');
   const compareTable = document.querySelector('.lite-compare');
-  function setNavAuthMode(loggedIn) {
-    navAuthBtn.dataset.mode = loggedIn ? 'logout' : 'login';
-    navAuthBtn.classList.toggle('is-logout', loggedIn);
-    navAuthBtnText.textContent = loggedIn ? 'Logout' : 'Login with Discord';
-    if (navCenter) navCenter.style.display = loggedIn ? 'none' : '';
-    if (compareLabel) compareLabel.style.display = loggedIn ? 'none' : '';
-    if (compareTable) compareTable.style.display = loggedIn ? 'none' : '';
+  function setCompareVisible(visible, animate) {
+    const display = visible ? '' : 'none';
+    if (navCenter) navCenter.style.display = display;
+    if (compareLabel) compareLabel.style.display = display;
+    if (compareTable) compareTable.style.display = display;
+    if (visible && animate) {
+      [compareLabel, compareTable].forEach(el => {
+        if (!el) return;
+        el.classList.remove('compare-animate-in');
+        void el.offsetWidth;
+        el.classList.add('compare-animate-in');
+      });
+    }
+  }
+
+  // phase: 'loggedOut' (default) | 'checking' (verifying a cached/fresh token) |
+  // 'noAccess' (logged in, not a booster/subscriber) | 'hasAccess' (eligible)
+  function setAuthPhase(phase) {
+    navAuthBtn.classList.remove('is-logout', 'is-checking');
+    navAuthBtnIcon.style.display = phase === 'loggedOut' ? '' : 'none';
+    if (phase === 'checking') {
+      navAuthBtn.dataset.mode = 'checking';
+      navAuthBtn.classList.add('is-checking');
+      navAuthBtnText.textContent = 'Loading...';
+      setCompareVisible(false, false);
+    } else if (phase === 'noAccess') {
+      navAuthBtn.dataset.mode = 'logout';
+      navAuthBtn.classList.add('is-logout');
+      navAuthBtnText.textContent = 'Logout';
+      setCompareVisible(true, true);
+    } else if (phase === 'hasAccess') {
+      navAuthBtn.dataset.mode = 'logout';
+      navAuthBtn.classList.add('is-logout');
+      navAuthBtnText.textContent = 'Logout';
+      setCompareVisible(false, false);
+    } else {
+      navAuthBtn.dataset.mode = 'login';
+      navAuthBtnText.textContent = 'Login with Discord';
+      setCompareVisible(true, false);
+    }
   }
 
   function showError(msg, detail) {
@@ -702,22 +740,24 @@
   }
 
   function render(data) {
-    if (!data || !data.ok) { showError(); afterResult('error', data); return; }
-    setNavAuthMode(true);
+    if (!data || !data.ok) { setAuthPhase('loggedOut'); showError(); afterResult('error', data); return; }
 
     if (data.status === 'not_member') {
+      setAuthPhase('noAccess');
       fillChip('chipNotMember', data.user);
       show('stateNotMember');
       afterResult('not_member', data);
       return;
     }
     if (data.status === 'not_booster') {
+      setAuthPhase('noAccess');
       fillChip('chipNotBooster', data.user);
       show('stateNotBooster');
       afterResult('not_booster', data);
       return;
     }
     if (data.status === 'eligible') {
+      setAuthPhase('hasAccess');
       fillChip('chipEligible', data.user, data.boostDays != null
         ? 'Boosting for ' + data.boostDays + (data.boostDays === 1 ? ' day' : ' days')
         : null);
@@ -732,16 +772,19 @@
       afterResult('eligible', data);
       return;
     }
+    setAuthPhase('loggedOut');
     showError();
     afterResult('error', data);
   }
 
   function exchange(code) {
     show('stateLoading');
+    setAuthPhase('checking');
     fetch(LITE_API_URL + '?action=liteAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (!data.ok) {
+          setAuthPhase('loggedOut');
           showError(data.error === 'auth_failed'
             ? 'Discord sign-in failed. Please try again.'
             : "Discord didn't respond correctly. Please try again.", data.detail);
@@ -750,16 +793,17 @@
         if (data.token) saveToken(data.token);
         render(data);
       })
-      .catch(() => showError('Network error while contacting the server. Please try again.'));
+      .catch(() => { setAuthPhase('loggedOut'); showError('Network error while contacting the server. Please try again.'); });
   }
   function recheck(token) {
     show('stateLoading');
+    setAuthPhase('checking');
     fetch(LITE_API_URL + '?action=liteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (!data.ok) {
           clearToken();
-          setNavAuthMode(false);
+          setAuthPhase('loggedOut');
           if (data.error === 'token_expired') { show('stateLogin'); return; }
           showError("Discord didn't respond correctly. Please try again.", data.detail);
           return;
@@ -767,13 +811,13 @@
         if (data.token) saveToken(data.token);
         render(data);
       })
-      .catch(() => showError('Network error while contacting the server. Please try again.'));
+      .catch(() => { setAuthPhase('loggedOut'); showError('Network error while contacting the server. Please try again.'); });
   }
   document.querySelectorAll('.js-lite-login').forEach(loginBtn => {
     loginBtn.addEventListener('click', () => {
       if (loginBtn.dataset.mode === 'logout') {
         clearToken();
-        setNavAuthMode(false);
+        setAuthPhase('loggedOut');
         show('stateLogin');
         return;
       }
@@ -812,7 +856,7 @@
 
   document.querySelectorAll('.js-signout').forEach(btn => btn.addEventListener('click', () => {
     clearToken();
-    setNavAuthMode(false);
+    setAuthPhase('loggedOut');
     show('stateLogin');
   }));
 
