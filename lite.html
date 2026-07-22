@@ -232,6 +232,38 @@
   }
   .btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); transform: translateY(-2px); }
 
+  .plans-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-bottom: 24px; text-align: left;
+  }
+  .plan-card {
+    background: rgba(8,12,16,0.5); border: 1px solid var(--border); border-radius: 16px;
+    padding: 22px 20px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .plan-card--sub { border-color: rgba(79,200,248,0.3); }
+  .plan-badge {
+    align-self: flex-start; font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; color: var(--boost);
+    background: rgba(255,115,250,0.12); padding: 4px 10px; border-radius: 999px;
+  }
+  .plan-badge--sub { color: var(--frost-blue); background: rgba(79,200,248,0.12); }
+  .plan-title { font-family: 'Space Mono', monospace; font-size: 21px; font-weight: 700; }
+  .plan-period { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+  .plan-desc { font-size: 13px; color: var(--muted); line-height: 1.6; flex: 1; margin: 0; }
+  .plan-card .btn-secondary, .plan-card .btn-lite-download { width: 100%; margin-top: 4px; }
+  .btn-lite-download.plan-blue {
+    background: linear-gradient(100deg, var(--frost-blue), var(--frost-deep));
+    box-shadow: 0 0 28px rgba(79,200,248,0.35);
+  }
+  .btn-lite-download.plan-blue:hover { box-shadow: 0 10px 40px rgba(79,200,248,0.55); }
+  .plans-divider {
+    display: flex; align-items: center; gap: 14px; margin: 6px 0 24px;
+    font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted);
+  }
+  .plans-divider::before, .plans-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  @media(max-width:600px){ .plans-grid { grid-template-columns: 1fr; } }
+
   .signout {
     display: inline-block; margin-top: 24px; background: none; border: none; cursor: pointer;
     color: var(--muted); font-family: 'Space Grotesk', sans-serif; font-size: 12.5px;
@@ -273,9 +305,9 @@
 </nav>
 
 <div class="lite-page">
-  <div class="lite-eyebrow">Booster Exclusive</div>
+  <div class="lite-eyebrow">Exclusive Access</div>
   <h1>FrostClient <span class="lite-grad">Lite</span></h1>
-  <p class="lite-sub">A lightweight build of Frost, exclusive to boosters of our Discord server. Sign in with Discord to check your access.</p>
+  <p class="lite-sub">A lightweight build of Frost. Unlock it by boosting our Discord server with 2 boosts, or by subscribing for €2.90/month.</p>
 
   <div class="lite-card">
     <div class="state active" id="stateLoading">
@@ -283,12 +315,29 @@
       <p class="state-text" style="margin-bottom:0;">Checking your booster status...</p>
     </div>
     <div class="state" id="stateLogin">
+      <div class="plans-grid">
+        <div class="plan-card">
+          <span class="plan-badge">Free</span>
+          <div class="plan-title">2 Boosts</div>
+          <p class="plan-desc">Boost the Frost Discord server with 2 boosts. Lite unlocks automatically and stays unlocked as long as you keep boosting.</p>
+          <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Boost the server</a>
+        </div>
+        <div class="plan-card plan-card--sub">
+          <span class="plan-badge plan-badge--sub">Subscription</span>
+          <div class="plan-title">€2.90<span class="plan-period">&nbsp;/ month</span></div>
+          <p class="plan-desc">Subscribe for €2.90/month via Whop. Your Discord role unlocks Lite automatically and stays active while your subscription runs.</p>
+          <a class="btn-lite-download plan-blue" id="whopSubscribeBtn" href="#" target="_blank" rel="noopener">Subscribe</a>
+        </div>
+      </div>
+
+      <div class="plans-divider"><span>Already have access?</span></div>
+
       <img class="state-icon" src="icons/discord.webp" alt="Discord"/>
-      <div class="state-title">Sign in with Discord</div>
-      <p class="state-text">We'll check whether you're boosting our Discord server. Members boosting with <strong style="color:var(--boost);">2 boosts</strong> for more than <strong style="color:var(--text);">1 month</strong> unlock the FrostClient Lite download.</p>
+      <div class="state-title">Login with Discord</div>
+      <p class="state-text">We'll check whether you're a booster or an active subscriber.</p>
       <button type="button" class="btn-discord" id="loginBtn">
         <span class="btn-spinner"></span>
-        Continue with Discord
+        Login with Discord
       </button>
       <p class="state-note" id="loginNote">We only read your username and your membership of our server. Nothing else.</p>
     </div>
@@ -301,25 +350,11 @@
     </div>
     <div class="state" id="stateNotBooster">
       <div class="user-chip" id="chipNotBooster"></div>
-      <div class="state-title">Boost the server to unlock</div>
-      <p class="state-text">You're on our server, but FrostClient Lite is exclusive to <strong style="color:var(--boost);">server boosters</strong>. Boost the Frost Discord server with <strong style="color:var(--boost);">2 boosts</strong>, keep them for 1 month, and the download unlocks right here.</p>
-      <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Open the Discord server</a>
-      <br/><button type="button" class="signout js-signout">Sign out</button>
-    </div>
-    <div class="state" id="stateTooNew">
-      <div class="user-chip booster" id="chipTooNew"></div>
-      <br/>
-      <span class="booster-badge">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.6 19 8l-7 14.4L5 8l7-6.4Zm0 3.1L8.1 8.3 12 16.5l3.9-8.2L12 4.7Z"/></svg>
-        Server Booster
-      </span>
-      <div class="state-title">Almost there!</div>
-      <p class="state-text">Thanks for boosting! FrostClient Lite unlocks after <strong style="color:var(--text);">1 month</strong> of boosting with <strong style="color:var(--boost);">2 boosts</strong>.</p>
-      <div class="countdown-big" id="daysLeftBig">–</div>
-      <div class="countdown-sub" id="unlockDateSub"></div>
-      <div class="progress-wrap">
-        <div class="progress-outer"><div class="progress-fill" id="boostProgress"></div></div>
-        <div class="progress-labels"><span id="boostDaysLabel">0 days</span><span id="boostGoalLabel">30 days</span></div>
+      <div class="state-title">Unlock FrostClient Lite</div>
+      <p class="state-text">You're on our server, but Lite needs <strong style="color:var(--boost);">2 boosts</strong> or an active <strong style="color:var(--frost-blue);">€2.90/month subscription</strong>.</p>
+      <div class="plans-grid" style="margin-bottom:8px;">
+        <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Boost the server</a>
+        <a class="btn-lite-download plan-blue" id="whopSubscribeBtnNotBooster" href="#" target="_blank" rel="noopener">Subscribe with Whop</a>
       </div>
       <button type="button" class="signout js-signout">Sign out</button>
     </div>
@@ -377,6 +412,10 @@
 <script>
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const WHOP_CHECKOUT_URL = 'https://whop.com/checkout/plan_oKGeLuyTvJb5u';
+  document.querySelectorAll('#whopSubscribeBtn, #whopSubscribeBtnNotBooster').forEach(function (btn) {
+    btn.href = WHOP_CHECKOUT_URL;
+  });
   const TOKEN_KEY = 'frostLiteToken';
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
   const GAME_SESSION_KEY = 'frostLiteGameSession';
@@ -422,7 +461,7 @@
     }
   }
 
-  const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateTooNew', 'stateEligible', 'stateError', 'stateUpdating'];
+  const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateEligible', 'stateError', 'stateUpdating'];
 
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
@@ -477,25 +516,6 @@
       fillChip('chipNotBooster', data.user);
       show('stateNotBooster');
       afterResult('not_booster', data);
-      return;
-    }
-    if (data.status === 'too_new') {
-      fillChip('chipTooNew', data.user, 'Boosting for ' + data.boostDays + (data.boostDays === 1 ? ' day' : ' days'));
-      const minDays = data.minDays || 30;
-      const left = Math.max(1, data.daysLeft || (minDays - data.boostDays));
-      document.getElementById('daysLeftBig').textContent = left + (left === 1 ? ' day left' : ' days left');
-      if (data.unlockAt) {
-        const d = new Date(data.unlockAt);
-        document.getElementById('unlockDateSub').textContent = 'Unlocks on ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-      }
-      document.getElementById('boostDaysLabel').textContent = data.boostDays + (data.boostDays === 1 ? ' day' : ' days');
-      document.getElementById('boostGoalLabel').textContent = minDays + ' days';
-      show('stateTooNew');
-      const pct = Math.min(100, Math.round((data.boostDays / minDays) * 100));
-      const bar = document.getElementById('boostProgress');
-      bar.style.width = '0%';
-      requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = pct + '%'; }));
-      afterResult('too_new', data, left);
       return;
     }
     if (data.status === 'eligible') {
@@ -565,10 +585,6 @@
           csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
           sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
         } catch (e) {}
-        // Discord always echoes "state" back verbatim on the redirect, unlike sessionStorage,
-        // which some browsers' anti-bounce-tracking protections (Firefox/Safari) wipe across
-        // the frostclient.eu -> discord.com -> frostclient.eu hop - carry the game context
-        // inside state too, as a fallback for when sessionStorage doesn't survive that hop.
         const gs = gameSession(), gp = gamePort();
         const state = csrfState + (gs && gp ? '.g.' + gs + '.' + gp : '');
         const url = 'https://discord.com/oauth2/authorize'
@@ -629,9 +645,6 @@
       let storedState = '';
       try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
       try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
-
-      // Recover game session/port from state if sessionStorage lost them across the
-      // Discord redirect hop (see the loginBtn handler for why they're embedded there).
       const gIdx = returnedState.indexOf('.g.');
       const csrfState = gIdx === -1 ? returnedState : returnedState.slice(0, gIdx);
       if (gIdx !== -1 && !gameSession()) {

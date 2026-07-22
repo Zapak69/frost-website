@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Thank You | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="robots" content="noindex, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+    --boost: #ff73fa; --boost-deep: #b845ff;
+    --blurple: #5865F2;
+    --green: #3dff72;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.05; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue);
+    text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none;
+  }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+
+  .lite-page { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding: 140px 24px 100px; text-align: center; }
+  .lite-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--green); margin-bottom: 16px;
+    animation: fadeDown 0.6s ease both;
+  }
+  .lite-page h1 {
+    font-family: 'Space Mono', monospace; font-size: clamp(30px, 5.5vw, 46px);
+    font-weight: 700; letter-spacing: -2px; margin-bottom: 14px;
+    animation: fadeDown 0.6s ease 0.08s both;
+  }
+  .lite-grad {
+    background: linear-gradient(90deg, var(--frost-blue), var(--frost-deep));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 24px rgba(79,200,248,0.35));
+  }
+  .lite-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 440px; margin: 0 auto; animation: fadeDown 0.6s ease 0.16s both; }
+
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(24px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .lite-card {
+    margin-top: 44px; position: relative; overflow: hidden;
+    background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 44px 36px;
+    animation: cardIn 0.7s cubic-bezier(0.22,1,0.36,1) 0.22s both;
+  }
+  .lite-card::before {
+    content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green), var(--frost-blue), transparent);
+    opacity: 0.6;
+  }
+
+  .state { display: none; }
+  .state.active { display: block; animation: stateIn 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+  @keyframes stateIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+  .spinner {
+    width: 34px; height: 34px;
+    border: 3px solid rgba(79,200,248,0.2); border-top-color: var(--frost-blue);
+    border-radius: 50%; margin: 0 auto 18px;
+    animation: spin 0.8s linear infinite;
+  }
+  .state-icon { width: 52px; height: 52px; margin: 0 auto 18px; display: block; }
+  .state-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .state-text { font-size: 14.5px; color: var(--muted); line-height: 1.7; max-width: 420px; margin: 0 auto 24px; }
+  .state-note { font-size: 12px; color: var(--muted); opacity: 0.75; margin-top: 18px; }
+
+  .btn-discord {
+    display: inline-flex; align-items: center; justify-content: center; gap: 11px;
+    background: var(--blurple); color: #fff; border: none; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-size: 15.5px; font-weight: 600;
+    padding: 14px 30px; border-radius: 12px; width: 100%;
+    transition: transform 0.2s, box-shadow 0.25s, filter 0.2s;
+    box-shadow: 0 0 0 rgba(88,101,242,0);
+  }
+  .btn-discord:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(88,101,242,0.45); filter: brightness(1.08); }
+  .btn-discord:active { transform: translateY(0) scale(0.98); }
+  .btn-discord.loading { pointer-events: none; opacity: 0.75; }
+  .btn-discord .btn-spinner {
+    width: 17px; height: 17px; border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite; display: none;
+  }
+  .btn-discord.loading .btn-spinner { display: inline-block; }
+
+  .btn-continue {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    background: linear-gradient(100deg, var(--green), #1fae56);
+    color: #06170c; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700;
+    padding: 15px 34px; border-radius: 12px; width: 100%; border: none; cursor: pointer;
+    box-shadow: 0 0 28px rgba(61,255,114,0.25);
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .btn-continue:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(61,255,114,0.4); }
+  .btn-continue:active { transform: translateY(0) scale(0.98); }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent; color: var(--frost-blue);
+    border: 1px solid var(--border); cursor: pointer; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; font-weight: 600;
+    padding: 13px 28px; border-radius: 12px; width: 100%;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); transform: translateY(-2px); }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 40px 48px; position: relative; z-index: 1;
+    font-size: 13px; color: var(--muted);
+  }
+  .footer-inner {
+    max-width: 900px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo-sm { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--frost-blue); font-size: 16px; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+  @media(max-width:600px){
+    nav { padding: 0 20px; }
+    .lite-card { padding: 36px 22px; }
+    .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
+    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+  </svg>
+</div>
+<nav>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+</nav>
+
+<div class="lite-page">
+  <div class="lite-eyebrow">Purchase Complete</div>
+  <h1>Thank you for <span class="lite-grad">subscribing</span>!</h1>
+  <p class="lite-sub">Sign in with Discord below and we'll grant your FrostClient Lite role automatically — no extra steps on Whop needed.</p>
+
+  <div class="lite-card">
+    <div class="state active" id="stateLogin">
+      <img class="state-icon" src="icons/discord.webp" alt="Discord"/>
+      <div class="state-title">Sign in with Discord</div>
+      <p class="state-text">We'll verify your payment and add the FrostClient Lite role to this Discord account right away.</p>
+      <button type="button" class="btn-discord" id="loginBtn">
+        <span class="btn-spinner"></span>
+        Login with Discord
+      </button>
+      <p class="state-note">We only read your username to grant the role — nothing else.</p>
+    </div>
+
+    <div class="state" id="stateClaiming">
+      <div class="spinner"></div>
+      <p class="state-text" style="margin-bottom:0;">Verifying your payment and granting your role...</p>
+    </div>
+
+    <div class="state" id="stateSuccess">
+      <div class="state-title">Role granted 🎉</div>
+      <p class="state-text">Your Discord account now has the FrostClient Lite role. Head over to the login page to download.</p>
+      <button type="button" class="btn-continue" id="continueBtn">Continue to download</button>
+    </div>
+
+    <div class="state" id="stateNoPayment">
+      <div class="state-title">No purchase found</div>
+      <p class="state-text">This page is only for right after subscribing on Whop. If you already have access, sign in from the download page instead.</p>
+      <a class="btn-secondary" href="https://frostclient.eu/lite">Go to the login page</a>
+    </div>
+
+    <div class="state" id="stateError">
+      <div class="state-title">Something went wrong</div>
+      <p class="state-text" id="errorText">We couldn't verify your purchase. Please try again.</p>
+      <p class="state-note" id="errorDetail" style="display:none; font-family:'Space Mono',monospace; word-break:break-all;"></p>
+      <button type="button" class="btn-secondary" id="retryBtn">Try again</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+<div class="footer-inner">
+  <span class="footer-logo-sm">❄ FROST</span>
+  <div class="footer-links">
+    <a href="https://frostclient.eu/faq">FAQ</a>
+    <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+    <a href="https://frostclient.eu/terms">Terms of Service</a>
+    <a href="https://frostclient.eu/imprint">Imprint</a>
+    <a href="https://frostclient.eu">Home</a>
+  </div>
+  <span>© Frost 2026</span>
+</div>
+</footer>
+
+<script>
+(function () {
+  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const PAYMENT_ID_KEY = 'frostWhopPaymentId';
+  const OAUTH_STATE_KEY = 'frostWhopOauthState';
+
+  const states = ['stateLogin', 'stateClaiming', 'stateSuccess', 'stateNoPayment', 'stateError'];
+  function show(id) {
+    states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
+  }
+
+  function showError(msg, detail) {
+    document.getElementById('errorText').textContent = msg || "We couldn't verify your purchase. Please try again.";
+    const detailEl = document.getElementById('errorDetail');
+    detailEl.textContent = detail || '';
+    detailEl.style.display = detail ? 'block' : 'none';
+    show('stateError');
+  }
+
+  function claim(code, paymentId) {
+    show('stateClaiming');
+    fetch(LITE_API_URL + '?action=whopClaim&code=' + encodeURIComponent(code) + '&payment_id=' + encodeURIComponent(paymentId), { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if (!data.ok) {
+          const messages = {
+            already_claimed_by_other: 'This purchase was already claimed by a different Discord account.',
+            payment_not_found: "We couldn't find that purchase. Please try again or contact support.",
+            payment_not_paid: 'This purchase is not marked as paid yet.',
+            no_membership: "We couldn't find a membership tied to this purchase.",
+            role_grant_failed: "Discord wouldn't let us grant the role. Please contact support.",
+            discord_auth_failed: 'Discord sign-in failed. Please try again.'
+          };
+          showError(messages[data.error] || "Something went wrong verifying your purchase.", data.detail);
+          return;
+        }
+        show('stateSuccess');
+      })
+      .catch(() => showError('Network error while contacting the server. Please try again.'));
+  }
+
+  const loginBtn = document.getElementById('loginBtn');
+  loginBtn.addEventListener('click', () => {
+    const paymentId = sessionStorage.getItem(PAYMENT_ID_KEY) || '';
+    if (!paymentId) { show('stateNoPayment'); return; }
+
+    loginBtn.classList.add('loading');
+    fetch(LITE_API_URL + '?action=whopClaimConfig', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(cfg => {
+        if (!cfg.ok || !cfg.clientId) {
+          loginBtn.classList.remove('loading');
+          showError('Discord sign-in is not configured yet. Please check back soon.');
+          return;
+        }
+        let csrfState = '';
+        try {
+          const buf = new Uint8Array(16);
+          crypto.getRandomValues(buf);
+          csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+          sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+        } catch (e) {}
+        const state = csrfState + '.p.' + paymentId;
+        const url = 'https://discord.com/oauth2/authorize'
+          + '?client_id=' + encodeURIComponent(cfg.clientId)
+          + '&response_type=code'
+          + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
+          + '&scope=identify'
+          + '&state=' + state;
+        window.location.href = url;
+      })
+      .catch(() => {
+        loginBtn.classList.remove('loading');
+        showError('Network error while contacting the server. Please try again.');
+      });
+  });
+
+  document.getElementById('retryBtn').addEventListener('click', () => show('stateLogin'));
+  document.getElementById('continueBtn').addEventListener('click', () => {
+    window.location.href = 'https://frostclient.eu/lite';
+  });
+
+  (function init() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has('code')) {
+      const code = params.get('code');
+      const returnedState = params.get('state') || '';
+      let storedState = '';
+      try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
+      try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+
+      const pIdx = returnedState.indexOf('.p.');
+      const csrfState = pIdx === -1 ? returnedState : returnedState.slice(0, pIdx);
+      let paymentId = pIdx !== -1 ? returnedState.slice(pIdx + 3) : '';
+      if (!paymentId) {
+        try { paymentId = sessionStorage.getItem(PAYMENT_ID_KEY) || ''; } catch (e) {}
+      }
+
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('code');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+
+      if (storedState && csrfState !== storedState) {
+        showError('Sign-in session mismatch. Please try again.');
+        return;
+      }
+      if (!paymentId) { show('stateNoPayment'); return; }
+      claim(code, paymentId);
+      return;
+    }
+
+    if (params.has('error')) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('error');
+      cleanUrl.searchParams.delete('error_description');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+      show('stateLogin');
+      return;
+    }
+
+    // First load, straight from Whop's checkout-success redirect.
+    const paymentId = params.get('payment_id') || params.get('receipt_id') || '';
+    if (paymentId) {
+      try { sessionStorage.setItem(PAYMENT_ID_KEY, paymentId); } catch (e) {}
+      const cleanUrl = new URL(window.location.href);
+      ['receipt_id', 'payment_id', 'checkout_status', 'status', 'state_id'].forEach(k => cleanUrl.searchParams.delete(k));
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+      show('stateLogin');
+      return;
+    }
+
+    let cachedPaymentId = '';
+    try { cachedPaymentId = sessionStorage.getItem(PAYMENT_ID_KEY) || ''; } catch (e) {}
+    show(cachedPaymentId ? 'stateLogin' : 'stateNoPayment');
+  })();
+})();
+</script>
+</body>
+</html>
