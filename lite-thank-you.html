@@ -107,18 +107,6 @@
   }
   .btn-discord.loading .btn-spinner { display: inline-block; }
 
-  .btn-continue {
-    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-    background: linear-gradient(100deg, var(--green), #1fae56);
-    color: #06170c; text-decoration: none;
-    font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700;
-    padding: 15px 34px; border-radius: 12px; width: 100%; border: none; cursor: pointer;
-    box-shadow: 0 0 28px rgba(61,255,114,0.25);
-    transition: transform 0.2s, box-shadow 0.25s;
-  }
-  .btn-continue:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(61,255,114,0.4); }
-  .btn-continue:active { transform: translateY(0) scale(0.98); }
-
   .btn-secondary {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     background: transparent; color: var(--frost-blue);
@@ -184,12 +172,6 @@
       <p class="state-text" style="margin-bottom:0;">Verifying your payment and granting your role...</p>
     </div>
 
-    <div class="state" id="stateSuccess">
-      <div class="state-title">Role granted 🎉</div>
-      <p class="state-text">Your Discord account now has the FrostClient Lite role. Head over to the login page to download.</p>
-      <button type="button" class="btn-continue" id="continueBtn">Continue to download</button>
-    </div>
-
     <div class="state" id="stateNoPayment">
       <div class="state-title">No purchase found</div>
       <p class="state-text">This page is only for right after subscribing on Whop. If you already have access, sign in from the download page instead.</p>
@@ -225,7 +207,8 @@
   const PAYMENT_ID_KEY = 'frostWhopPaymentId';
   const OAUTH_STATE_KEY = 'frostWhopOauthState';
 
-  const states = ['stateLogin', 'stateClaiming', 'stateSuccess', 'stateNoPayment', 'stateError'];
+  const states = ['stateLogin', 'stateClaiming', 'stateNoPayment', 'stateError'];
+  const TOKEN_KEY = 'frostLiteToken'; // same localStorage key /lite itself uses
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
   }
@@ -255,7 +238,11 @@
           showError(messages[data.error] || "Something went wrong verifying your purchase.", data.detail);
           return;
         }
-        show('stateSuccess');
+        // Hand the same token /lite itself would have stored straight to it, so it
+        // re-checks and shows the "Access unlocked" / download state directly - no
+        // second Discord login needed.
+        try { localStorage.setItem(TOKEN_KEY, data.token); } catch (e) {}
+        window.location.href = 'https://frostclient.eu/lite';
       })
       .catch(() => showError('Network error while contacting the server. Please try again.'));
   }
@@ -286,7 +273,7 @@
           + '?client_id=' + encodeURIComponent(cfg.clientId)
           + '&response_type=code'
           + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
-          + '&scope=identify'
+          + '&scope=' + encodeURIComponent('identify guilds.members.read')
           + '&state=' + state;
         window.location.href = url;
       })
@@ -297,9 +284,6 @@
   });
 
   document.getElementById('retryBtn').addEventListener('click', () => show('stateLogin'));
-  document.getElementById('continueBtn').addEventListener('click', () => {
-    window.location.href = 'https://frostclient.eu/lite';
-  });
 
   (function init() {
     const params = new URLSearchParams(window.location.search);
