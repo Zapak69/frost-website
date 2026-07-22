@@ -21,7 +21,20 @@
   html { scroll-behavior: smooth; }
   body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
   .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-  .topo-bg svg { width: 100%; height: 100%; opacity: 0.05; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.07; }
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  #cursor-glow {
+    position: fixed; left: 0; top: 0;
+    width: 560px; height: 560px; border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(0,200,255,0.10) 0%,
+      rgba(79,200,248,0.04) 40%,
+      transparent 70%);
+    pointer-events: none; z-index: 3; opacity: 0;
+    will-change: transform, opacity;
+    transition: opacity 0.35s ease;
+    mix-blend-mode: screen;
+  }
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
@@ -40,6 +53,13 @@
   .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
   .nav-back:hover { color: var(--text); }
   .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-center {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: flex; align-items: center; gap: 28px;
+  }
+  .nav-anchor { color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none; transition: color 0.2s; }
+  .nav-anchor:hover { color: var(--frost-blue); }
+  @media(max-width:700px){ .nav-center { display: none; } }
   .nav-cancel-btn {
     display: inline-flex; align-items: center; gap: 6px;
     font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted);
@@ -49,6 +69,47 @@
   }
   .nav-cancel-btn:hover { border-color: var(--boost); color: var(--boost); background: rgba(255,115,250,0.08); }
   @media(max-width:600px){ .nav-cancel-btn { display: none; } }
+  .nav-discord-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: #fff;
+    background: var(--blurple); border: none; border-radius: 999px; cursor: pointer;
+    padding: 7px 16px 7px 10px;
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+  }
+  .nav-discord-btn img { width: 16px; height: 16px; display: block; }
+  .btn-icon { width: 18px; height: 18px; display: block; border-radius: 22%; }
+  .nav-discord-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(88,101,242,0.4); filter: brightness(1.08); }
+  .js-lite-login.loading { opacity: 0.6; pointer-events: none; }
+
+  .lite-compare {
+    max-width: 620px; margin: 40px auto 0;
+    border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
+    background: linear-gradient(180deg, rgba(17,29,43,0.85), rgba(12,20,30,0.85));
+    text-align: left;
+  }
+  .lite-compare-row {
+    display: grid; grid-template-columns: 1.15fr 1fr 1fr; align-items: stretch;
+    border-bottom: 1px solid var(--border);
+  }
+  .lite-compare-row:last-child { border-bottom: none; }
+  .lite-compare-cell {
+    padding: 16px 18px; font-size: 14.5px; display: flex; align-items: center; justify-content: center;
+  }
+  .lite-compare-cell:first-child { justify-content: flex-start; text-align: left; color: var(--muted); }
+  .lite-col-frost { color: var(--text); }
+  .lite-col-lite {
+    color: var(--boost); font-weight: 600;
+    background: rgba(255,115,250,0.06);
+    border-left: 1px solid rgba(255,115,250,0.2);
+  }
+  .lite-compare-head .lite-compare-cell {
+    font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.5px; padding: 18px;
+  }
+  @media(max-width:600px){
+    .lite-compare-cell { padding: 13px 10px; font-size: 12.5px; }
+    .lite-compare-head .lite-compare-cell { font-size: 11px; padding: 14px 10px; }
+  }
 
   .lite-page { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 140px 24px 100px; text-align: center; }
   .lite-eyebrow {
@@ -71,8 +132,25 @@
   @keyframes fadeDown { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes cardIn { from { opacity: 0; transform: translateY(24px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
+  .section-label {
+    font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--frost-blue); text-align: center;
+    margin: 0 0 14px; scroll-margin-top: 90px;
+  }
+  .lite-compare-row--cta { display: flex; padding: 0; }
+  .lite-compare-see-plans {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    background: linear-gradient(100deg, var(--boost), var(--boost-deep));
+    color: #fff; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; font-weight: 700;
+    padding: 16px 18px;
+    transition: filter 0.2s;
+  }
+  .lite-compare-see-plans:hover { filter: brightness(1.1); }
+
   .lite-card {
-    margin-top: 44px; position: relative; overflow: hidden;
+    margin-top: 72px; position: relative; overflow: hidden; scroll-margin-top: 90px;
     background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
     border: 1px solid var(--border); border-radius: 20px;
     padding: 44px 36px;
@@ -305,14 +383,29 @@
   <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
     <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
     <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
-    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
-    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+    <path class="tline" d="M-100,270 C80,250 200,310 380,270 S600,190 760,265 S1000,340 1180,285 S1380,225 1500,265"/>
+    <path class="tline" d="M-100,340 C60,320 180,380 360,340 S580,255 740,330 S980,400 1160,345 S1360,290 1500,335"/>
+    <path class="tline" d="M-100,420 C40,400 160,460 340,420 S560,330 720,410 S960,470 1140,415 S1340,365 1500,415"/>
+    <path class="tline" d="M-100,500 C20,480 140,540 320,500 S540,405 700,490 S940,545 1120,490 S1320,440 1500,490"/>
+    <path class="tline" d="M-100,580 C0,558 120,618 300,580 S520,480 680,565 S920,625 1100,570 S1300,518 1500,568"/>
+    <path class="tline" d="M-100,660 C-20,640 100,700 280,660 S500,560 660,645 S900,705 1080,650 S1280,598 1500,648"/>
+    <path class="tline" d="M-100,740 C-40,720 80,780 260,740 S480,640 640,725 S880,785 1060,730 S1260,678 1500,728"/>
+    <path class="tline" d="M200,100 C300,80 380,150 450,100 S600,40 700,110 S820,180 940,120 S1100,60 1200,100"/>
+    <path class="tline" d="M150,160 C260,140 340,210 420,160 S570,95 670,165 S800,235 920,175 S1060,115 1160,160"/>
+    <path class="tline" d="M250,820 C350,800 430,870 500,820 S650,755 750,825 S870,895 990,835 S1150,775 1250,820"/>
   </svg>
 </div>
+<canvas id="particles"></canvas>
+<div id="cursor-glow"></div>
 <nav>
   <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <div class="nav-center">
+    <a class="nav-anchor" href="#compare">Compare</a>
+    <a class="nav-anchor" href="#plans">Plans</a>
+  </div>
   <div class="nav-right">
-    <a class="nav-cancel-btn" href="https://frostclient.eu/lite-cancel">Cancel Subscription</a>
+    <button type="button" class="nav-discord-btn js-lite-login"><img src="icons/discord.webp" alt=""/>Login with Discord</button>
+    <a class="nav-cancel-btn" href="https://frostclient.eu/lite/cancel">Cancel Subscription</a>
     <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
   </div>
 </nav>
@@ -322,37 +415,66 @@
   <h1>FrostClient <span class="lite-grad">Lite</span></h1>
   <p class="lite-sub">A lightweight build of Frost. Unlock it by boosting our Discord server with 2 boosts, or by subscribing for €2.90/month.</p>
 
-  <div class="lite-card">
+  <div class="section-label" id="compare" style="margin-top:40px;">Compare</div>
+  <div class="lite-compare">
+    <div class="lite-compare-row lite-compare-head">
+      <div class="lite-compare-cell"></div>
+      <div class="lite-compare-cell lite-col-frost">FROSTCLIENT</div>
+      <div class="lite-compare-cell lite-col-lite">FROSTCLIENT LITE</div>
+    </div>
+    <div class="lite-compare-row">
+      <div class="lite-compare-cell">Optimization</div>
+      <div class="lite-compare-cell lite-col-frost">Advanced</div>
+      <div class="lite-compare-cell lite-col-lite">Maximum</div>
+    </div>
+    <div class="lite-compare-row">
+      <div class="lite-compare-cell">FPS</div>
+      <div class="lite-compare-cell lite-col-frost">~700</div>
+      <div class="lite-compare-cell lite-col-lite">~1000</div>
+    </div>
+    <div class="lite-compare-row">
+      <div class="lite-compare-cell">Support</div>
+      <div class="lite-compare-cell lite-col-frost">Standard</div>
+      <div class="lite-compare-cell lite-col-lite">Extended</div>
+    </div>
+    <div class="lite-compare-row">
+      <div class="lite-compare-cell">Badge before nametag in-game</div>
+      <div class="lite-compare-cell lite-col-frost">—</div>
+      <div class="lite-compare-cell lite-col-lite">✓</div>
+    </div>
+    <div class="lite-compare-row">
+      <div class="lite-compare-cell">Special Discord role</div>
+      <div class="lite-compare-cell lite-col-frost">—</div>
+      <div class="lite-compare-cell lite-col-lite">✓</div>
+    </div>
+    <div class="lite-compare-row lite-compare-row--cta">
+      <a class="lite-compare-see-plans" href="#plans">See Plans ↓</a>
+    </div>
+  </div>
+
+  <div class="lite-card" id="plans">
     <div class="state active" id="stateLoading">
       <div class="spinner"></div>
       <p class="state-text" style="margin-bottom:0;">Checking your booster status...</p>
     </div>
     <div class="state" id="stateLogin">
+      <div class="section-label">Plans</div>
       <div class="plans-grid">
         <div class="plan-card">
           <span class="plan-badge">Free</span>
           <div class="plan-title">2 Boosts</div>
           <p class="plan-desc">Boost the Frost Discord server with 2 boosts. Lite unlocks automatically and stays unlocked as long as you keep boosting.</p>
-          <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Boost the server</a>
+          <button type="button" class="btn-secondary js-lite-login"><img class="btn-icon" src="icons/discord.webp" alt=""/>Login</button>
         </div>
         <div class="plan-card plan-card--sub">
           <span class="plan-badge plan-badge--sub">Subscription</span>
           <div class="plan-title">€2.90<span class="plan-period">&nbsp;/ month</span></div>
           <p class="plan-desc">Subscribe for €2.90/month via Whop. Your Discord role unlocks Lite automatically and stays active while your subscription runs.</p>
-          <a class="btn-lite-download plan-blue" id="whopSubscribeBtn" href="#" target="_blank" rel="noopener">Subscribe</a>
+          <a class="btn-lite-download plan-blue" id="whopSubscribeBtn" href="#" target="_blank" rel="noopener"><img class="btn-icon" src="icons/whop.webp" alt=""/>Subscribe</a>
         </div>
       </div>
 
-      <div class="plans-divider"><span>Already have access?</span></div>
-
-      <img class="state-icon" src="icons/discord.webp" alt="Discord"/>
-      <div class="state-title">Login with Discord</div>
-      <p class="state-text">We'll check whether you're a booster or an active subscriber.</p>
-      <button type="button" class="btn-discord" id="loginBtn">
-        <span class="btn-spinner"></span>
-        Login with Discord
-      </button>
-      <p class="state-note" id="loginNote">We only read your username and your membership of our server. Nothing else.</p>
+      <p class="state-note" id="loginNote" style="text-align:center;">Logging in only reads your username and your membership of our server. Nothing else.</p>
     </div>
     <div class="state" id="stateNotMember">
       <div class="user-chip" id="chipNotMember"></div>
@@ -366,8 +488,8 @@
       <div class="state-title">Unlock FrostClient Lite</div>
       <p class="state-text">You're on our server, but Lite needs <strong style="color:var(--boost);">2 boosts</strong> or an active <strong style="color:var(--frost-blue);">€2.90/month subscription</strong>.</p>
       <div class="plans-grid" style="margin-bottom:8px;">
-        <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Boost the server</a>
-        <a class="btn-lite-download plan-blue" id="whopSubscribeBtnNotBooster" href="#" target="_blank" rel="noopener">Subscribe with Whop</a>
+        <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank"><img class="btn-icon" src="icons/discord.webp" alt=""/>Boost the server</a>
+        <a class="btn-lite-download plan-blue" id="whopSubscribeBtnNotBooster" href="#" target="_blank" rel="noopener"><img class="btn-icon" src="icons/whop.webp" alt=""/>Subscribe with Whop</a>
       </div>
       <button type="button" class="signout js-signout">Sign out</button>
     </div>
@@ -384,7 +506,7 @@
       <div class="state-title">Access unlocked 🎉</div>
       <p class="state-text" id="eligibleText">Thanks for supporting Frost! Your exclusive FrostClient Lite build is ready.</p>
       <a class="btn-lite-download" id="liteDownloadBtn" href="#" rel="noopener">Download FrostClient Lite</a>
-      <br/><a class="signout" href="https://frostclient.eu/lite-cancel">Subscribed via Whop? Manage / cancel it</a>
+      <br/><a class="signout" href="https://frostclient.eu/lite/cancel">Subscribed via Whop? Manage / cancel it</a>
       <br/><button type="button" class="signout js-signout">Sign out</button>
     </div>
     <div class="state" id="stateError">
@@ -422,6 +544,51 @@
   <span>© Frost 2026</span>
 </div>
 </footer>
+
+<script>
+(function () {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  for (let i = 0; i < 100; i++) particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 1.5 + 0.5,
+    speed: Math.random() * 0.4 + 0.1,
+    drift: (Math.random() - 0.5) * 0.3,
+    opacity: Math.random() * 0.4 + 0.1
+  });
+  (function animateParticles() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
+      ctx.fill();
+      p.y += p.speed; p.x += p.drift;
+      if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+      if (p.x > W + 10) p.x = -10;
+      if (p.x < -10) p.x = W + 10;
+    }
+    requestAnimationFrame(animateParticles);
+  })();
+  const cursorGlow = document.getElementById('cursor-glow');
+  const HALF = 280;
+  document.addEventListener('mousemove', (e) => {
+    cursorGlow.style.transform = `translate(${e.clientX - HALF}px,${e.clientY - HALF}px)`;
+    const under = document.elementFromPoint(e.clientX, e.clientY);
+    const isInteractive = under && under.closest('a, button, nav, [class*="btn"]');
+    cursorGlow.style.opacity = isInteractive ? '0' : '1';
+  });
+  document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+})();
+</script>
 
 <script>
 (function () {
@@ -581,38 +748,39 @@
       })
       .catch(() => showError('Network error while contacting the server. Please try again.'));
   }
-  const loginBtn = document.getElementById('loginBtn');
-  loginBtn.addEventListener('click', () => {
-    loginBtn.classList.add('loading');
-    fetch(LITE_API_URL + '?action=liteConfig', { cache: 'no-store' })
-      .then(r => r.json())
-      .then(cfg => {
-        if (!cfg.ok || !cfg.clientId || cfg.clientId.indexOf('PASTE_') === 0) {
+  document.querySelectorAll('.js-lite-login').forEach(loginBtn => {
+    loginBtn.addEventListener('click', () => {
+      loginBtn.classList.add('loading');
+      fetch(LITE_API_URL + '?action=liteConfig', { cache: 'no-store' })
+        .then(r => r.json())
+        .then(cfg => {
+          if (!cfg.ok || !cfg.clientId || cfg.clientId.indexOf('PASTE_') === 0) {
+            loginBtn.classList.remove('loading');
+            showError('Discord sign-in is not configured yet. Please check back soon.');
+            return;
+          }
+          let csrfState = '';
+          try {
+            const buf = new Uint8Array(16);
+            crypto.getRandomValues(buf);
+            csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+            sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+          } catch (e) {}
+          const gs = gameSession(), gp = gamePort();
+          const state = csrfState + (gs && gp ? '.g.' + gs + '.' + gp : '');
+          const url = 'https://discord.com/oauth2/authorize'
+            + '?client_id=' + encodeURIComponent(cfg.clientId)
+            + '&response_type=code'
+            + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
+            + '&scope=' + encodeURIComponent('identify guilds.members.read')
+            + (state ? '&state=' + state : '');
+          window.location.href = url;
+        })
+        .catch(() => {
           loginBtn.classList.remove('loading');
-          showError('Discord sign-in is not configured yet. Please check back soon.');
-          return;
-        }
-        let csrfState = '';
-        try {
-          const buf = new Uint8Array(16);
-          crypto.getRandomValues(buf);
-          csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
-          sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
-        } catch (e) {}
-        const gs = gameSession(), gp = gamePort();
-        const state = csrfState + (gs && gp ? '.g.' + gs + '.' + gp : '');
-        const url = 'https://discord.com/oauth2/authorize'
-          + '?client_id=' + encodeURIComponent(cfg.clientId)
-          + '&response_type=code'
-          + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
-          + '&scope=' + encodeURIComponent('identify guilds.members.read')
-          + (state ? '&state=' + state : '');
-        window.location.href = url;
-      })
-      .catch(() => {
-        loginBtn.classList.remove('loading');
-        showError('Network error while contacting the server. Please try again.');
-      });
+          showError('Network error while contacting the server. Please try again.');
+        });
+    });
   });
 
   document.querySelectorAll('.js-signout').forEach(btn => btn.addEventListener('click', () => {

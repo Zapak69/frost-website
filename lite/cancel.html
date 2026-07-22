@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Cancel Subscription | Frost</title>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
 <meta name="robots" content="noindex, follow">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
@@ -19,7 +19,20 @@
   html { scroll-behavior: smooth; }
   body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
   .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-  .topo-bg svg { width: 100%; height: 100%; opacity: 0.05; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.07; }
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  #cursor-glow {
+    position: fixed; left: 0; top: 0;
+    width: 560px; height: 560px; border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(0,200,255,0.10) 0%,
+      rgba(79,200,248,0.04) 40%,
+      transparent 70%);
+    pointer-events: none; z-index: 3; opacity: 0;
+    will-change: transform, opacity;
+    transition: opacity 0.35s ease;
+    mix-blend-mode: screen;
+  }
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
@@ -131,12 +144,22 @@
   <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
     <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
     <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
-    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
-    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+    <path class="tline" d="M-100,270 C80,250 200,310 380,270 S600,190 760,265 S1000,340 1180,285 S1380,225 1500,265"/>
+    <path class="tline" d="M-100,340 C60,320 180,380 360,340 S580,255 740,330 S980,400 1160,345 S1360,290 1500,335"/>
+    <path class="tline" d="M-100,420 C40,400 160,460 340,420 S560,330 720,410 S960,470 1140,415 S1340,365 1500,415"/>
+    <path class="tline" d="M-100,500 C20,480 140,540 320,500 S540,405 700,490 S940,545 1120,490 S1320,440 1500,490"/>
+    <path class="tline" d="M-100,580 C0,558 120,618 300,580 S520,480 680,565 S920,625 1100,570 S1300,518 1500,568"/>
+    <path class="tline" d="M-100,660 C-20,640 100,700 280,660 S500,560 660,645 S900,705 1080,650 S1280,598 1500,648"/>
+    <path class="tline" d="M-100,740 C-40,720 80,780 260,740 S480,640 640,725 S880,785 1060,730 S1260,678 1500,728"/>
+    <path class="tline" d="M200,100 C300,80 380,150 450,100 S600,40 700,110 S820,180 940,120 S1100,60 1200,100"/>
+    <path class="tline" d="M150,160 C260,140 340,210 420,160 S570,95 670,165 S800,235 920,175 S1060,115 1160,160"/>
+    <path class="tline" d="M250,820 C350,800 430,870 500,820 S650,755 750,825 S870,895 990,835 S1150,775 1250,820"/>
   </svg>
 </div>
+<canvas id="particles"></canvas>
+<div id="cursor-glow"></div>
 <nav>
-  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="../favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
   <a class="nav-back" href="https://frostclient.eu/lite">← Back to Lite</a>
 </nav>
 
@@ -187,5 +210,50 @@
   <span>© Frost 2026</span>
 </div>
 </footer>
+
+<script>
+(function () {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  for (let i = 0; i < 100; i++) particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 1.5 + 0.5,
+    speed: Math.random() * 0.4 + 0.1,
+    drift: (Math.random() - 0.5) * 0.3,
+    opacity: Math.random() * 0.4 + 0.1
+  });
+  (function animateParticles() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
+      ctx.fill();
+      p.y += p.speed; p.x += p.drift;
+      if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+      if (p.x > W + 10) p.x = -10;
+      if (p.x < -10) p.x = W + 10;
+    }
+    requestAnimationFrame(animateParticles);
+  })();
+  const cursorGlow = document.getElementById('cursor-glow');
+  const HALF = 280;
+  document.addEventListener('mousemove', (e) => {
+    cursorGlow.style.transform = `translate(${e.clientX - HALF}px,${e.clientY - HALF}px)`;
+    const under = document.elementFromPoint(e.clientX, e.clientY);
+    const isInteractive = under && under.closest('a, button, nav, [class*="btn"]');
+    cursorGlow.style.opacity = isInteractive ? '0' : '1';
+  });
+  document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+})();
+</script>
 </body>
 </html>
