@@ -39,6 +39,16 @@
   .nav-logo span { color: var(--text); }
   .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
   .nav-back:hover { color: var(--text); }
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-cancel-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 7px 16px; text-decoration: none;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+  }
+  .nav-cancel-btn:hover { border-color: var(--boost); color: var(--boost); background: rgba(255,115,250,0.08); }
+  @media(max-width:600px){ .nav-cancel-btn { display: none; } }
 
   .lite-page { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 140px 24px 100px; text-align: center; }
   .lite-eyebrow {
@@ -301,7 +311,10 @@
 </div>
 <nav>
   <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
-  <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+  <div class="nav-right">
+    <a class="nav-cancel-btn" href="https://frostclient.eu/lite-cancel">Cancel Subscription</a>
+    <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+  </div>
 </nav>
 
 <div class="lite-page">
@@ -371,6 +384,7 @@
       <div class="state-title">Access unlocked 🎉</div>
       <p class="state-text" id="eligibleText">Thanks for supporting Frost! Your exclusive FrostClient Lite build is ready.</p>
       <a class="btn-lite-download" id="liteDownloadBtn" href="#" rel="noopener">Download FrostClient Lite</a>
+      <br/><a class="signout" href="https://frostclient.eu/lite-cancel">Subscribed via Whop? Manage / cancel it</a>
       <br/><button type="button" class="signout js-signout">Sign out</button>
     </div>
     <div class="state" id="stateError">

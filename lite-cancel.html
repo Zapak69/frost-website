@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cancel Subscription | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="robots" content="noindex, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+    --boost: #ff73fa; --boost-deep: #b845ff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.05; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue);
+    text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none;
+  }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+
+  .lite-page { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 140px 24px 100px; text-align: center; }
+  .lite-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--muted); margin-bottom: 16px;
+  }
+  .lite-page h1 {
+    font-family: 'Space Mono', monospace; font-size: clamp(30px, 5.5vw, 46px);
+    font-weight: 700; letter-spacing: -2px; margin-bottom: 14px;
+  }
+  .lite-grad {
+    background: linear-gradient(90deg, var(--boost), var(--boost-deep));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lite-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 460px; margin: 0 auto; }
+
+  .lite-card {
+    margin-top: 44px; position: relative; overflow: hidden; text-align: left;
+    background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 40px 36px;
+  }
+  .lite-card::before {
+    content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--frost-blue), transparent);
+    opacity: 0.6;
+  }
+  .lite-card + .lite-card { margin-top: 24px; }
+
+  .card-title {
+    font-family: 'Space Mono', monospace; font-size: 12px; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--frost-blue); margin-bottom: 22px; text-align: center;
+  }
+  .steps { list-style: none; counter-reset: step; display: flex; flex-direction: column; gap: 18px; }
+  .steps li { counter-increment: step; display: flex; gap: 16px; align-items: flex-start; }
+  .steps li::before {
+    content: counter(step);
+    flex: none; width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(79,200,248,0.12); border: 1px solid var(--border);
+    color: var(--frost-blue); font-family: 'Space Mono', monospace; font-weight: 700; font-size: 13.5px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .steps li p { font-size: 14.5px; line-height: 1.65; color: var(--text); padding-top: 4px; }
+  .steps li p strong { color: var(--frost-blue); }
+
+  .platform-label {
+    font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--muted); margin: 28px 0 14px;
+  }
+  .platform-label:first-of-type { margin-top: 0; }
+
+  .note-box {
+    margin-top: 26px; padding: 16px 18px; border-radius: 12px;
+    background: rgba(79,200,248,0.06); border: 1px solid var(--border);
+    font-size: 13.5px; color: var(--muted); line-height: 1.6;
+  }
+  .note-box strong { color: var(--text); }
+
+  .link-row { display: flex; justify-content: center; margin-top: 28px; }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent; color: var(--frost-blue);
+    border: 1px solid var(--border); cursor: pointer; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; font-weight: 600;
+    padding: 13px 28px; border-radius: 12px;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); transform: translateY(-2px); }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 40px 48px; position: relative; z-index: 1;
+    font-size: 13px; color: var(--muted);
+  }
+  .footer-inner {
+    max-width: 900px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo-sm { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--frost-blue); font-size: 16px; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+  @media(max-width:600px){
+    nav { padding: 0 20px; }
+    .lite-card { padding: 32px 22px; }
+    .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
+    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+  </svg>
+</div>
+<nav>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <a class="nav-back" href="https://frostclient.eu/lite">← Back to Lite</a>
+</nav>
+
+<div class="lite-page">
+  <div class="lite-eyebrow">Subscription Management</div>
+  <h1>Cancel your <span class="lite-grad">€3/month</span> subscription</h1>
+  <p class="lite-sub">Your FrostClient Lite subscription is billed and managed by Whop, not by us — cancel it directly on whop.com using the steps below.</p>
+
+  <div class="lite-card">
+    <div class="card-title">How to cancel</div>
+
+    <div class="platform-label">On the web</div>
+    <ol class="steps">
+      <li><p>Log in at <strong>whop.com</strong> with the account you subscribed with.</p></li>
+      <li><p>Go to your <strong>Profile → Orders</strong>.</p></li>
+      <li><p>Click the FrostClient Lite subscription.</p></li>
+      <li><p>Select <strong>Cancel membership</strong>.</p></li>
+    </ol>
+
+    <div class="platform-label">On mobile (Whop app)</div>
+    <ol class="steps">
+      <li><p>Tap your <strong>profile picture</strong>.</p></li>
+      <li><p>Choose <strong>Manage Orders</strong>.</p></li>
+      <li><p>Tap the FrostClient Lite subscription.</p></li>
+      <li><p>Tap <strong>Cancel membership</strong>.</p></li>
+    </ol>
+
+    <div class="note-box">
+      Cancelling stops it from renewing — you'll keep your FrostClient Lite Discord role and access until the <strong>end of your current billing period</strong>, then it's removed automatically. You'll get a confirmation email from Whop. Want a refund for the current period instead? That's a separate request through Whop and is subject to our refund policy.
+    </div>
+
+    <div class="link-row">
+      <a class="btn-secondary" href="https://whop.com/hub" target="_blank" rel="noopener">Open Whop →</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+<div class="footer-inner">
+  <span class="footer-logo-sm">❄ FROST</span>
+  <div class="footer-links">
+    <a href="https://frostclient.eu/faq">FAQ</a>
+    <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+    <a href="https://frostclient.eu/terms">Terms of Service</a>
+    <a href="https://frostclient.eu/imprint">Imprint</a>
+    <a href="https://frostclient.eu">Home</a>
+  </div>
+  <span>© Frost 2026</span>
+</div>
+</footer>
+</body>
+</html>
