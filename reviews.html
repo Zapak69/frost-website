@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reviews | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+    --star: #ffc94d;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.07; }
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  #cursor-glow {
+    position: fixed; left: 0; top: 0;
+    width: 560px; height: 560px; border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(0,200,255,0.10) 0%,
+      rgba(79,200,248,0.04) 40%,
+      transparent 70%);
+    pointer-events: none; z-index: 3; opacity: 0;
+    will-change: transform, opacity;
+    transition: opacity 0.35s ease;
+    mix-blend-mode: screen;
+  }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue);
+    text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none;
+  }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+
+  .reviews-page { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 140px 24px 100px; }
+  .reviews-header { text-align: center; margin-bottom: 56px; }
+  .reviews-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--frost-blue); margin-bottom: 16px;
+  }
+  .reviews-header h1 {
+    font-family: 'Space Mono', monospace; font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700; letter-spacing: -2px; margin-bottom: 14px;
+  }
+  .reviews-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 480px; margin: 0 auto; }
+
+  @keyframes stateIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 34px; height: 34px;
+    border: 3px solid rgba(79,200,248,0.2); border-top-color: var(--frost-blue);
+    border-radius: 50%; margin: 0 auto 18px;
+    animation: spin 0.8s linear infinite;
+  }
+  .reviews-state { display: none; text-align: center; padding: 40px 0; }
+  .reviews-state.active { display: block; animation: stateIn 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+  .reviews-state p { color: var(--muted); font-size: 14.5px; }
+
+  .reviews-grid {
+    display: none;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+  .reviews-grid.active { display: grid; animation: stateIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+  .review-card {
+    background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 22px; position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .review-card::before {
+    content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--frost-blue), transparent);
+    opacity: 0.55;
+  }
+  .review-head { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+  .review-avatar, .review-avatar-anon {
+    width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+  }
+  .review-avatar { object-fit: cover; border: 1px solid var(--border); }
+  .review-avatar-anon {
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--frost-blue), var(--frost-deep));
+    color: #06121c; font-weight: 700; font-size: 15px;
+  }
+  .review-name { font-weight: 700; font-size: 14px; overflow-wrap: anywhere; }
+  .review-stars { color: var(--star); font-size: 14px; letter-spacing: 2px; margin-bottom: 10px; }
+  .review-comment { font-size: 13px; color: var(--muted); line-height: 1.6; overflow-wrap: anywhere; }
+
+  .reviews-cta { text-align: center; margin-top: 60px; }
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: linear-gradient(135deg, var(--frost-blue), var(--frost-deep)); color: #06121c;
+    border: none; cursor: pointer; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700;
+    padding: 14px 32px; border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(79,200,248,0.35); }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 40px 48px; position: relative; z-index: 1;
+    font-size: 13px; color: var(--muted);
+  }
+  .footer-inner {
+    max-width: 900px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo-sm { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--frost-blue); font-size: 16px; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+  @media(max-width:900px){
+    .reviews-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media(max-width:600px){
+    nav { padding: 0 20px; }
+    .reviews-grid { grid-template-columns: 1fr; }
+    .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,270 C80,250 200,310 380,270 S600,190 760,265 S1000,340 1180,285 S1380,225 1500,265"/>
+    <path class="tline" d="M-100,340 C60,320 180,380 360,340 S580,255 740,330 S980,400 1160,345 S1360,290 1500,335"/>
+    <path class="tline" d="M-100,420 C40,400 160,460 340,420 S560,330 720,410 S960,470 1140,415 S1340,365 1500,415"/>
+    <path class="tline" d="M-100,500 C20,480 140,540 320,500 S540,405 700,490 S940,545 1120,490 S1320,440 1500,490"/>
+    <path class="tline" d="M-100,580 C0,558 120,618 300,580 S520,480 680,565 S920,625 1100,570 S1300,518 1500,568"/>
+    <path class="tline" d="M-100,660 C-20,640 100,700 280,660 S500,560 660,645 S900,705 1080,650 S1280,598 1500,648"/>
+    <path class="tline" d="M-100,740 C-40,720 80,780 260,740 S480,640 640,725 S880,785 1060,730 S1260,678 1500,728"/>
+    <path class="tline" d="M200,100 C300,80 380,150 450,100 S600,40 700,110 S820,180 940,120 S1100,60 1200,100"/>
+    <path class="tline" d="M150,160 C260,140 340,210 420,160 S570,95 670,165 S800,235 920,175 S1060,115 1160,160"/>
+    <path class="tline" d="M250,820 C350,800 430,870 500,820 S650,755 750,825 S870,895 990,835 S1150,775 1250,820"/>
+  </svg>
+</div>
+<canvas id="particles"></canvas>
+<div id="cursor-glow"></div>
+<nav>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+</nav>
+
+<div class="reviews-page">
+  <div class="reviews-header">
+    <div class="reviews-eyebrow">Community</div>
+    <h1>Reviews</h1>
+    <p class="reviews-sub">What FrostClient players are saying, straight from Discord.</p>
+  </div>
+
+  <div class="reviews-state active" id="stateLoading">
+    <div class="spinner"></div>
+    <p>Loading reviews...</p>
+  </div>
+
+  <div class="reviews-state" id="stateEmpty">
+    <p>No reviews yet - be the first to leave one!</p>
+  </div>
+
+  <div class="reviews-state" id="stateError">
+    <p>Couldn't load reviews right now. Please try again later.</p>
+  </div>
+
+  <div class="reviews-grid" id="reviewsGrid"></div>
+
+  <div class="reviews-cta">
+    <a class="btn-primary" href="https://frostclient.eu/review">★ Leave a Review</a>
+  </div>
+</div>
+
+<footer>
+<div class="footer-inner">
+  <span class="footer-logo-sm">❄ FROST</span>
+  <div class="footer-links">
+    <a href="https://frostclient.eu/faq">FAQ</a>
+    <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+    <a href="https://frostclient.eu/terms">Terms of Service</a>
+    <a href="https://frostclient.eu/imprint">Imprint</a>
+    <a href="https://frostclient.eu">Home</a>
+  </div>
+  <span>© Frost 2026</span>
+</div>
+</footer>
+
+<script>
+(function () {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  for (let i = 0; i < 100; i++) particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 1.5 + 0.5,
+    speed: Math.random() * 0.4 + 0.1,
+    drift: (Math.random() - 0.5) * 0.3,
+    opacity: Math.random() * 0.4 + 0.1
+  });
+  (function animateParticles() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
+      ctx.fill();
+      p.y += p.speed; p.x += p.drift;
+      if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+      if (p.x > W + 10) p.x = -10;
+      if (p.x < -10) p.x = W + 10;
+    }
+    requestAnimationFrame(animateParticles);
+  })();
+  const cursorGlow = document.getElementById('cursor-glow');
+  const HALF = 280;
+  document.addEventListener('mousemove', (e) => {
+    cursorGlow.style.transform = `translate(${e.clientX - HALF}px,${e.clientY - HALF}px)`;
+    const under = document.elementFromPoint(e.clientX, e.clientY);
+    const isInteractive = under && under.closest('a, button, nav, [class*="btn"]');
+    cursorGlow.style.opacity = isInteractive ? '0' : '1';
+  });
+  document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+})();
+</script>
+
+<script>
+(function () {
+  function parseStars(s) {
+    const n = parseInt(String(s || '').split('/')[0], 10);
+    return Number.isFinite(n) ? Math.max(0, Math.min(5, n)) : 0;
+  }
+
+  function starsText(n) {
+    return '★'.repeat(n) + '☆'.repeat(5 - n);
+  }
+
+  function buildCard(review) {
+    const isAnon = !review.username || !review.avatar;
+
+    const card = document.createElement('div');
+    card.className = 'review-card';
+
+    const head = document.createElement('div');
+    head.className = 'review-head';
+
+    if (isAnon) {
+      const av = document.createElement('div');
+      av.className = 'review-avatar-anon';
+      av.textContent = 'A';
+      head.appendChild(av);
+    } else {
+      const img = document.createElement('img');
+      img.className = 'review-avatar';
+      img.src = review.avatar;
+      img.alt = '';
+      img.loading = 'lazy';
+      head.appendChild(img);
+    }
+
+    const name = document.createElement('div');
+    name.className = 'review-name';
+    name.textContent = isAnon ? 'Anonymous' : review.username;
+    head.appendChild(name);
+    card.appendChild(head);
+
+    const stars = document.createElement('div');
+    stars.className = 'review-stars';
+    stars.textContent = starsText(parseStars(review.stars));
+    card.appendChild(stars);
+
+    const comment = document.createElement('p');
+    comment.className = 'review-comment';
+    comment.textContent = review.comment || '';
+    card.appendChild(comment);
+
+    return card;
+  }
+
+  function show(id) {
+    document.querySelectorAll('.reviews-state').forEach(el => el.classList.toggle('active', el.id === id));
+  }
+
+  fetch('/reviews_export.json', { cache: 'no-store' })
+    .then(r => {
+      if (!r.ok) throw new Error('http_' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      if (!Array.isArray(data) || data.length === 0) {
+        show('stateEmpty');
+        return;
+      }
+      const sorted = data.slice().sort((a, b) => parseStars(b.stars) - parseStars(a.stars));
+      const grid = document.getElementById('reviewsGrid');
+      sorted.forEach(r => grid.appendChild(buildCard(r)));
+      document.querySelectorAll('.reviews-state').forEach(el => el.classList.remove('active'));
+      grid.classList.add('active');
+    })
+    .catch(() => show('stateError'));
+})();
+</script>
+</body>
+</html>
