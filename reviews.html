@@ -93,25 +93,14 @@
     opacity: 0.55;
   }
   .review-head { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+  .review-name-col { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
   .lite-badge {
-    position: relative; display: inline-flex; align-items: center; justify-content: center;
-    width: 17px; height: 17px; border-radius: 50%; flex-shrink: 0;
+    align-self: flex-start;
+    display: inline-flex; align-items: center;
+    padding: 3px 9px; border-radius: 6px;
     background: rgba(255,115,250,0.15); border: 1px solid rgba(255,115,250,0.4);
-    color: #ff73fa; font-size: 11px; font-weight: 700; font-style: italic;
-    cursor: default;
-  }
-  .lite-badge-tooltip {
-    position: absolute; bottom: calc(100% + 9px); left: 50%;
-    transform: translateX(-50%) translateY(4px);
-    width: 190px; background: rgba(8,12,16,0.97);
-    border: 1px solid rgba(255,115,250,0.4); border-radius: 8px;
-    padding: 9px 12px; font-size: 11.5px; font-weight: 400; font-style: normal;
-    line-height: 1.55; color: var(--text); text-align: left;
-    opacity: 0; visibility: hidden; pointer-events: none; z-index: 30;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-  }
-  .lite-badge:hover .lite-badge-tooltip, .lite-badge:focus .lite-badge-tooltip {
-    opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+    color: #ff73fa; font-size: 10.5px; font-weight: 700; font-style: normal;
+    letter-spacing: 0.2px; white-space: nowrap;
   }
   .review-avatar, .review-avatar-anon {
     width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
@@ -281,27 +270,17 @@
   }
 
   function buildLiteBadge(review) {
-    let label, text;
+    let label;
     if (review.booster === true) {
       label = 'Server Booster';
-      text = 'This reviewer is a Server Booster and uses FrostClient Lite.';
     } else if (review.subscription === true) {
       label = 'Lite Subscriber';
-      text = 'This reviewer is a Lite Subscriber and uses FrostClient Lite.';
     } else {
       return null;
     }
     const badge = document.createElement('span');
     badge.className = 'lite-badge';
-    badge.tabIndex = 0;
-    badge.setAttribute('aria-label', label + ' - ' + text);
-    badge.textContent = 'i';
-
-    const tooltip = document.createElement('span');
-    tooltip.className = 'lite-badge-tooltip';
-    tooltip.textContent = text;
-    badge.appendChild(tooltip);
-
+    badge.textContent = label;
     return badge;
   }
 
@@ -328,14 +307,18 @@
       head.appendChild(img);
     }
 
+    const nameCol = document.createElement('div');
+    nameCol.className = 'review-name-col';
+
     const name = document.createElement('div');
     name.className = 'review-name';
     name.textContent = isAnon ? 'Anonymous' : review.username;
-    head.appendChild(name);
+    nameCol.appendChild(name);
 
     const badge = buildLiteBadge(review);
-    if (badge) head.appendChild(badge);
+    if (badge) nameCol.appendChild(badge);
 
+    head.appendChild(nameCol);
     card.appendChild(head);
 
     const stars = document.createElement('div');
