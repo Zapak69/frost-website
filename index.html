@@ -1571,7 +1571,7 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
 
   const grid = document.getElementById('reviewsGridTeaser');
   if (!grid) return;
-  fetch('/reviews_export.json', { cache: 'no-store' })
+  fetch('https://bot.frostclient.eu/reviews_export.json', { cache: 'no-store' })
     .then(r => {
       if (!r.ok) throw new Error('http_' + r.status);
       return r.json();
