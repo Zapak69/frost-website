@@ -112,12 +112,14 @@
     mix-blend-mode: screen;
   }
 
+  /* Positioned INSIDE <nav> (absolute, bottom:0) instead of as a separate fixed sibling -
+     it then always fills nav's own current box exactly, animated or not, rounded or not,
+     with zero duplicated width/position math that could drift out of sync with it. */
   #scroll-progress {
-    position: fixed;
-    top: 68px; left: 0; right: 0;
+    position: absolute; left: 0; right: 0; bottom: 0;
     height: 2px;
-    z-index: 99;
     background: transparent;
+    pointer-events: none;
   }
   #scroll-bar {
     height: 100%;
@@ -133,15 +135,30 @@
   .topo-bg svg { width: 100%; height: 100%; opacity: 0.07; }
 
   nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 100;
+    width: 100%;
+    max-width: 100%;
     height: 68px;
     backdrop-filter: blur(20px);
     background: rgba(8,12,16,0.75);
-    border-bottom: 1px solid var(--border);
-    transition: background 0.3s;
+    border: 1px solid transparent;
+    border-bottom-color: var(--border);
+    border-radius: 0;
+    overflow: hidden;
+    transition: width 0.45s cubic-bezier(0.22,1,0.36,1), max-width 0.45s cubic-bezier(0.22,1,0.36,1),
+                top 0.45s cubic-bezier(0.22,1,0.36,1), border-radius 0.45s ease,
+                background 0.3s, border-color 0.3s;
+  }
+  nav.nav-scrolled {
+    top: 14px;
+    width: calc(100% - 32px);
+    max-width: 1240px;
+    border-color: var(--border);
+    border-radius: 18px;
+    background: rgba(8,12,16,0.95);
   }
   .nav-inner {
-    max-width: 1240px; margin: 0 auto; height: 100%;
+    height: 100%;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 48px;
   }
@@ -160,9 +177,13 @@
   .nav-links a {
     color: var(--muted); font-size: 14px; font-weight: 500;
     text-decoration: none; letter-spacing: 0.3px;
-    transition: color 0.2s;
+    transition: color 0.35s ease, text-shadow 0.35s ease;
   }
   .nav-links a:hover { color: var(--text); }
+  .nav-links a.active {
+    color: var(--frost-blue);
+    text-shadow: 0 0 14px rgba(79,200,248,0.65);
+  }
   .nav-actions { display: flex; align-items: center; gap: 12px; }
   .nav-cta {
     background: var(--frost-blue); color: #000;
@@ -403,7 +424,7 @@
   }
   .review-card {
     background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-    padding: 26px; position: relative; overflow: hidden;
+    padding: 26px; position: relative;
     display: flex; flex-direction: column;
   }
   .review-card::before {
@@ -412,6 +433,26 @@
     opacity: 0.55;
   }
   .review-head { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+  .lite-badge {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    width: 17px; height: 17px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(255,115,250,0.15); border: 1px solid rgba(255,115,250,0.4);
+    color: #ff73fa; font-size: 11px; font-weight: 700; font-style: italic;
+    cursor: default;
+  }
+  .lite-badge-tooltip {
+    position: absolute; bottom: calc(100% + 9px); left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    width: 190px; background: rgba(8,12,16,0.97);
+    border: 1px solid rgba(255,115,250,0.4); border-radius: 8px;
+    padding: 9px 12px; font-size: 11.5px; font-weight: 400; font-style: normal;
+    line-height: 1.55; color: var(--text); text-align: left;
+    opacity: 0; visibility: hidden; pointer-events: none; z-index: 30;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .lite-badge:hover .lite-badge-tooltip, .lite-badge:focus .lite-badge-tooltip {
+    opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+  }
   .review-avatar, .review-avatar-anon { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; }
   .review-avatar { object-fit: cover; border: 1px solid var(--border); }
   .review-avatar-anon {
@@ -903,7 +944,6 @@
 </div>
 <canvas id="particles"></canvas>
 <div id="cursor-glow"></div>
-<div id="scroll-progress"><div id="scroll-bar"></div></div>
 <nav>
 <div class="nav-inner">
   <a class="nav-logo" href="#top"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
@@ -911,8 +951,8 @@
     <li><a href="#features">Features</a></li>
     <li><a href="#mods">Mods</a></li>
     <li><a href="#performance">Performance</a></li>
+    <li><a href="#reviews">Reviews</a></li>
     <li><a href="#download">Download</a></li>
-    <li><a href="https://frostclient.eu/reviews">Reviews</a></li>
     <li><a href="https://frostclient.eu/faq">FAQ</a></li>
   </ul>
   <div class="nav-actions">
@@ -920,6 +960,7 @@
     <button type="button" id="navDownloadBtn" class="nav-cta js-download-trigger">Download Free</button>
   </div>
 </div>
+<div id="scroll-progress"><div id="scroll-bar"></div></div>
 </nav>
 <div>
 <section class="hero" id="top">
@@ -1050,6 +1091,7 @@
 </div>
 </section>
 </div>
+<div class="section-gap"></div>
 <div>
 <section id="performance">
 <div class="split-section reverse">
@@ -1364,6 +1406,18 @@ const fpsFills   = document.querySelectorAll('.fps-fill');
 const perfSect   = document.getElementById('performance');
 const liteSect   = document.getElementById('lite');
 const navLiteBtn = document.querySelector('.nav-cta--lite');
+const navSpyLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')]
+  .map(a => ({ link: a, section: document.getElementById(a.getAttribute('href').slice(1)) }))
+  .filter(x => x.section);
+function updateNavSpy() {
+  const refY = window.innerHeight * 0.5;
+  let current = null;
+  for (const { link, section } of navSpyLinks) {
+    const r = section.getBoundingClientRect();
+    if (r.top <= refY && r.bottom > refY) current = link;
+  }
+  navSpyLinks.forEach(({ link }) => link.classList.toggle('active', link === current));
+}
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', (e) => {
     const id = link.getAttribute('href').slice(1);
@@ -1417,9 +1471,8 @@ function onScroll() {
   const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
   const pct = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
   scrollBar.style.width = pct.toFixed(2) + '%';
-  navEl.style.background = window.scrollY > 40
-    ? 'rgba(8,12,16,0.95)'
-    : 'rgba(8,12,16,0.75)';
+  navEl.classList.toggle('nav-scrolled', window.scrollY > 40);
+  updateNavSpy();
   updateReveal();
   updateFps();
   if (liteSect && navLiteBtn) {
@@ -1462,6 +1515,31 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   function starsText(n) {
     return '★'.repeat(n) + '☆'.repeat(5 - n);
   }
+  function buildLiteBadge(review) {
+    let label, text;
+    if (review.booster === true) {
+      label = 'Server Booster';
+      text = 'This reviewer is a Server Booster and uses FrostClient Lite.';
+    } else if (review.subscription === true) {
+      label = 'Lite Subscriber';
+      text = 'This reviewer is a Lite Subscriber and uses FrostClient Lite.';
+    } else {
+      return null;
+    }
+    const badge = document.createElement('span');
+    badge.className = 'lite-badge';
+    badge.tabIndex = 0;
+    badge.setAttribute('aria-label', label + ' - ' + text);
+    badge.textContent = 'i';
+
+    const tooltip = document.createElement('span');
+    tooltip.className = 'lite-badge-tooltip';
+    tooltip.textContent = text;
+    badge.appendChild(tooltip);
+
+    return badge;
+  }
+
   function buildReviewCard(review) {
     const isAnon = !review.username || !review.avatar;
     const card = document.createElement('div');
@@ -1486,6 +1564,10 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     name.className = 'review-name';
     name.textContent = isAnon ? 'Anonymous' : review.username;
     head.appendChild(name);
+
+    const badge = buildLiteBadge(review);
+    if (badge) head.appendChild(badge);
+
     card.appendChild(head);
 
     const stars = document.createElement('div');

@@ -4,7 +4,8 @@
     "avatar": "https://cdn.discordapp.com/avatars/1291092393663266909/67253f6b465cf785118510a1f022b08f.png?size=256",
     "stars": "5/5",
     "comment": "a pretty good client, boosted my fps from 70 to 250+ which is not bad",
-    "memberSince": "2026-07-21T23:53:27.061000+00:00"
+    "memberSince": "2026-07-21T23:53:27.061000+00:00",
+    "booster": true
   },
   {
     "username": "voidisbackagain",
@@ -38,6 +39,7 @@
     "avatar": "https://cdn.discordapp.com/avatars/1360133189754032172/7d726003d0d830982b3db6aa1039e207.webp",
     "stars": "5/5",
     "comment": "My laptop ram 8gb gpu uhd 620 \nRun Minecraft 60fps to 400fps\nFrost client is the best♥️",
-    "memberSince": "2026-07-23T04:30:04.808Z"
+    "memberSince": "2026-07-23T04:30:04.808Z",
+    "subscription": true
   }
 ]

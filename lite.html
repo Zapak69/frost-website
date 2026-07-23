@@ -58,8 +58,9 @@
     position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
     display: flex; align-items: center; gap: 28px;
   }
-  .nav-anchor { color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none; transition: color 0.2s; }
+  .nav-anchor { color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none; transition: color 0.35s ease, text-shadow 0.35s ease; }
   .nav-anchor:hover { color: var(--frost-blue); }
+  .nav-anchor.active { color: var(--frost-blue); text-shadow: 0 0 14px rgba(79,200,248,0.65); }
   @media(max-width:700px){ .nav-center { display: none; } }
   .nav-cancel-btn {
     display: inline-flex; align-items: center; gap: 6px;
@@ -459,6 +460,21 @@
     </div>
     <div class="lite-compare-row">
       <div class="lite-compare-cell">Special Discord role</div>
+      <div class="lite-compare-cell lite-col-frost">—</div>
+      <div class="lite-compare-cell lite-col-lite">✓</div>
+    </div>
+    <div class="lite-compare-row">
+      <div class="lite-compare-cell">Priority Tickets</div>
+      <div class="lite-compare-cell lite-col-frost">—</div>
+      <div class="lite-compare-cell lite-col-lite">✓</div>
+    </div>
+    <div class="lite-compare-row">
+      <div class="lite-compare-cell">Staff Pings on Discord</div>
+      <div class="lite-compare-cell lite-col-frost">—</div>
+      <div class="lite-compare-cell lite-col-lite">✓</div>
+    </div>
+    <div class="lite-compare-row">
+      <div class="lite-compare-cell">Cancel Anytime</div>
       <div class="lite-compare-cell lite-col-frost">—</div>
       <div class="lite-compare-cell lite-col-lite">✓</div>
     </div>
@@ -961,6 +977,28 @@
 
     show('stateLogin');
   })();
+})();
+</script>
+
+<script>
+(function () {
+  const anchors = [...document.querySelectorAll('.nav-anchor[href^="#"]')]
+    .map(a => ({ link: a, section: document.getElementById(a.getAttribute('href').slice(1)) }))
+    .filter(x => x.section);
+  if (!anchors.length) return;
+
+  function updateActive() {
+    const refY = 120;
+    let current = null;
+    for (const { link, section } of anchors) {
+      const r = section.getBoundingClientRect();
+      if (r.top <= refY && r.bottom > refY) current = link;
+    }
+    anchors.forEach(({ link }) => link.classList.toggle('active', link === current));
+  }
+  window.addEventListener('scroll', updateActive, { passive: true });
+  window.addEventListener('resize', updateActive);
+  updateActive();
 })();
 </script>
 </body>
