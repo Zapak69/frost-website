@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Review Login | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="robots" content="noindex, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+    --blurple: #5865F2;
+    --green: #3dff72;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.07; }
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  #cursor-glow {
+    position: fixed; left: 0; top: 0;
+    width: 560px; height: 560px; border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(0,200,255,0.10) 0%,
+      rgba(79,200,248,0.04) 40%,
+      transparent 70%);
+    pointer-events: none; z-index: 3; opacity: 0;
+    will-change: transform, opacity;
+    transition: opacity 0.35s ease;
+    mix-blend-mode: screen;
+  }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue);
+    text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none;
+  }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+
+  .lite-page { position: relative; z-index: 1; max-width: 520px; margin: 0 auto; padding: 140px 24px 100px; text-align: center; }
+  .lite-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--frost-blue); margin-bottom: 16px;
+  }
+  .lite-page h1 {
+    font-family: 'Space Mono', monospace; font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700; letter-spacing: -2px; margin-bottom: 14px;
+  }
+  .lite-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 420px; margin: 0 auto; }
+
+  @keyframes stateIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .lite-card {
+    margin-top: 44px; position: relative; overflow: hidden;
+    background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 44px 36px;
+  }
+  .lite-card::before {
+    content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--frost-blue), transparent);
+    opacity: 0.6;
+  }
+
+  .state { display: none; }
+  .state.active { display: block; animation: stateIn 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+
+  .spinner {
+    width: 34px; height: 34px;
+    border: 3px solid rgba(79,200,248,0.2); border-top-color: var(--frost-blue);
+    border-radius: 50%; margin: 0 auto 18px;
+    animation: spin 0.8s linear infinite;
+  }
+  .state-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .state-text { font-size: 14.5px; color: var(--muted); line-height: 1.7; max-width: 420px; margin: 0 auto 24px; }
+  .state-note { font-size: 12px; color: var(--muted); opacity: 0.75; margin-top: 18px; }
+
+  .btn-discord {
+    display: inline-flex; align-items: center; justify-content: center; gap: 11px;
+    background: var(--blurple); color: #fff; border: none; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-size: 15.5px; font-weight: 600;
+    padding: 14px 30px; border-radius: 12px; width: 100%;
+    transition: transform 0.2s, box-shadow 0.25s, filter 0.2s;
+  }
+  .btn-discord:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(88,101,242,0.45); filter: brightness(1.08); }
+  .btn-discord.loading { pointer-events: none; opacity: 0.75; }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent; color: var(--frost-blue);
+    border: 1px solid var(--border); cursor: pointer; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; font-weight: 600;
+    padding: 13px 28px; border-radius: 12px; width: 100%;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); transform: translateY(-2px); }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 40px 48px; position: relative; z-index: 1;
+    font-size: 13px; color: var(--muted);
+  }
+  .footer-inner {
+    max-width: 900px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo-sm { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--frost-blue); font-size: 16px; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+  @media(max-width:600px){
+    nav { padding: 0 20px; }
+    .lite-card { padding: 36px 22px; }
+    .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,270 C80,250 200,310 380,270 S600,190 760,265 S1000,340 1180,285 S1380,225 1500,265"/>
+    <path class="tline" d="M-100,340 C60,320 180,380 360,340 S580,255 740,330 S980,400 1160,345 S1360,290 1500,335"/>
+    <path class="tline" d="M-100,420 C40,400 160,460 340,420 S560,330 720,410 S960,470 1140,415 S1340,365 1500,415"/>
+    <path class="tline" d="M-100,500 C20,480 140,540 320,500 S540,405 700,490 S940,545 1120,490 S1320,440 1500,490"/>
+    <path class="tline" d="M-100,580 C0,558 120,618 300,580 S520,480 680,565 S920,625 1100,570 S1300,518 1500,568"/>
+    <path class="tline" d="M-100,660 C-20,640 100,700 280,660 S500,560 660,645 S900,705 1080,650 S1280,598 1500,648"/>
+    <path class="tline" d="M-100,740 C-40,720 80,780 260,740 S480,640 640,725 S880,785 1060,730 S1260,678 1500,728"/>
+    <path class="tline" d="M200,100 C300,80 380,150 450,100 S600,40 700,110 S820,180 940,120 S1100,60 1200,100"/>
+    <path class="tline" d="M150,160 C260,140 340,210 420,160 S570,95 670,165 S800,235 920,175 S1060,115 1160,160"/>
+    <path class="tline" d="M250,820 C350,800 430,870 500,820 S650,755 750,825 S870,895 990,835 S1150,775 1250,820"/>
+  </svg>
+</div>
+<canvas id="particles"></canvas>
+<div id="cursor-glow"></div>
+<nav>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+</nav>
+
+<div class="lite-page">
+  <div class="lite-eyebrow">In-Game Review</div>
+  <h1>Sign in to be credited</h1>
+  <p class="lite-sub">This just identifies you for the review you're leaving in-game — it doesn't check server membership or grant anything.</p>
+
+  <div class="lite-card">
+    <div class="state active" id="stateLogin">
+      <div class="state-title">Sign in with Discord</div>
+      <p class="state-text">We only read your username and avatar. Nothing else.</p>
+      <button type="button" class="btn-discord" id="loginBtn">Login with Discord</button>
+    </div>
+
+    <div class="state" id="stateWorking">
+      <div class="spinner"></div>
+      <p class="state-text" style="margin-bottom:0;">Signing you in...</p>
+    </div>
+
+    <div class="state" id="stateDone">
+      <div class="state-title">You're signed in 🎉</div>
+      <p class="state-text">Head back to the game — your review will be credited to this account.</p>
+      <p class="state-note" id="retryNote" style="display:none;"></p>
+      <button type="button" class="btn-secondary" id="retryNotifyBtn" style="display:none;">Didn't return to the game? Click here</button>
+    </div>
+
+    <div class="state" id="stateNoSession">
+      <div class="state-title">Nothing to do here</div>
+      <p class="state-text">This page is only for signing in from the in-game review prompt.</p>
+      <a class="btn-secondary" href="https://frostclient.eu">Go home</a>
+    </div>
+
+    <div class="state" id="stateError">
+      <div class="state-title">Something went wrong</div>
+      <p class="state-text" id="errorText">We couldn't sign you in. Please try again.</p>
+      <button type="button" class="btn-secondary" id="retryBtn">Try again</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+<div class="footer-inner">
+  <span class="footer-logo-sm">❄ FROST</span>
+  <div class="footer-links">
+    <a href="https://frostclient.eu/faq">FAQ</a>
+    <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+    <a href="https://frostclient.eu/terms">Terms of Service</a>
+    <a href="https://frostclient.eu/imprint">Imprint</a>
+    <a href="https://frostclient.eu">Home</a>
+  </div>
+  <span>© Frost 2026</span>
+</div>
+</footer>
+
+<script>
+(function () {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  for (let i = 0; i < 100; i++) particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 1.5 + 0.5,
+    speed: Math.random() * 0.4 + 0.1,
+    drift: (Math.random() - 0.5) * 0.3,
+    opacity: Math.random() * 0.4 + 0.1
+  });
+  (function animateParticles() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
+      ctx.fill();
+      p.y += p.speed; p.x += p.drift;
+      if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+      if (p.x > W + 10) p.x = -10;
+      if (p.x < -10) p.x = W + 10;
+    }
+    requestAnimationFrame(animateParticles);
+  })();
+  const cursorGlow = document.getElementById('cursor-glow');
+  const HALF = 280;
+  document.addEventListener('mousemove', (e) => {
+    cursorGlow.style.transform = `translate(${e.clientX - HALF}px,${e.clientY - HALF}px)`;
+    const under = document.elementFromPoint(e.clientX, e.clientY);
+    const isInteractive = under && under.closest('a, button, nav, [class*="btn"]');
+    cursorGlow.style.opacity = isInteractive ? '0' : '1';
+  });
+  document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+})();
+</script>
+
+<script>
+(function () {
+  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const GAME_SESSION_KEY = 'frostReviewGameSession';
+  const GAME_PORT_KEY = 'frostReviewGamePort';
+  const OAUTH_STATE_KEY = 'frostReviewOauthState';
+
+  function gameSession() {
+    try { return sessionStorage.getItem(GAME_SESSION_KEY) || ''; } catch (e) { return ''; }
+  }
+  function gamePort() {
+    try { return sessionStorage.getItem(GAME_PORT_KEY) || ''; } catch (e) { return ''; }
+  }
+
+  const states = ['stateLogin', 'stateWorking', 'stateDone', 'stateNoSession', 'stateError'];
+  function show(id) {
+    states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
+  }
+
+  function showError(msg) {
+    document.getElementById('errorText').textContent = msg || "We couldn't sign you in. Please try again.";
+    show('stateError');
+  }
+
+  let lastNotifyPayload = null;
+  function notifyGame(user) {
+    const session = gameSession();
+    const port = gamePort();
+    if (!session || !port) return;
+    lastNotifyPayload = user;
+    let url = 'http://127.0.0.1:' + port + '/result?session=' + encodeURIComponent(session)
+      + '&id=' + encodeURIComponent(user.id)
+      + '&username=' + encodeURIComponent(user.username || '')
+      + '&name=' + encodeURIComponent(user.name || '')
+      + '&avatar=' + encodeURIComponent(user.avatar || '');
+    fetch(url, { mode: 'no-cors', cache: 'no-store' }).catch(function () {});
+    const note = document.getElementById('retryNote');
+    const btn = document.getElementById('retryNotifyBtn');
+    if (note) { note.textContent = 'You can close this tab now.'; note.style.display = 'block'; }
+    if (btn) btn.style.display = 'inline-flex';
+  }
+
+  function exchange(code) {
+    show('stateWorking');
+    fetch(LITE_API_URL + '?action=identifyAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if (!data.ok || !data.user) {
+          showError('Discord sign-in failed. Please try again.');
+          return;
+        }
+        show('stateDone');
+        notifyGame(data.user);
+      })
+      .catch(() => showError('Network error while contacting the server. Please try again.'));
+  }
+
+  const loginBtn = document.getElementById('loginBtn');
+  loginBtn.addEventListener('click', () => {
+    loginBtn.classList.add('loading');
+    fetch(LITE_API_URL + '?action=identifyConfig', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(cfg => {
+        if (!cfg.ok || !cfg.clientId) {
+          loginBtn.classList.remove('loading');
+          showError('Discord sign-in is not configured yet. Please check back soon.');
+          return;
+        }
+        let csrfState = '';
+        try {
+          const buf = new Uint8Array(16);
+          crypto.getRandomValues(buf);
+          csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+          sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+        } catch (e) {}
+        // Same defensive pattern as /lite and /lite/thank-you: carry the game session/port
+        // inside "state" too, since some browsers' anti-bounce-tracking protections wipe
+        // sessionStorage across the frostclient.eu -> discord.com -> frostclient.eu hop.
+        const gs = gameSession(), gp = gamePort();
+        const state = csrfState + (gs && gp ? '.g.' + gs + '.' + gp : '');
+        const url = 'https://discord.com/oauth2/authorize'
+          + '?client_id=' + encodeURIComponent(cfg.clientId)
+          + '&response_type=code'
+          + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
+          + '&scope=identify'
+          + '&state=' + state;
+        window.location.href = url;
+      })
+      .catch(() => {
+        loginBtn.classList.remove('loading');
+        showError('Network error while contacting the server. Please try again.');
+      });
+  });
+
+  document.getElementById('retryBtn').addEventListener('click', () => show('stateLogin'));
+  document.getElementById('retryNotifyBtn').addEventListener('click', () => {
+    if (lastNotifyPayload) notifyGame(lastNotifyPayload);
+  });
+
+  (function init() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has('game') && params.has('session')) {
+      try {
+        sessionStorage.setItem(GAME_SESSION_KEY, params.get('session'));
+        sessionStorage.setItem(GAME_PORT_KEY, params.get('port') || '41422');
+      } catch (e) {}
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('game');
+      cleanUrl.searchParams.delete('session');
+      cleanUrl.searchParams.delete('port');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+    }
+
+    if (params.has('code')) {
+      const code = params.get('code');
+      const returnedState = params.get('state') || '';
+      let storedState = '';
+      try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
+      try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+
+      const gIdx = returnedState.indexOf('.g.');
+      const csrfState = gIdx === -1 ? returnedState : returnedState.slice(0, gIdx);
+      if (gIdx !== -1 && !gameSession()) {
+        const gameParts = returnedState.slice(gIdx + 3).split('.');
+        if (gameParts.length === 2 && gameParts[0] && gameParts[1]) {
+          try {
+            sessionStorage.setItem(GAME_SESSION_KEY, gameParts[0]);
+            sessionStorage.setItem(GAME_PORT_KEY, gameParts[1]);
+          } catch (e) {}
+        }
+      }
+
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('code');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+
+      if (storedState && csrfState !== storedState) {
+        showError('Sign-in session mismatch. Please try again.');
+        return;
+      }
+      exchange(code);
+      return;
+    }
+
+    if (params.has('error')) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('error');
+      cleanUrl.searchParams.delete('error_description');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+      show('stateLogin');
+      return;
+    }
+
+    if (!gameSession()) { show('stateNoSession'); return; }
+    show('stateLogin');
+  })();
+})();
+</script>
+</body>
+</html>

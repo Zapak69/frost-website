@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Leave a Review | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="robots" content="noindex, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+    --blurple: #5865F2;
+    --green: #3dff72;
+    --star: #ffc94d;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.07; }
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  #cursor-glow {
+    position: fixed; left: 0; top: 0;
+    width: 560px; height: 560px; border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(0,200,255,0.10) 0%,
+      rgba(79,200,248,0.04) 40%,
+      transparent 70%);
+    pointer-events: none; z-index: 3; opacity: 0;
+    will-change: transform, opacity;
+    transition: opacity 0.35s ease;
+    mix-blend-mode: screen;
+  }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue);
+    text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none;
+  }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+
+  .lite-page { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding: 140px 24px 100px; text-align: center; }
+  .lite-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--frost-blue); margin-bottom: 16px;
+  }
+  .lite-page h1 {
+    font-family: 'Space Mono', monospace; font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700; letter-spacing: -2px; margin-bottom: 14px;
+  }
+  .lite-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 440px; margin: 0 auto; }
+
+  @keyframes stateIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .lite-card {
+    margin-top: 44px; position: relative; overflow: hidden;
+    background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 44px 36px; text-align: left;
+  }
+  .lite-card::before {
+    content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--frost-blue), transparent);
+    opacity: 0.6;
+  }
+
+  .state { display: none; }
+  .state.active { display: block; animation: stateIn 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+  .state-center { text-align: center; }
+
+  .spinner {
+    width: 34px; height: 34px;
+    border: 3px solid rgba(79,200,248,0.2); border-top-color: var(--frost-blue);
+    border-radius: 50%; margin: 0 auto 18px;
+    animation: spin 0.8s linear infinite;
+  }
+  .state-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .state-text { font-size: 14.5px; color: var(--muted); line-height: 1.7; max-width: 420px; margin: 0 auto 24px; }
+  .state-note { font-size: 12px; color: var(--muted); opacity: 0.75; margin-top: 18px; }
+
+  .btn-discord {
+    display: inline-flex; align-items: center; justify-content: center; gap: 11px;
+    background: var(--blurple); color: #fff; border: none; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-size: 15.5px; font-weight: 600;
+    padding: 14px 30px; border-radius: 12px; width: 100%;
+    transition: transform 0.2s, box-shadow 0.25s, filter 0.2s;
+  }
+  .btn-discord:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(88,101,242,0.45); filter: brightness(1.08); }
+  .btn-discord.loading { pointer-events: none; opacity: 0.75; }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent; color: var(--frost-blue);
+    border: 1px solid var(--border); cursor: pointer; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; font-weight: 600;
+    padding: 13px 28px; border-radius: 12px; width: 100%;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); transform: translateY(-2px); }
+  .btn-secondary.loading { pointer-events: none; opacity: 0.75; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: linear-gradient(135deg, var(--frost-blue), var(--frost-deep)); color: #06121c;
+    border: none; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700;
+    padding: 14px 28px; border-radius: 12px; width: 100%;
+    transition: transform 0.2s, box-shadow 0.25s, filter 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(79,200,248,0.35); }
+  .btn-primary.loading, .btn-primary:disabled { pointer-events: none; opacity: 0.6; }
+
+  .reviewer {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 28px;
+    padding-bottom: 22px; border-bottom: 1px solid var(--border);
+  }
+  .reviewer img {
+    width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--border);
+  }
+  .reviewer .name { font-weight: 700; font-size: 15px; }
+  .reviewer .sub { font-size: 12.5px; color: var(--muted); }
+  .reviewer .logout {
+    margin-left: auto; font-size: 12.5px; color: var(--muted); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px;
+    background: transparent; cursor: pointer; font-family: inherit; transition: color 0.2s, border-color 0.2s;
+  }
+  .reviewer .logout:hover { color: var(--text); border-color: var(--frost-blue); }
+
+  .field-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; display: block; }
+  .field-block { margin-bottom: 26px; }
+
+  .stars { display: flex; gap: 6px; }
+  .star-btn {
+    background: transparent; border: none; cursor: pointer; padding: 4px;
+    font-size: 34px; line-height: 1; color: rgba(255,201,77,0.25);
+    transition: color 0.15s, transform 0.15s;
+  }
+  .star-btn:hover { transform: scale(1.12); }
+  .star-btn.filled { color: var(--star); }
+
+  textarea {
+    width: 100%; resize: vertical; min-height: 110px;
+    background: rgba(8,12,16,0.6); border: 1px solid var(--border); border-radius: 12px;
+    color: var(--text); font-family: 'Space Grotesk', sans-serif; font-size: 14.5px;
+    padding: 14px 16px; line-height: 1.6;
+  }
+  textarea:focus { outline: none; border-color: var(--frost-blue); }
+  .char-count { font-size: 11.5px; color: var(--muted); text-align: right; margin-top: 6px; }
+
+  .checkbox-row { display: flex; align-items: flex-start; gap: 10px; }
+  .checkbox-row input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--frost-blue); flex-shrink: 0; }
+  .checkbox-row label { font-size: 13.5px; color: var(--muted); line-height: 1.6; cursor: pointer; }
+
+  .form-error {
+    display: none; font-size: 13px; color: #ff6b6b; margin-bottom: 18px;
+    background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25);
+    border-radius: 10px; padding: 10px 14px;
+  }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 40px 48px; position: relative; z-index: 1;
+    font-size: 13px; color: var(--muted);
+  }
+  .footer-inner {
+    max-width: 900px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo-sm { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--frost-blue); font-size: 16px; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+  @media(max-width:600px){
+    nav { padding: 0 20px; }
+    .lite-card { padding: 36px 22px; }
+    .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+    .star-btn { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,270 C80,250 200,310 380,270 S600,190 760,265 S1000,340 1180,285 S1380,225 1500,265"/>
+    <path class="tline" d="M-100,340 C60,320 180,380 360,340 S580,255 740,330 S980,400 1160,345 S1360,290 1500,335"/>
+    <path class="tline" d="M-100,420 C40,400 160,460 340,420 S560,330 720,410 S960,470 1140,415 S1340,365 1500,415"/>
+    <path class="tline" d="M-100,500 C20,480 140,540 320,500 S540,405 700,490 S940,545 1120,490 S1320,440 1500,490"/>
+    <path class="tline" d="M-100,580 C0,558 120,618 300,580 S520,480 680,565 S920,625 1100,570 S1300,518 1500,568"/>
+    <path class="tline" d="M-100,660 C-20,640 100,700 280,660 S500,560 660,645 S900,705 1080,650 S1280,598 1500,648"/>
+    <path class="tline" d="M-100,740 C-40,720 80,780 260,740 S480,640 640,725 S880,785 1060,730 S1260,678 1500,728"/>
+    <path class="tline" d="M200,100 C300,80 380,150 450,100 S600,40 700,110 S820,180 940,120 S1100,60 1200,100"/>
+    <path class="tline" d="M150,160 C260,140 340,210 420,160 S570,95 670,165 S800,235 920,175 S1060,115 1160,160"/>
+    <path class="tline" d="M250,820 C350,800 430,870 500,820 S650,755 750,825 S870,895 990,835 S1150,775 1250,820"/>
+  </svg>
+</div>
+<canvas id="particles"></canvas>
+<div id="cursor-glow"></div>
+<nav>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+</nav>
+
+<div class="lite-page">
+  <div class="lite-eyebrow">Feedback</div>
+  <h1>Leave a Review</h1>
+  <p class="lite-sub">Sign in with Discord to write - or update - your FrostClient review. It goes straight to our team.</p>
+
+  <div class="lite-card">
+    <div class="state state-center active" id="stateLoading">
+      <div class="spinner"></div>
+      <p class="state-text" style="margin-bottom:0;">Loading...</p>
+    </div>
+
+    <div class="state state-center" id="stateLogin">
+      <div class="state-title">Sign in with Discord</div>
+      <p class="state-text">We only read your username and avatar - nothing else, no server membership check.</p>
+      <button type="button" class="btn-discord" id="loginBtn">Login with Discord</button>
+    </div>
+
+    <div class="state state-center" id="stateWorking">
+      <div class="spinner"></div>
+      <p class="state-text" style="margin-bottom:0;">Signing you in...</p>
+    </div>
+
+    <div class="state" id="stateForm">
+      <div class="reviewer">
+        <img id="reviewerAvatar" src="" alt=""/>
+        <div>
+          <div class="name" id="reviewerName"></div>
+          <div class="sub" id="reviewerSub">Writing a new review</div>
+        </div>
+        <button type="button" class="logout" id="logoutBtn">Log out</button>
+      </div>
+
+      <div class="form-error" id="formError"></div>
+
+      <div class="field-block">
+        <span class="field-label">Your rating</span>
+        <div class="stars" id="starRow">
+          <button type="button" class="star-btn" data-star="1">★</button>
+          <button type="button" class="star-btn" data-star="2">★</button>
+          <button type="button" class="star-btn" data-star="3">★</button>
+          <button type="button" class="star-btn" data-star="4">★</button>
+          <button type="button" class="star-btn" data-star="5">★</button>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Your comment (optional)</span>
+        <textarea id="commentBox" maxlength="1000" placeholder="What do you like, or what should we improve?"></textarea>
+        <div class="char-count"><span id="charCount">0</span>/1000</div>
+      </div>
+
+      <div class="field-block">
+        <div class="checkbox-row">
+          <input type="checkbox" id="publicCheck"/>
+          <label for="publicCheck">We may show my name &amp; Discord photo if this review is ever featured publicly on the site.</label>
+        </div>
+      </div>
+
+      <button type="button" class="btn-primary" id="submitBtn">Submit review</button>
+    </div>
+
+    <div class="state state-center" id="stateSubmitting">
+      <div class="spinner"></div>
+      <p class="state-text" style="margin-bottom:0;">Sending...</p>
+    </div>
+
+    <div class="state state-center" id="stateDone">
+      <div class="state-title">Thanks for the feedback! 🎉</div>
+      <p class="state-text">Your review has been sent to our team.</p>
+      <button type="button" class="btn-secondary" id="editAgainBtn">Edit your review</button>
+    </div>
+
+    <div class="state state-center" id="stateError">
+      <div class="state-title">Something went wrong</div>
+      <p class="state-text" id="errorText">We couldn't sign you in. Please try again.</p>
+      <button type="button" class="btn-secondary" id="retryBtn">Try again</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+<div class="footer-inner">
+  <span class="footer-logo-sm">❄ FROST</span>
+  <div class="footer-links">
+    <a href="https://frostclient.eu/faq">FAQ</a>
+    <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+    <a href="https://frostclient.eu/terms">Terms of Service</a>
+    <a href="https://frostclient.eu/imprint">Imprint</a>
+    <a href="https://frostclient.eu">Home</a>
+  </div>
+  <span>© Frost 2026</span>
+</div>
+</footer>
+
+<script>
+(function () {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  for (let i = 0; i < 100; i++) particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 1.5 + 0.5,
+    speed: Math.random() * 0.4 + 0.1,
+    drift: (Math.random() - 0.5) * 0.3,
+    opacity: Math.random() * 0.4 + 0.1
+  });
+  (function animateParticles() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
+      ctx.fill();
+      p.y += p.speed; p.x += p.drift;
+      if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+      if (p.x > W + 10) p.x = -10;
+      if (p.x < -10) p.x = W + 10;
+    }
+    requestAnimationFrame(animateParticles);
+  })();
+  const cursorGlow = document.getElementById('cursor-glow');
+  const HALF = 280;
+  document.addEventListener('mousemove', (e) => {
+    cursorGlow.style.transform = `translate(${e.clientX - HALF}px,${e.clientY - HALF}px)`;
+    const under = document.elementFromPoint(e.clientX, e.clientY);
+    const isInteractive = under && under.closest('a, button, nav, [class*="btn"]');
+    cursorGlow.style.opacity = isInteractive ? '0' : '1';
+  });
+  document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+})();
+</script>
+
+<script>
+(function () {
+  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const TOKEN_KEY = 'frostReviewToken';
+  const OAUTH_STATE_KEY = 'frostReviewOauthState';
+
+  const states = ['stateLoading', 'stateLogin', 'stateWorking', 'stateForm', 'stateSubmitting', 'stateDone', 'stateError'];
+  function show(id) {
+    states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
+  }
+
+  function saveToken(t) { try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {} }
+  function loadToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
+  function clearToken() { try { localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+
+  function showError(msg) {
+    document.getElementById('errorText').textContent = msg || "We couldn't sign you in. Please try again.";
+    show('stateError');
+  }
+
+  let currentUser = null;
+  let selectedRating = 0;
+  const MAX_LEN = 1000;
+
+  function paintStars() {
+    document.querySelectorAll('.star-btn').forEach(btn => {
+      btn.classList.toggle('filled', Number(btn.dataset.star) <= selectedRating);
+    });
+  }
+  document.getElementById('starRow').addEventListener('click', (e) => {
+    const btn = e.target.closest('.star-btn');
+    if (!btn) return;
+    selectedRating = Number(btn.dataset.star);
+    paintStars();
+  });
+
+  const commentBox = document.getElementById('commentBox');
+  const charCount = document.getElementById('charCount');
+  commentBox.addEventListener('input', () => {
+    charCount.textContent = String(commentBox.value.length);
+  });
+
+  function showForm(user, review) {
+    currentUser = user;
+    document.getElementById('reviewerAvatar').src = user.avatar
+      ? 'https://cdn.discordapp.com/avatars/' + user.id + '/' + user.avatar + '.png?size=64'
+      : 'https://cdn.discordapp.com/embed/avatars/0.png';
+    document.getElementById('reviewerName').textContent = user.name || user.username || 'Discord user';
+    document.getElementById('reviewerSub').textContent = review ? 'Editing your review' : 'Writing a new review';
+    document.getElementById('formError').style.display = 'none';
+
+    selectedRating = review ? review.rating : 0;
+    paintStars();
+    commentBox.value = review ? (review.comment || '') : '';
+    charCount.textContent = String(commentBox.value.length);
+    document.getElementById('publicCheck').checked = !!(review && review.isPublic);
+
+    document.getElementById('submitBtn').textContent = review ? 'Update review' : 'Submit review';
+    show('stateForm');
+  }
+
+  function formError(msg) {
+    const el = document.getElementById('formError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    if (selectedRating < 1 || selectedRating > 5) {
+      formError('Please pick a star rating.');
+      return;
+    }
+    const token = loadToken();
+    if (!token) { show('stateLogin'); return; }
+
+    show('stateSubmitting');
+    fetch(LITE_API_URL + '?action=submitReview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        token: token,
+        rating: selectedRating,
+        comment: commentBox.value.slice(0, MAX_LEN),
+        isPublic: document.getElementById('publicCheck').checked
+      })
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error === 'token_expired') { clearToken(); show('stateLogin'); return; }
+        if (!data.ok) {
+          show('stateForm');
+          formError('Could not send your review. Please try again.');
+          return;
+        }
+        show('stateDone');
+      })
+      .catch(() => {
+        show('stateForm');
+        formError('Network error while sending your review. Please try again.');
+      });
+  });
+
+  document.getElementById('editAgainBtn').addEventListener('click', () => {
+    if (currentUser) showForm(currentUser, { rating: selectedRating, comment: commentBox.value, isPublic: document.getElementById('publicCheck').checked });
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    clearToken();
+    currentUser = null;
+    show('stateLogin');
+  });
+
+  document.getElementById('retryBtn').addEventListener('click', () => show('stateLogin'));
+
+  function startLogin() {
+    const loginBtn = document.getElementById('loginBtn');
+    loginBtn.classList.add('loading');
+    fetch(LITE_API_URL + '?action=identifyConfig', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(cfg => {
+        if (!cfg.ok || !cfg.clientId) {
+          loginBtn.classList.remove('loading');
+          showError('Discord sign-in is not configured yet. Please check back soon.');
+          return;
+        }
+        let csrfState = '';
+        try {
+          const buf = new Uint8Array(16);
+          crypto.getRandomValues(buf);
+          csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+          sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+        } catch (e) {}
+        const url = 'https://discord.com/oauth2/authorize'
+          + '?client_id=' + encodeURIComponent(cfg.clientId)
+          + '&response_type=code'
+          + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
+          + '&scope=identify'
+          + '&state=' + csrfState;
+        window.location.href = url;
+      })
+      .catch(() => {
+        loginBtn.classList.remove('loading');
+        showError('Network error while contacting the server. Please try again.');
+      });
+  }
+  document.getElementById('loginBtn').addEventListener('click', startLogin);
+
+  function applyStatus(data) {
+    if (!data.ok || !data.user) {
+      clearToken();
+      show('stateLogin');
+      return;
+    }
+    saveToken(data.token);
+    showForm(data.user, data.review);
+  }
+
+  (function init() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has('code')) {
+      show('stateWorking');
+      const code = params.get('code');
+      const returnedState = params.get('state') || '';
+      let storedState = '';
+      try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
+      try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('code');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+
+      if (storedState && returnedState !== storedState) {
+        showError('Sign-in session mismatch. Please try again.');
+        return;
+      }
+      fetch(LITE_API_URL + '?action=identifyAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
+        .then(r => r.json())
+        .then(applyStatus)
+        .catch(() => showError('Network error while contacting the server. Please try again.'));
+      return;
+    }
+
+    if (params.has('error')) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('error');
+      cleanUrl.searchParams.delete('error_description');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+      show('stateLogin');
+      return;
+    }
+
+    const token = loadToken();
+    if (!token) { show('stateLogin'); return; }
+    show('stateLoading');
+    fetch(LITE_API_URL + '?action=identifyCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
+      .then(r => r.json())
+      .then(applyStatus)
+      .catch(() => showError('Network error while contacting the server. Please try again.'));
+  })();
+})();
+</script>
+</body>
+</html>
