@@ -455,6 +455,12 @@
     font-size: 13px; color: var(--muted); line-height: 1.6; overflow-wrap: anywhere;
     display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
   }
+  .review-latest-badge {
+    position: absolute; top: 14px; right: 14px;
+    padding: 3px 9px; border-radius: 6px;
+    background: rgba(61,255,114,0.15); border: 1px solid rgba(61,255,114,0.4);
+    color: var(--green); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  }
   .reviews-teaser-cta { text-align: center; }
   .reviews-view-more {
     color: var(--frost-blue); text-decoration: none;
@@ -1506,6 +1512,12 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   function starsText(n) {
     return '★'.repeat(n) + '☆'.repeat(5 - n);
   }
+  // submittedAt only exists on reviews written through the current /review flow - older,
+  // manually-curated entries don't have it, and fall back to 0 (sorted last).
+  function timestampOf(review) {
+    const t = Date.parse(review.submittedAt || '');
+    return Number.isFinite(t) ? t : 0;
+  }
   function buildLiteBadge(review) {
     let label;
     if (review.booster === true) {
@@ -1521,10 +1533,17 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     return badge;
   }
 
-  function buildReviewCard(review) {
+  function buildReviewCard(review, isLatest) {
     const isAnon = !review.username || !review.avatar;
     const card = document.createElement('div');
     card.className = 'review-card';
+
+    if (isLatest) {
+      const latest = document.createElement('span');
+      latest.className = 'review-latest-badge';
+      latest.textContent = 'LATEST';
+      card.appendChild(latest);
+    }
 
     const head = document.createElement('div');
     head.className = 'review-head';
@@ -1579,9 +1598,9 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     .then(data => {
       if (!Array.isArray(data)) return;
       data.slice()
-        .sort((a, b) => parseStars(b.stars) - parseStars(a.stars))
+        .sort((a, b) => timestampOf(b) - timestampOf(a))
         .slice(0, 6)
-        .forEach(r => grid.appendChild(buildReviewCard(r)));
+        .forEach((r, i) => grid.appendChild(buildReviewCard(r, i === 0)));
     })
     .catch(() => {});
 })();

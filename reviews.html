@@ -13,7 +13,7 @@
     --bg: #080c10; --surface: #111d2b;
     --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
     --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
-    --star: #ffc94d;
+    --star: #ffc94d; --green: #3dff72;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -114,6 +114,13 @@
   .review-name { font-weight: 700; font-size: 14px; overflow-wrap: anywhere; }
   .review-stars { color: var(--star); font-size: 14px; letter-spacing: 2px; margin-bottom: 10px; }
   .review-comment { font-size: 13px; color: var(--muted); line-height: 1.6; overflow-wrap: anywhere; }
+  .review-age { font-size: 11.5px; color: var(--muted); opacity: 0.75; margin-top: 12px; }
+  .review-latest-badge {
+    position: absolute; top: 14px; right: 14px;
+    padding: 3px 9px; border-radius: 6px;
+    background: rgba(61,255,114,0.15); border: 1px solid rgba(61,255,114,0.4);
+    color: var(--green); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  }
 
   .reviews-cta { text-align: center; margin-top: 60px; }
   .btn-primary {
@@ -269,6 +276,35 @@
     return '★'.repeat(n) + '☆'.repeat(5 - n);
   }
 
+  // submittedAt only exists on reviews written through the current /review flow - older,
+  // manually-curated entries don't have it, and fall back to 0 (sorted last, no age shown).
+  function timestampOf(review) {
+    const t = Date.parse(review.submittedAt || '');
+    return Number.isFinite(t) ? t : 0;
+  }
+
+  function formatAge(iso) {
+    const then = new Date(iso);
+    if (isNaN(then.getTime())) return '';
+    const now = new Date();
+    const diffMs = now - then;
+    const minutes = Math.floor(diffMs / 60000);
+    const hours = Math.floor(diffMs / 3600000);
+    const days = Math.floor(diffMs / 86400000);
+
+    if (days >= 7) {
+      const dd = String(then.getDate()).padStart(2, '0');
+      const mm = String(then.getMonth() + 1).padStart(2, '0');
+      return then.getFullYear() !== now.getFullYear()
+        ? `${dd}.${mm}.${then.getFullYear()}`
+        : `${dd}.${mm}`;
+    }
+    if (days >= 1) return `${days} day${days === 1 ? '' : 's'} ago`;
+    if (hours >= 1) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+    if (minutes >= 1) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+    return 'just now';
+  }
+
   function buildLiteBadge(review) {
     let label;
     if (review.booster === true) {
@@ -284,11 +320,18 @@
     return badge;
   }
 
-  function buildCard(review) {
+  function buildCard(review, isLatest) {
     const isAnon = !review.username || !review.avatar;
 
     const card = document.createElement('div');
     card.className = 'review-card';
+
+    if (isLatest) {
+      const latest = document.createElement('span');
+      latest.className = 'review-latest-badge';
+      latest.textContent = 'LATEST';
+      card.appendChild(latest);
+    }
 
     const head = document.createElement('div');
     head.className = 'review-head';
@@ -331,6 +374,13 @@
     comment.textContent = review.comment || '';
     card.appendChild(comment);
 
+    if (review.submittedAt) {
+      const age = document.createElement('div');
+      age.className = 'review-age';
+      age.textContent = formatAge(review.submittedAt);
+      card.appendChild(age);
+    }
+
     return card;
   }
 
@@ -348,9 +398,9 @@
         show('stateEmpty');
         return;
       }
-      const sorted = data.slice().sort((a, b) => parseStars(b.stars) - parseStars(a.stars));
+      const sorted = data.slice().sort((a, b) => timestampOf(b) - timestampOf(a));
       const grid = document.getElementById('reviewsGrid');
-      sorted.forEach(r => grid.appendChild(buildCard(r)));
+      sorted.forEach((r, i) => grid.appendChild(buildCard(r, i === 0)));
       document.querySelectorAll('.reviews-state').forEach(el => el.classList.remove('active'));
       grid.classList.add('active');
     })
