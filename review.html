@@ -410,8 +410,6 @@
     paintStars();
     commentBox.value = review ? (review.comment || '') : '';
     charCount.textContent = String(commentBox.value.length);
-    // Defaults to checked for a brand-new review; an existing review keeps whatever the
-    // reviewer chose last time instead of being forced back to checked on every edit.
     document.getElementById('publicCheck').checked = review ? !!review.isPublic : true;
 
     document.getElementById('submitBtn').textContent = review ? 'Update review' : 'Submit review';

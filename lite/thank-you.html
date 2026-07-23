@@ -276,7 +276,7 @@
   const OAUTH_STATE_KEY = 'frostWhopOauthState';
 
   const states = ['stateLogin', 'stateClaiming', 'stateNoPayment', 'stateError'];
-  const TOKEN_KEY = 'frostLiteToken'; // same localStorage key /lite itself uses
+  const TOKEN_KEY = 'frostLiteToken';
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
   }
@@ -306,9 +306,6 @@
           showError(messages[data.error] || "Something went wrong verifying your purchase.", data.detail);
           return;
         }
-        // Hand the same token /lite itself would have stored straight to it, so it
-        // re-checks and shows the "Access unlocked" / download state directly - no
-        // second Discord login needed.
         try { localStorage.setItem(TOKEN_KEY, data.token); } catch (e) {}
         window.location.href = 'https://frostclient.eu/lite';
       })
@@ -393,8 +390,6 @@
       show('stateLogin');
       return;
     }
-
-    // First load, straight from Whop's checkout-success redirect.
     const paymentId = params.get('payment_id') || params.get('receipt_id') || '';
     if (paymentId) {
       try { sessionStorage.setItem(PAYMENT_ID_KEY, paymentId); } catch (e) {}

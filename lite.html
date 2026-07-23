@@ -739,9 +739,6 @@
       });
     }
   }
-
-  // phase: 'loggedOut' (default) | 'checking' (verifying a cached/fresh token) |
-  // 'noAccess' (logged in, not a booster/subscriber) | 'hasAccess' (eligible)
   function setAuthPhase(phase) {
     navAuthBtn.classList.remove('is-logout', 'is-checking');
     navAuthBtnIcon.style.display = phase === 'loggedOut' ? '' : 'none';

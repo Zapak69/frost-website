@@ -326,9 +326,6 @@
           csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
           sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
         } catch (e) {}
-        // Same defensive pattern as /lite and /lite/thank-you: carry the game session/port
-        // inside "state" too, since some browsers' anti-bounce-tracking protections wipe
-        // sessionStorage across the frostclient.eu -> discord.com -> frostclient.eu hop.
         const gs = gameSession(), gp = gamePort();
         const state = csrfState + (gs && gp ? '.g.' + gs + '.' + gp : '');
         const url = 'https://discord.com/oauth2/authorize'

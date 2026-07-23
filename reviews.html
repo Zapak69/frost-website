@@ -275,9 +275,6 @@
   function starsText(n) {
     return '★'.repeat(n) + '☆'.repeat(5 - n);
   }
-
-  // submittedAt only exists on reviews written through the current /review flow - older,
-  // manually-curated entries don't have it, and fall back to 0 (sorted last, no age shown).
   function timestampOf(review) {
     const t = Date.parse(review.submittedAt || '');
     return Number.isFinite(t) ? t : 0;
