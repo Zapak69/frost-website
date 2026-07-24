@@ -556,7 +556,7 @@
   <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
   <div class="nav-center">
     <a class="nav-anchor" href="#compare" data-glow-early="130" id="compareNavLink">Compare</a>
-    <a class="nav-anchor" href="#lite-reviews-section">Reviews</a>
+    <a class="nav-anchor" href="#lite-reviews-section" id="reviewsNavLink">Reviews</a>
     <a class="nav-anchor" href="#plans">Plans</a>
   </div>
   <div class="nav-right">
@@ -888,14 +888,20 @@
   const compareNavLink = document.getElementById('compareNavLink');
   const compareLabel = document.getElementById('compare');
   const compareTable = document.querySelector('.lite-compare');
+  const reviewsNavLink = document.getElementById('reviewsNavLink');
+  const reviewsSection = document.getElementById('lite-reviews-section');
   const litePageEl = document.querySelector('.lite-page');
   function setCompareVisible(visible, animate) {
     const display = visible ? '' : 'none';
+    // Compare and Reviews both go together here - neither is relevant once someone already
+    // has Lite - but Plans must stay reachable regardless, so it's never touched by this.
     if (compareNavLink) compareNavLink.style.display = visible ? '' : 'none';
     if (compareLabel) compareLabel.style.display = display;
     if (compareTable) compareTable.style.display = display;
+    if (reviewsNavLink) reviewsNavLink.style.display = visible ? '' : 'none';
+    if (reviewsSection) reviewsSection.style.display = display;
     if (visible && animate) {
-      [compareLabel, compareTable].forEach(el => {
+      [compareLabel, compareTable, reviewsSection].forEach(el => {
         if (!el) return;
         el.classList.remove('compare-animate-in');
         void el.offsetWidth;
