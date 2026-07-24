@@ -893,8 +893,6 @@
   const litePageEl = document.querySelector('.lite-page');
   function setCompareVisible(visible, animate) {
     const display = visible ? '' : 'none';
-    // Compare and Reviews both go together here - neither is relevant once someone already
-    // has Lite - but Plans must stay reachable regardless, so it's never touched by this.
     if (compareNavLink) compareNavLink.style.display = visible ? '' : 'none';
     if (compareLabel) compareLabel.style.display = display;
     if (compareTable) compareTable.style.display = display;
