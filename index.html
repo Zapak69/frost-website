@@ -1434,9 +1434,6 @@
     modal.classList.add('active');
   }
   function closeModal() { modal.classList.remove('active'); }
-
-  // Every download click goes through this Lite prompt first - "No thanks" is what actually
-  // opens the real version-picker modal below.
   const litePromptModal   = document.getElementById('litePromptModal');
   const litePromptCloseBtn = document.getElementById('litePromptCloseBtn');
   const litePromptNoBtn   = document.getElementById('litePromptNoBtn');
@@ -1616,10 +1613,6 @@ revealEls.forEach(el => {
 function getRevealP(rect, delayPx) {
   const vh         = window.innerHeight;
   const enterStart = vh * 0.95 - delayPx;
-  // Short reveal band relative to enterStart: elements finish appearing
-  // while still in the lower fifth of the viewport, so a section is fully
-  // visible without having to scroll its heading out of view. (Relative
-  // also keeps delayed elements from inverting the band on small screens.)
   const enterEnd   = enterStart - vh * 0.17;
   const exitStart  = -vh * 0.05;
   const exitEnd    = -vh * 0.55;
@@ -1690,8 +1683,6 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   function starsText(n) {
     return '★'.repeat(n) + '☆'.repeat(5 - n);
   }
-  // submittedAt only exists on reviews written through the current /review flow - older,
-  // manually-curated entries don't have it, and fall back to 0 (sorted last).
   function timestampOf(review) {
     const t = Date.parse(review.submittedAt || '');
     return Number.isFinite(t) ? t : 0;

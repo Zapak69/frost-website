@@ -883,9 +883,6 @@
   const navAuthBtn = document.getElementById('navAuthBtn');
   const navAuthBtnText = document.getElementById('navAuthBtnText');
   const navAuthBtnIcon = document.getElementById('navAuthBtnIcon');
-  // Mobile menu's login/logout item just delegates to the real button above (same click
-  // handler, same login/logout/loading logic) instead of duplicating that state machine -
-  // setAuthPhase() below keeps its text in sync.
   const navMobileAuthBtn = document.getElementById('navMobileAuthBtn');
   if (navMobileAuthBtn) navMobileAuthBtn.addEventListener('click', () => navAuthBtn.click());
   const compareNavLink = document.getElementById('compareNavLink');
@@ -894,9 +891,6 @@
   const litePageEl = document.querySelector('.lite-page');
   function setCompareVisible(visible, animate) {
     const display = visible ? '' : 'none';
-    // Only the Compare nav link should follow this (it's genuinely irrelevant once someone
-    // already has Lite) - Reviews and Plans must stay reachable regardless, so the whole
-    // .nav-center is never hidden here.
     if (compareNavLink) compareNavLink.style.display = visible ? '' : 'none';
     if (compareLabel) compareLabel.style.display = display;
     if (compareTable) compareTable.style.display = display;
@@ -928,8 +922,6 @@
       navAuthBtn.classList.add('is-logout');
       navAuthBtnText.textContent = 'Logout';
       setCompareVisible(false, false);
-      // Already subscribed - the "first week free" promo toast would be irrelevant/confusing
-      // here, and never worth showing again once they actually have access.
       hidePromoToast(true);
     } else {
       navAuthBtn.dataset.mode = 'login';
@@ -1157,17 +1149,10 @@
     .map(a => ({
       link: a,
       section: document.getElementById(a.getAttribute('href').slice(1)),
-      // Optional per-section "trigger sooner" tweak, e.g. data-glow-early="130" on Compare -
-      // shifts that section's own effective reference line down the viewport by N px so it
-      // starts glowing while its top is still further from the top of the screen.
       early: parseFloat(a.dataset.glowEarly || '0') || 0
     }))
     .filter(x => x.section);
   if (!anchors.length) return;
-
-  // Ramp distance (px of scroll) over which a section's glow fades in/out - a continuous
-  // value driven straight off scroll position (updated every scroll tick, no CSS transition
-  // needed) so the glow eases in and out smoothly instead of snapping.
   const GLOW_RAMP_PX = 80;
   const refY = 120;
   function sectionProgress(rect, early) {
@@ -1176,25 +1161,11 @@
   const MUTED = [107, 143, 168];
   const BOOST = [255, 115, 250];
   function updateActive() {
-    // Sort by CURRENT rendered position, not nav-bar order - .lite-page.reorder-plans-first
-    // (shown to logged-in users without access yet) visually moves Plans above Compare/Reviews.
     const withRects = anchors
       .map(a => ({ link: a.link, rect: a.section.getBoundingClientRect(), early: a.early }))
       .sort((a, b) => a.rect.top - b.rect.top);
-
-    // The active section is the last one whose top has crossed its reference line - it owns
-    // the full ramp-in. The one right before it ramps out in lockstep (mirrored progress) so
-    // the handoff is a smooth crossfade; everything else is fully off. This replaces the old
-    // subtraction-based crossfade, which suppressed a section's own glow whenever whatever
-    // came after it hadn't started ramping yet (the "only lights up near the end" symptom).
     let activeIndex = -1;
     withRects.forEach((a, i) => { if (a.rect.top <= refY + a.early) activeIndex = i; });
-
-    // The last section (Plans) can have so much bottom padding/margin below it that the page
-    // simply runs out of scroll room before its top ever reaches refY - it would then never
-    // activate even when scrolled all the way down. Once the page is within one ramp-length of
-    // its true bottom, force the last section active and ramp it in off scroll-remaining
-    // instead of off its own (unreachable) rect position.
     const doc = document.documentElement;
     const distanceFromBottom = doc.scrollHeight - (window.innerHeight + window.scrollY);
     const bottomProgress = Math.max(0, Math.min(1, (GLOW_RAMP_PX - distanceFromBottom) / GLOW_RAMP_PX));
@@ -1279,8 +1250,6 @@
   function starsText(n) {
     return '★'.repeat(n) + '☆'.repeat(5 - n);
   }
-  // submittedAt only exists on reviews written through the current /review flow - older,
-  // manually-curated entries don't have it, and fall back to 0 (sorted last).
   function timestampOf(review) {
     const t = Date.parse(review.submittedAt || '');
     return Number.isFinite(t) ? t : 0;
