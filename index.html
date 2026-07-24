@@ -874,6 +874,14 @@
     transition: background 0.15s, color 0.15s, transform 0.25s ease;
   }
   .modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text); transform: rotate(90deg); }
+  .modal-box--lite {
+    border-color: rgba(255,115,250,0.35);
+    box-shadow: 0 30px 100px rgba(0,0,0,0.65), 0 0 60px rgba(255,115,250,0.18);
+    max-width: 520px;
+    padding: 48px;
+  }
+  .modal-box--lite .modal-title { font-size: 28px; }
+  .modal-box--lite .modal-desc { font-size: 16px; }
   .modal-title {
     font-family: 'Space Mono', monospace;
     font-size: 20px; font-weight: 700;
@@ -961,6 +969,40 @@
     100% { transform: scale(1); box-shadow: 0 0 28px rgba(61,255,114,0.35); }
   }
   .btn-version-download.clicked { animation: versionDownloadPulse 0.4s ease; }
+
+  .promo-toast {
+    position: fixed; z-index: 150;
+    left: 24px; bottom: 24px; max-width: 360px;
+    background: linear-gradient(180deg, rgba(17,29,43,0.97), rgba(12,20,30,0.97));
+    border: 1px solid rgba(255,115,250,0.35); border-radius: 16px;
+    padding: 18px 40px 18px 20px;
+    display: flex; align-items: flex-start; gap: 12px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+    transform: translateY(140%); opacity: 0; pointer-events: none;
+    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease;
+  }
+  .promo-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .promo-toast-body { display: flex; flex-direction: column; gap: 10px; }
+  .promo-toast-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+  .promo-toast-text strong { color: #ff73fa; }
+  .promo-toast-cta {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #ff73fa, #b845ff); color: #fff;
+    font-size: 13px; font-weight: 700; text-decoration: none;
+    padding: 8px 16px; border-radius: 8px;
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .promo-toast-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(255,115,250,0.4); }
+  .promo-toast-close {
+    position: absolute; top: 10px; right: 12px;
+    background: none; border: none; color: var(--muted); font-size: 18px; line-height: 1;
+    cursor: pointer; padding: 4px;
+  }
+  .promo-toast-close:hover { color: var(--text); }
+  @media(max-width:600px){
+    .promo-toast { left: 16px; right: 16px; bottom: 16px; max-width: none; }
+  }
 </style>
 </head>
 <body>
@@ -994,6 +1036,13 @@
 </div>
 <canvas id="particles"></canvas>
 <div id="cursor-glow"></div>
+<div class="promo-toast" id="promoToast">
+  <button class="promo-toast-close" id="promoToastClose" aria-label="Close">×</button>
+  <div class="promo-toast-body">
+    <div class="promo-toast-text"><strong>Limited offer:</strong> subscribe to FrostClient Lite now and get your first 7 days free!</div>
+    <a href="lite" class="promo-toast-cta">Get Lite →</a>
+  </div>
+</div>
 <nav>
 <div class="nav-inner">
   <a class="nav-logo" href="#top"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
@@ -1253,7 +1302,7 @@
   <h2 class="reveal">Ready to play<br/><span class="accent">differently?</span></h2>
   <p class="reveal">Download Frost for free and experience Minecraft the way it was meant to feel — fast, personal, and yours.</p>
 <div class="hero-actions reveal reveal-delay-1">
-  <button type="button" id="downloadBtn" class="btn-primary js-download-trigger" style="font-size:18px;padding:20px 56px;">
+  <button type="button" id="downloadBtn" class="btn-primary js-download-trigger" style="font-size:18px;padding:20px 56px;border-radius:20px;">
     <span class="btn-dl-icon">↓</span>
     <span>Download Frost</span>
   </button>
@@ -1263,6 +1312,16 @@
   </div>
   <p class="hero-version reveal reveal-delay-2" style="margin-top:24px;">Windows · macOS · Linux</p>
 </section>
+</div>
+
+<div class="modal-overlay" id="litePromptModal">
+  <div class="modal-box modal-box--lite">
+    <button type="button" class="modal-close" id="litePromptCloseBtn" aria-label="Close">✕</button>
+    <div class="modal-title" style="text-align:center;">Want to try <span class="lite-accent">Lite</span>?</div>
+    <p class="modal-desc" style="text-align:center;">More FPS. Better performance. More updates.</p>
+    <a href="lite" class="btn-lite-promo" id="litePromptSureBtn" style="width:100%;">Sure</a>
+    <button type="button" class="reviews-view-more" id="litePromptNoBtn" style="display:block; margin:16px auto 0; background:none; border:none; cursor:pointer; font-family:inherit;">No thanks</button>
+  </div>
 </div>
 
 <div class="modal-overlay" id="versionModal">
@@ -1376,10 +1435,28 @@
   }
   function closeModal() { modal.classList.remove('active'); }
 
-  openBtns.forEach(btn => btn.addEventListener('click', () => openModal()));
+  // Every download click goes through this Lite prompt first - "No thanks" is what actually
+  // opens the real version-picker modal below.
+  const litePromptModal   = document.getElementById('litePromptModal');
+  const litePromptCloseBtn = document.getElementById('litePromptCloseBtn');
+  const litePromptNoBtn   = document.getElementById('litePromptNoBtn');
+  function openLitePrompt() { litePromptModal.classList.add('active'); }
+  function closeLitePrompt() { litePromptModal.classList.remove('active'); }
+  litePromptCloseBtn.addEventListener('click', closeLitePrompt);
+  litePromptModal.addEventListener('click', (e) => { if (e.target === litePromptModal) closeLitePrompt(); });
+  litePromptNoBtn.addEventListener('click', () => {
+    closeLitePrompt();
+    openModal();
+  });
+
+  openBtns.forEach(btn => btn.addEventListener('click', () => openLitePrompt()));
   closeBtn.addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (litePromptModal.classList.contains('active')) closeLitePrompt();
+    else if (modal.classList.contains('active')) closeModal();
+  });
   vulkanBtn.addEventListener('click', () => selectRenderer('vulkan'));
   openglBtn.addEventListener('click', () => selectRenderer('opengl'));
   versionSelect.addEventListener('change', () => {
@@ -1483,6 +1560,20 @@ for (let i = 0; i < 100; i++) particles.push({
     hamburger.setAttribute('aria-expanded', String(isOpen));
   });
   mobileMenu.querySelectorAll('a, button').forEach(el => el.addEventListener('click', closeMenu));
+})();
+(function () {
+  const KEY = 'frostPromoToastDismissed';
+  const toast = document.getElementById('promoToast');
+  const closeBtn = document.getElementById('promoToastClose');
+  if (!toast || !closeBtn) return;
+  let dismissed = false;
+  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  if (dismissed) return;
+  setTimeout(() => toast.classList.add('show'), 1200);
+  closeBtn.addEventListener('click', () => {
+    toast.classList.remove('show');
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+  });
 })();
 const scrollBar  = document.getElementById('scroll-bar');
 const navEl      = document.querySelector('nav');

@@ -17,6 +17,7 @@
     --blurple: #5865F2;
     --green: #3dff72;
     --red: #d41212;
+    --star: #ffc94d;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -58,9 +59,8 @@
     position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
     display: flex; align-items: center; gap: 28px;
   }
-  .nav-anchor { color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none; transition: color 0.35s ease, text-shadow 0.35s ease; }
+  .nav-anchor { color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none; }
   .nav-anchor:hover { color: var(--frost-blue); }
-  .nav-anchor.active { color: var(--frost-blue); text-shadow: 0 0 14px rgba(79,200,248,0.65); }
   .nav-hamburger {
     display: none; flex-direction: column; justify-content: center; gap: 5px;
     width: 28px; height: 22px; background: none; border: none; cursor: pointer; padding: 0;
@@ -128,7 +128,7 @@
   .js-lite-login.loading { opacity: 0.6; pointer-events: none; }
 
   .lite-compare {
-    max-width: 620px; margin: 40px auto 0;
+    max-width: 620px; margin: 14px auto 0;
     border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
     background: linear-gradient(180deg, rgba(17,29,43,0.85), rgba(12,20,30,0.85));
     text-align: left;
@@ -158,13 +158,15 @@
   }
 
   .lite-page {
-    position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 140px 24px 100px; text-align: center;
+    position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 140px 24px 200px; text-align: center;
     display: flex; flex-direction: column;
   }
   .lite-page > .lite-eyebrow, .lite-page > h1, .lite-page > .lite-sub { order: 1; }
   .lite-page > #compare, .lite-page > .lite-compare { order: 2; }
-  .lite-page > .lite-card { order: 3; }
-  .lite-page.reorder-plans-first > #compare, .lite-page.reorder-plans-first > .lite-compare { order: 4; }
+  .lite-page > #lite-reviews-section { order: 3; }
+  .lite-page > .lite-card { order: 4; }
+  .lite-page.reorder-plans-first > #compare, .lite-page.reorder-plans-first > .lite-compare { order: 5; }
+  .lite-page.reorder-plans-first > #lite-reviews-section { order: 6; }
   .lite-page.reorder-plans-first > .lite-card { order: 2; }
   .lite-eyebrow {
     font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
@@ -203,8 +205,65 @@
   }
   .lite-compare-see-plans:hover { filter: brightness(1.1); }
 
+  #lite-reviews-section {
+    max-width: 620px; margin: 200px auto 0; padding-top: 48px; text-align: center;
+    border-top: 1px solid var(--border); scroll-margin-top: 90px;
+  }
+  .lite-reviews-title {
+    font-family: 'Space Mono', monospace; font-size: clamp(24px, 4vw, 32px);
+    font-weight: 700; letter-spacing: -1px; margin-bottom: 10px;
+  }
+  .lite-reviews-sub { font-size: 14.5px; color: var(--muted); margin-bottom: 28px; }
+  .lite-reviews-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; text-align: left; }
+  @media(max-width:600px){ .lite-reviews-grid { grid-template-columns: 1fr; } }
+  .lite-reviews-view-more {
+    display: inline-block; margin-top: 28px;
+    color: var(--frost-blue); text-decoration: none;
+    font-size: 15px; font-weight: 600;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .lite-reviews-view-more:hover { border-color: var(--frost-blue); }
+  .review-card {
+    background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px; position: relative;
+    display: flex; flex-direction: column;
+  }
+  .review-card::before {
+    content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--frost-blue), transparent);
+    opacity: 0.55;
+  }
+  .review-head { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+  .review-name-col { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .lite-badge {
+    align-self: flex-start;
+    display: inline-flex; align-items: center;
+    padding: 3px 9px; border-radius: 6px;
+    background: rgba(255,115,250,0.15); border: 1px solid rgba(255,115,250,0.4);
+    color: var(--boost); font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.2px; white-space: nowrap;
+  }
+  .review-avatar, .review-avatar-anon { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; }
+  .review-avatar { object-fit: cover; border: 1px solid var(--border); }
+  .review-avatar-anon {
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--frost-blue), var(--frost-deep));
+    color: #06121c; font-weight: 700; font-size: 15px;
+  }
+  .review-name { font-weight: 700; font-size: 14px; overflow-wrap: anywhere; }
+  .review-stars { color: var(--star); font-size: 14px; letter-spacing: 2px; margin-bottom: 10px; }
+  .review-comment { font-size: 13px; color: var(--muted); line-height: 1.6; overflow-wrap: anywhere; }
+  .review-latest-badge {
+    position: absolute; top: 14px; right: 14px;
+    padding: 3px 9px; border-radius: 6px;
+    background: rgba(61,255,114,0.15); border: 1px solid rgba(61,255,114,0.4);
+    color: var(--green); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  }
+
   .lite-card {
-    margin-top: 72px; position: relative; overflow: hidden; scroll-margin-top: 90px;
+    margin-top: 200px; position: relative; overflow: hidden; scroll-margin-top: 90px;
     background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
     border: 1px solid var(--border); border-radius: 20px;
     padding: 44px 36px;
@@ -430,6 +489,40 @@
     .lite-card { padding: 36px 22px; }
     .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
   }
+
+  .promo-toast {
+    position: fixed; z-index: 150;
+    left: 24px; bottom: 24px; max-width: 360px;
+    background: linear-gradient(180deg, rgba(17,29,43,0.97), rgba(12,20,30,0.97));
+    border: 1px solid rgba(255,115,250,0.35); border-radius: 16px;
+    padding: 18px 40px 18px 20px;
+    display: flex; align-items: flex-start; gap: 12px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+    transform: translateY(140%); opacity: 0; pointer-events: none;
+    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease;
+  }
+  .promo-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .promo-toast-body { display: flex; flex-direction: column; gap: 10px; }
+  .promo-toast-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+  .promo-toast-text strong { color: #ff73fa; }
+  .promo-toast-cta {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #ff73fa, #b845ff); color: #fff;
+    font-size: 13px; font-weight: 700; text-decoration: none;
+    padding: 8px 16px; border-radius: 8px;
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .promo-toast-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(255,115,250,0.4); }
+  .promo-toast-close {
+    position: absolute; top: 10px; right: 12px;
+    background: none; border: none; color: var(--muted); font-size: 18px; line-height: 1;
+    cursor: pointer; padding: 4px;
+  }
+  .promo-toast-close:hover { color: var(--text); }
+  @media(max-width:600px){
+    .promo-toast { left: 16px; right: 16px; bottom: 16px; max-width: none; }
+  }
 </style>
 </head>
 <body>
@@ -451,11 +544,19 @@
 </div>
 <canvas id="particles"></canvas>
 <div id="cursor-glow"></div>
+<div class="promo-toast" id="promoToast">
+  <button class="promo-toast-close" id="promoToastClose" aria-label="Close">×</button>
+  <div class="promo-toast-body">
+    <div class="promo-toast-text"><strong>Limited offer:</strong> subscribe to FrostClient Lite now and get your first 7 days free!</div>
+    <a href="#plans" class="promo-toast-cta">See Plans →</a>
+  </div>
+</div>
 <nav>
 <div class="nav-desktop">
   <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
   <div class="nav-center">
-    <a class="nav-anchor" href="#compare">Compare</a>
+    <a class="nav-anchor" href="#compare" data-glow-early="130">Compare</a>
+    <a class="nav-anchor" href="#lite-reviews-section">Reviews</a>
     <a class="nav-anchor" href="#plans">Plans</a>
   </div>
   <div class="nav-right">
@@ -473,6 +574,7 @@
 </nav>
 <div class="nav-mobile-menu" id="navMobileMenu">
   <a href="#compare">Compare</a>
+  <a href="#lite-reviews-section">Reviews</a>
   <a href="#plans">Plans</a>
   <button type="button" id="navMobileAuthBtn">Login with Discord</button>
   <a href="https://frostclient.eu/lite/cancel">Cancel Subscription</a>
@@ -484,7 +586,7 @@
   <h1>FrostClient <span class="lite-grad">Lite</span></h1>
   <p class="lite-sub">A lightweight build of Frost. Unlock it by boosting our Discord server with 2 boosts, or by subscribing for €2.90/month.</p>
 
-  <div class="section-label" id="compare" style="margin-top:40px;">Compare</div>
+  <div class="section-label" id="compare" style="margin-top:32px;">Compare</div>
   <div class="lite-compare">
     <div class="lite-compare-row lite-compare-head">
       <div class="lite-compare-cell"></div>
@@ -534,6 +636,13 @@
     <div class="lite-compare-row lite-compare-row--cta">
       <a class="lite-compare-see-plans" href="#plans">See Plans ↓</a>
     </div>
+  </div>
+
+  <div id="lite-reviews-section">
+    <div class="lite-reviews-title">Is it really worth it?</div>
+    <p class="lite-reviews-sub">What our subscribers say about us</p>
+    <div class="lite-reviews-grid" id="liteReviewsGrid"></div>
+    <a href="https://frostclient.eu/reviews" class="lite-reviews-view-more">View More →</a>
   </div>
 
   <div class="lite-card" id="plans">
@@ -816,6 +925,9 @@
       navAuthBtn.classList.add('is-logout');
       navAuthBtnText.textContent = 'Logout';
       setCompareVisible(false, false);
+      // Already subscribed - the "first week free" promo toast would be irrelevant/confusing
+      // here, and never worth showing again once they actually have access.
+      hidePromoToast(true);
     } else {
       navAuthBtn.dataset.mode = 'login';
       navAuthBtnText.textContent = 'Login with Discord';
@@ -1039,18 +1151,74 @@
 <script>
 (function () {
   const anchors = [...document.querySelectorAll('.nav-anchor[href^="#"]')]
-    .map(a => ({ link: a, section: document.getElementById(a.getAttribute('href').slice(1)) }))
+    .map(a => ({
+      link: a,
+      section: document.getElementById(a.getAttribute('href').slice(1)),
+      // Optional per-section "trigger sooner" tweak, e.g. data-glow-early="130" on Compare -
+      // shifts that section's own effective reference line down the viewport by N px so it
+      // starts glowing while its top is still further from the top of the screen.
+      early: parseFloat(a.dataset.glowEarly || '0') || 0
+    }))
     .filter(x => x.section);
   if (!anchors.length) return;
 
+  // Ramp distance (px of scroll) over which a section's glow fades in/out - a continuous
+  // value driven straight off scroll position (updated every scroll tick, no CSS transition
+  // needed) so the glow eases in and out smoothly instead of snapping.
+  const GLOW_RAMP_PX = 80;
+  const refY = 120;
+  function sectionProgress(rect, early) {
+    return Math.max(0, Math.min(1, (refY + early - rect.top) / GLOW_RAMP_PX));
+  }
+  const MUTED = [107, 143, 168];
+  const BOOST = [255, 115, 250];
   function updateActive() {
-    const refY = 120;
-    let current = null;
-    for (const { link, section } of anchors) {
-      const r = section.getBoundingClientRect();
-      if (r.top <= refY && r.bottom > refY) current = link;
-    }
-    anchors.forEach(({ link }) => link.classList.toggle('active', link === current));
+    // Sort by CURRENT rendered position, not nav-bar order - .lite-page.reorder-plans-first
+    // (shown to logged-in users without access yet) visually moves Plans above Compare/Reviews.
+    const withRects = anchors
+      .map(a => ({ link: a.link, rect: a.section.getBoundingClientRect(), early: a.early }))
+      .sort((a, b) => a.rect.top - b.rect.top);
+
+    // The active section is the last one whose top has crossed its reference line - it owns
+    // the full ramp-in. The one right before it ramps out in lockstep (mirrored progress) so
+    // the handoff is a smooth crossfade; everything else is fully off. This replaces the old
+    // subtraction-based crossfade, which suppressed a section's own glow whenever whatever
+    // came after it hadn't started ramping yet (the "only lights up near the end" symptom).
+    let activeIndex = -1;
+    withRects.forEach((a, i) => { if (a.rect.top <= refY + a.early) activeIndex = i; });
+
+    // The last section (Plans) can have so much bottom padding/margin below it that the page
+    // simply runs out of scroll room before its top ever reaches refY - it would then never
+    // activate even when scrolled all the way down. Once the page is within one ramp-length of
+    // its true bottom, force the last section active and ramp it in off scroll-remaining
+    // instead of off its own (unreachable) rect position.
+    const doc = document.documentElement;
+    const distanceFromBottom = doc.scrollHeight - (window.innerHeight + window.scrollY);
+    const bottomProgress = Math.max(0, Math.min(1, (GLOW_RAMP_PX - distanceFromBottom) / GLOW_RAMP_PX));
+    const lastIndex = withRects.length - 1;
+    if (bottomProgress > 0) activeIndex = lastIndex;
+
+    withRects.forEach((a, i) => {
+      let glow = 0;
+      if (i === activeIndex) {
+        glow = i === lastIndex ? Math.max(sectionProgress(a.rect, a.early), bottomProgress) : sectionProgress(a.rect, a.early);
+      } else if (activeIndex >= 0 && i === activeIndex - 1) {
+        const activeItem = withRects[activeIndex];
+        const activeGlow = activeIndex === lastIndex
+          ? Math.max(sectionProgress(activeItem.rect, activeItem.early), bottomProgress)
+          : sectionProgress(activeItem.rect, activeItem.early);
+        glow = 1 - activeGlow;
+      }
+      glow = Math.max(0, Math.min(1, glow));
+
+      const r = Math.round(MUTED[0] + (BOOST[0] - MUTED[0]) * glow);
+      const g = Math.round(MUTED[1] + (BOOST[1] - MUTED[1]) * glow);
+      const b = Math.round(MUTED[2] + (BOOST[2] - MUTED[2]) * glow);
+      a.link.style.color = `rgb(${r}, ${g}, ${b})`;
+      a.link.style.textShadow = glow > 0.02
+        ? `0 0 ${(glow * 14).toFixed(1)}px rgba(255,115,250,${(glow * 0.65).toFixed(3)})`
+        : 'none';
+    });
   }
   window.addEventListener('scroll', updateActive, { passive: true });
   window.addEventListener('resize', updateActive);
@@ -1074,6 +1242,126 @@
     hamburger.setAttribute('aria-expanded', String(isOpen));
   });
   mobileMenu.querySelectorAll('a, button').forEach(el => el.addEventListener('click', closeMenu));
+})();
+</script>
+
+<script>
+(function () {
+  const KEY = 'frostPromoToastDismissed';
+  const toast = document.getElementById('promoToast');
+  const closeBtn = document.getElementById('promoToastClose');
+  window.hidePromoToast = function (persist) {
+    if (!toast) return;
+    toast.classList.remove('show');
+    if (persist) { try { localStorage.setItem(KEY, '1'); } catch (e) {} }
+  };
+  if (!toast || !closeBtn) return;
+  let dismissed = false;
+  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  if (dismissed) return;
+  setTimeout(() => toast.classList.add('show'), 1200);
+  closeBtn.addEventListener('click', () => hidePromoToast(true));
+})();
+</script>
+
+<script>
+(function () {
+  const grid = document.getElementById('liteReviewsGrid');
+  if (!grid) return;
+
+  function parseStars(s) {
+    const n = parseInt(String(s || '').split('/')[0], 10);
+    return Number.isFinite(n) ? Math.max(0, Math.min(5, n)) : 0;
+  }
+  function starsText(n) {
+    return '★'.repeat(n) + '☆'.repeat(5 - n);
+  }
+  // submittedAt only exists on reviews written through the current /review flow - older,
+  // manually-curated entries don't have it, and fall back to 0 (sorted last).
+  function timestampOf(review) {
+    const t = Date.parse(review.submittedAt || '');
+    return Number.isFinite(t) ? t : 0;
+  }
+  function buildLiteBadge(review) {
+    let label;
+    if (review.booster === true) {
+      label = 'Server Booster';
+    } else if (review.subscription === true) {
+      label = 'Lite Subscriber';
+    } else {
+      return null;
+    }
+    const badge = document.createElement('span');
+    badge.className = 'lite-badge';
+    badge.textContent = label;
+    return badge;
+  }
+
+  function buildCard(review, isLatest) {
+    const isAnon = !review.username || !review.avatar;
+    const card = document.createElement('div');
+    card.className = 'review-card';
+
+    if (isLatest) {
+      const latest = document.createElement('span');
+      latest.className = 'review-latest-badge';
+      latest.textContent = 'LATEST';
+      card.appendChild(latest);
+    }
+
+    const head = document.createElement('div');
+    head.className = 'review-head';
+    if (isAnon) {
+      const av = document.createElement('div');
+      av.className = 'review-avatar-anon';
+      av.textContent = 'A';
+      head.appendChild(av);
+    } else {
+      const img = document.createElement('img');
+      img.className = 'review-avatar';
+      img.src = review.avatar;
+      img.alt = '';
+      img.loading = 'lazy';
+      head.appendChild(img);
+    }
+
+    const nameCol = document.createElement('div');
+    nameCol.className = 'review-name-col';
+    const name = document.createElement('div');
+    name.className = 'review-name';
+    name.textContent = isAnon ? 'Anonymous' : review.username;
+    nameCol.appendChild(name);
+    const badge = buildLiteBadge(review);
+    if (badge) nameCol.appendChild(badge);
+    head.appendChild(nameCol);
+    card.appendChild(head);
+
+    const stars = document.createElement('div');
+    stars.className = 'review-stars';
+    stars.textContent = starsText(parseStars(review.stars));
+    card.appendChild(stars);
+
+    const comment = document.createElement('p');
+    comment.className = 'review-comment';
+    comment.textContent = review.comment || '';
+    card.appendChild(comment);
+
+    return card;
+  }
+
+  fetch('https://bot.frostclient.eu/reviews_export.json', { cache: 'no-store' })
+    .then(r => {
+      if (!r.ok) throw new Error('http_' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      if (!Array.isArray(data) || data.length === 0) return;
+      data.filter(r => r.booster === true || r.subscription === true)
+        .sort((a, b) => timestampOf(b) - timestampOf(a))
+        .slice(0, 4)
+        .forEach((r, i) => grid.appendChild(buildCard(r, i === 0)));
+    })
+    .catch(() => {});
 })();
 </script>
 </body>
