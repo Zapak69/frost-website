@@ -547,7 +547,7 @@
 <div class="promo-toast" id="promoToast">
   <button class="promo-toast-close" id="promoToastClose" aria-label="Close">×</button>
   <div class="promo-toast-body">
-    <div class="promo-toast-text"><strong>Limited offer:</strong> subscribe to FrostClient Lite now and get your first 7 days free!</div>
+    <div class="promo-toast-text"><strong>Limited offer:</strong> subscribe to FrostClient Lite now and get your first day for free!</div>
     <a href="#plans" class="promo-toast-cta">See Plans →</a>
   </div>
 </div>
@@ -555,7 +555,7 @@
 <div class="nav-desktop">
   <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
   <div class="nav-center">
-    <a class="nav-anchor" href="#compare" data-glow-early="130">Compare</a>
+    <a class="nav-anchor" href="#compare" data-glow-early="130" id="compareNavLink">Compare</a>
     <a class="nav-anchor" href="#lite-reviews-section">Reviews</a>
     <a class="nav-anchor" href="#plans">Plans</a>
   </div>
@@ -888,13 +888,16 @@
   // setAuthPhase() below keeps its text in sync.
   const navMobileAuthBtn = document.getElementById('navMobileAuthBtn');
   if (navMobileAuthBtn) navMobileAuthBtn.addEventListener('click', () => navAuthBtn.click());
-  const navCenter = document.querySelector('.nav-center');
+  const compareNavLink = document.getElementById('compareNavLink');
   const compareLabel = document.getElementById('compare');
   const compareTable = document.querySelector('.lite-compare');
   const litePageEl = document.querySelector('.lite-page');
   function setCompareVisible(visible, animate) {
     const display = visible ? '' : 'none';
-    if (navCenter) navCenter.style.display = display;
+    // Only the Compare nav link should follow this (it's genuinely irrelevant once someone
+    // already has Lite) - Reviews and Plans must stay reachable regardless, so the whole
+    // .nav-center is never hidden here.
+    if (compareNavLink) compareNavLink.style.display = visible ? '' : 'none';
     if (compareLabel) compareLabel.style.display = display;
     if (compareTable) compareTable.style.display = display;
     if (visible && animate) {
