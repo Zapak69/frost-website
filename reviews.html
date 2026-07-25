@@ -140,6 +140,15 @@
     background: linear-gradient(90deg, transparent, var(--frost-blue), transparent);
     opacity: 0.55;
   }
+  .review-card.is-lite { border-color: rgba(255,115,250,0.3); }
+  .review-card.is-lite::before { background: linear-gradient(90deg, transparent, #ff73fa, transparent); }
+  .review-lite-tag {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 6px; margin-bottom: 10px;
+    background: rgba(255,115,250,0.15); border: 1px solid rgba(255,115,250,0.4);
+    color: #ff73fa; font-size: 10.5px; font-weight: 700; letter-spacing: 0.3px;
+  }
   .review-head { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
   .review-name-col { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
   .lite-badge {
@@ -426,8 +435,16 @@
 
     const stars = document.createElement('div');
     stars.className = 'review-stars';
-    stars.textContent = starsText(parseStars(review.stars));
+    stars.textContent = starsText(parseStars(review.lite === true && review.liteStars ? review.liteStars : review.stars));
     card.appendChild(stars);
+
+    if (review.lite === true) {
+      card.classList.add('is-lite');
+      const liteTag = document.createElement('div');
+      liteTag.className = 'review-lite-tag';
+      liteTag.textContent = '❄ Lite Review';
+      card.appendChild(liteTag);
+    }
 
     const comment = document.createElement('p');
     comment.className = 'review-comment';

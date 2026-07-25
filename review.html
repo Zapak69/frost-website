@@ -16,6 +16,7 @@
     --blurple: #5865F2;
     --green: #3dff72;
     --star: #ffc94d;
+    --boost: #ff73fa;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -183,6 +184,14 @@
   .field-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; display: block; }
   .field-block { margin-bottom: 26px; }
 
+  .lite-reviewer-note {
+    display: none; align-items: center; gap: 8px;
+    background: rgba(255,115,250,0.1); border: 1px solid rgba(255,115,250,0.3);
+    border-radius: 12px; padding: 12px 16px; margin-bottom: 24px;
+    font-size: 13px; color: #ff9ffb; line-height: 1.5;
+  }
+  .lite-reviewer-note.show { display: flex; }
+
   .stars { display: flex; gap: 6px; }
   .star-btn {
     background: transparent; border: none; cursor: pointer; padding: 4px;
@@ -279,7 +288,7 @@
 
     <div class="state state-center" id="stateLogin">
       <div class="state-title">Sign in with Discord</div>
-      <p class="state-text">We only read your username and avatar - nothing else, no server membership check.</p>
+      <p class="state-text">We only read your username, avatar, and whether you have FrostClient Lite - nothing else.</p>
       <button type="button" class="btn-discord" id="loginBtn">Login with Discord</button>
     </div>
 
@@ -300,6 +309,8 @@
 
       <div class="form-error" id="formError"></div>
 
+      <div class="lite-reviewer-note" id="liteReviewerNote">❄ You've got FrostClient Lite - tell us what's different about it below.</div>
+
       <div class="field-block">
         <span class="field-label">Your rating</span>
         <div class="stars" id="starRow">
@@ -312,7 +323,7 @@
       </div>
 
       <div class="field-block">
-        <span class="field-label">Your comment (optional)</span>
+        <span class="field-label" id="commentLabel">Your comment (optional)</span>
         <textarea id="commentBox" maxlength="1000" placeholder="What do you like, or what should we improve?"></textarea>
         <div class="char-count"><span id="charCount">0</span>/1000</div>
       </div>
@@ -427,6 +438,7 @@
 
   let currentUser = null;
   let selectedRating = 0;
+  let isLiteMember = false;
   const MAX_LEN = 1000;
 
   function paintStars() {
@@ -455,6 +467,14 @@
     document.getElementById('reviewerName').textContent = user.name || user.username || 'Discord user';
     document.getElementById('reviewerSub').textContent = review ? 'Editing your review' : 'Writing a new review';
     document.getElementById('formError').style.display = 'none';
+
+    document.getElementById('liteReviewerNote').classList.toggle('show', isLiteMember);
+    document.getElementById('commentLabel').textContent = isLiteMember
+      ? "What's different with Lite? (optional)"
+      : 'Your comment (optional)';
+    commentBox.placeholder = isLiteMember
+      ? 'More FPS? Smoother gameplay? What have you noticed since switching to Lite?'
+      : 'What do you like, or what should we improve?';
 
     selectedRating = review ? review.rating : 0;
     paintStars();
@@ -541,7 +561,7 @@
           + '?client_id=' + encodeURIComponent(cfg.clientId)
           + '&response_type=code'
           + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
-          + '&scope=identify'
+          + '&scope=' + encodeURIComponent('identify guilds.members.read')
           + '&state=' + csrfState;
         window.location.href = url;
       })
@@ -559,6 +579,7 @@
       return;
     }
     saveToken(data.token);
+    isLiteMember = data.isLiteMember === true;
     showForm(data.user, data.review);
   }
 
