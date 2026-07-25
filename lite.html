@@ -1269,10 +1269,10 @@
   }
   function buildLiteBadge(review) {
     let label;
-    if (review.booster === true) {
-      label = 'Server Booster';
-    } else if (review.subscription === true) {
+    if (review.subscription === true) {
       label = 'Lite Subscriber';
+    } else if (review.booster === true) {
+      label = 'Server Booster';
     } else {
       return null;
     }
