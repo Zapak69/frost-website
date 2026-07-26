@@ -112,9 +112,6 @@
     mix-blend-mode: screen;
   }
 
-  /* Positioned INSIDE <nav> (absolute, bottom:0) instead of as a separate fixed sibling -
-     it then always fills nav's own current box exactly, animated or not, rounded or not,
-     with zero duplicated width/position math that could drift out of sync with it. */
   #scroll-progress {
     position: absolute; left: 0; right: 0; bottom: 0;
     height: 2px;
@@ -138,7 +135,7 @@
     position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 100;
     width: 100%;
     max-width: 100%;
-    height: 68px;
+    height: 80px;
     backdrop-filter: blur(20px);
     background: rgba(8,12,16,0.75);
     border: 1px solid transparent;
@@ -207,10 +204,10 @@
   .nav-logo-mobile img { width: 20px; height: 20px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
   .nav-logo-mobile span { color: var(--text); }
   .nav-mobile-menu {
-    display: none; position: fixed; top: 68px; left: 0; right: 0; z-index: 100;
+    display: none; position: fixed; top: 80px; left: 0; right: 0; z-index: 100;
     background: rgba(8,12,16,0.98); border-bottom: 1px solid var(--border);
     flex-direction: column; padding: 8px 24px 16px;
-    max-height: calc(100vh - 68px); overflow-y: auto;
+    max-height: calc(100vh - 80px); overflow-y: auto;
   }
   .nav-mobile-menu.open { display: flex; }
   .nav-mobile-menu a, .nav-mobile-menu button {
@@ -234,21 +231,34 @@
   .nav-cta:hover { box-shadow: 0 0 32px rgba(79,200,248,0.6); transform: translateY(-1px); }
   .nav-cta--lite {
     display: inline-block;
-    background: linear-gradient(100deg, #ff73fa, #b845ff); color: #fff;
-    box-shadow: 0 0 20px rgba(255,115,250,0.3);
+    background: transparent; color: #ff73fa;
+    border: 1.5px solid #ff73fa;
+    box-shadow: none;
   }
-  .nav-cta--lite:hover { box-shadow: 0 0 32px rgba(255,115,250,0.6); transform: translateY(-1px); }
+  .nav-cta--lite:hover { background: rgba(255,115,250,0.1); box-shadow: 0 0 24px rgba(255,115,250,0.35); transform: translateY(-1px); }
   .nav-cta--lite.in-lite { animation: navLiteGlow 1.8s ease-in-out infinite; }
   @keyframes navLiteGlow {
-    0%, 100% { box-shadow: 0 0 22px rgba(255,115,250,0.55); }
-    50% { box-shadow: 0 0 44px rgba(255,115,250,0.95); }
+    0%, 100% { box-shadow: 0 0 12px rgba(255,115,250,0.3); }
+    50% { box-shadow: 0 0 26px rgba(255,115,250,0.65); }
   }
+  .nav-signin-btn {
+    display: inline-flex; align-items: center;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 600;
+    color: var(--muted); background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; cursor: pointer;
+    padding: 9px 18px; text-decoration: none;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .nav-signin-btn img { display: none; }
+  .nav-signin-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.08); }
+  .nav-signin-btn.loading { opacity: 0.6; pointer-events: none; }
+  .nav-signin-btn.is-logged-in { color: var(--frost-blue); }
 
   .hero {
     position: relative; z-index: 1;
     min-height: 100vh;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 120px 24px 80px;
+    padding: 110px clamp(36px, 6vw, 110px) 60px;
     text-align: center;
     overflow: hidden;
   }
@@ -354,9 +364,16 @@
   }
   .btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.06); }
   .hero-version { font-size: 12px; color: var(--muted); margin-top: 20px; font-family: 'Space Mono', monospace; }
+
+  .preview-screen {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 90px clamp(36px, 6vw, 110px) 40px;
+  }
   .preview-section {
     position: relative; z-index: 1;
-    padding: 0 24px 120px;
+    padding: 0 0 56px;
     display: flex; justify-content: center;
   }
   .preview-frame {
@@ -383,8 +400,8 @@
   .stats-bar {
     position: relative; z-index: 1;
     display: flex; justify-content: center; gap: 0;
-    margin: 0 24px 120px;
-    max-width: 900px; margin-left: auto; margin-right: auto;
+    margin: 0 auto; width: 100%;
+    max-width: 900px;
     border: 1px solid var(--border);
     border-radius: 16px;
     background: var(--surface);
@@ -415,7 +432,12 @@
   }
   h2 .accent { color: var(--frost-blue); }
   .section-desc { font-size: 17px; color: var(--muted); line-height: 1.65; max-width: 480px; }
-  .features-section { padding: 0 24px 120px; max-width: 1160px; margin: 0 auto; }
+  .features-section {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 90px clamp(36px, 6vw, 110px) 60px;
+    max-width: 1380px; margin: 0 auto;
+  }
   .features-header { text-align: center; margin-bottom: 72px; }
   .features-header .section-desc { margin: 0 auto; }
   .features-grid {
@@ -451,7 +473,14 @@
   }
   .feature-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
   .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
-  .reviews-teaser { padding: 0 24px 40px; max-width: 1160px; margin: 0 auto; }
+  #reviews {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .reviews-teaser {
+    padding: 90px clamp(36px, 6vw, 110px) 60px;
+    max-width: 1380px; margin: 0 auto; width: 100%;
+  }
   .reviews-teaser-header { text-align: center; margin-bottom: 56px; }
   .reviews-teaser-header .section-desc { margin: 0 auto; }
   .reviews-grid-teaser {
@@ -522,9 +551,13 @@
     .reviews-grid-teaser { grid-template-columns: 1fr; }
     .reviews-grid-teaser .review-card:nth-child(n+3) { display: none; }
   }
+  #mods, #performance {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
   .split-section {
-    padding: 100px 48px;
-    max-width: 1160px; margin: 0 auto;
+    padding: 90px clamp(36px, 6vw, 110px) 60px;
+    max-width: 1380px; margin: 0 auto; width: 100%;
     display: flex; align-items: center; gap: 80px;
   }
   .split-section.reverse { flex-direction: row-reverse; }
@@ -561,15 +594,17 @@
   .mock-badge.green { background: rgba(61,255,114,0.15); color: var(--green); }
   .divider { height: 1px; background: var(--border); margin: 0 48px; }
   .section-gap {
-    height: 80vh;
-    min-height: 200px;
+    height: 0;
+    min-height: 0;
   }
   .section-gap-small {
-    height: 40vh;
-    min-height: 200px;
+    height: 0;
+    min-height: 0;
   }
   .cta-section {
-    padding: 160px 24px;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 90px clamp(36px, 6vw, 110px) 60px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -577,7 +612,12 @@
   .cta-section::before { display: none; }
   .cta-section h2 { font-size: clamp(40px, 6vw, 72px); margin-bottom: 20px; }
   .cta-section p { color: var(--muted); font-size: 18px; max-width: 480px; margin: 0 auto 48px; }
-  .lite-promo { padding: 40px 24px 150px; text-align: center; scroll-margin-top: 90px; }
+  .lite-promo {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 90px clamp(36px, 6vw, 110px) 60px;
+    text-align: center; scroll-margin-top: 90px;
+  }
   .btn-lite-try {
     display: inline-flex; align-items: center; gap: 8px;
     color: #ff73fa; text-decoration: none;
@@ -829,16 +869,12 @@
       border-radius: 0 !important; border-color: var(--border) !important;
       background: rgba(8,12,16,0.95) !important; transition: none !important;
     }
-    /* The scroll-linked fade/slide-in progress is driven by window.innerHeight, which mobile
-       browsers change mid-scroll as the address bar collapses/expands - causes visible jank
-       there that desktop never sees. Simplest fix: skip the effect on mobile, content just
-       shows immediately at full opacity. */
+
     .reveal, .reveal-left, .reveal-right, .reveal-scale {
       opacity: 1 !important; transform: none !important;
     }
   }
 
-  /* ---- Version picker popup ---- */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 200;
     display: flex; align-items: center; justify-content: center;
@@ -1066,6 +1102,7 @@
   <div class="nav-actions">
     <a href="lite" class="nav-cta nav-cta--lite">LITE</a>
     <button type="button" id="navDownloadBtn" class="nav-cta js-download-trigger">Download Free</button>
+    <button type="button" class="nav-signin-btn js-site-auth-btn"><img src="icons/discord.webp" alt=""/><span class="js-site-auth-text">Sign in</span></button>
   </div>
 </div>
 <button class="nav-hamburger" id="navHamburger" type="button" aria-label="Menu" aria-expanded="false">
@@ -1085,6 +1122,7 @@
   <a href="https://frostclient.eu/faq">FAQ</a>
   <a href="lite">LITE</a>
   <button type="button" class="js-download-trigger">Download Free</button>
+  <button type="button" class="js-site-auth-btn">Sign in</button>
 </div>
 <div>
 <section class="hero" id="top">
@@ -1107,7 +1145,7 @@
   <p class="hero-version">Supports Minecraft 1.21+ · Free forever</p>
 </section>
 </div>
-<div class="section-gap-small"></div>
+<div class="preview-screen">
 <div class="preview-section">
   <div class="preview-frame reveal">
     <img src="./screenshot.png" alt="Frost Client Preview" id="heroImg"/>
@@ -1132,7 +1170,7 @@
     <div class="stat-label">Always</div>
   </div>
 </div>
-<div class="section-gap"></div>
+</div>
 <div>
 <section class="features-section" id="features">
   <div class="features-header reveal">
@@ -1819,5 +1857,6 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     .catch(() => {});
 })();
 </script>
+<script src="site-auth.js"></script>
 </body>
 </html>

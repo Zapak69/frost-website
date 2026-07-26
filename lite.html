@@ -38,10 +38,24 @@
     mix-blend-mode: screen;
   }
   nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 0 48px; height: 68px;
-    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
-    border-bottom: 1px solid var(--border);
+    position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 100;
+    width: 100%; max-width: 100%;
+    padding: 0 48px; height: 80px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.75);
+    border: 1px solid transparent;
+    border-bottom-color: var(--border);
+    border-radius: 0;
+    transition: width 0.45s cubic-bezier(0.22,1,0.36,1), max-width 0.45s cubic-bezier(0.22,1,0.36,1),
+                top 0.45s cubic-bezier(0.22,1,0.36,1), border-radius 0.45s ease,
+                background 0.3s, border-color 0.3s;
+  }
+  nav.nav-scrolled {
+    top: 14px;
+    width: calc(100% - 32px);
+    max-width: 1240px;
+    border-color: var(--border);
+    border-radius: 18px;
+    background: rgba(8,12,16,0.95);
   }
   .nav-desktop { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 100%; }
   .nav-logo {
@@ -82,10 +96,10 @@
   .nav-logo-mobile img { width: 20px; height: 20px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
   .nav-logo-mobile span { color: var(--text); }
   .nav-mobile-menu {
-    display: none; position: fixed; top: 68px; left: 0; right: 0; z-index: 100;
+    display: none; position: fixed; top: 80px; left: 0; right: 0; z-index: 100;
     background: rgba(8,12,16,0.98); border-bottom: 1px solid var(--border);
     flex-direction: column; padding: 8px 24px 16px;
-    max-height: calc(100vh - 68px); overflow-y: auto;
+    max-height: calc(100vh - 80px); overflow-y: auto;
   }
   .nav-mobile-menu.open { display: flex; }
   .nav-mobile-menu a, .nav-mobile-menu button {
@@ -99,6 +113,12 @@
   @media(max-width:700px){
     .nav-desktop { display: none; }
     .nav-hamburger, .nav-logo-mobile { display: flex; }
+    nav, nav.nav-scrolled {
+      width: 100% !important; max-width: 100% !important; top: 0 !important;
+      border-radius: 0 !important; border-color: transparent !important;
+      border-bottom-color: var(--border) !important;
+      background: rgba(8,12,16,0.95) !important; transition: none !important;
+    }
   }
   .nav-cancel-btn {
     display: inline-flex; align-items: center; gap: 6px;
@@ -110,19 +130,20 @@
   .nav-cancel-btn:hover { border-color: var(--boost); color: var(--boost); background: rgba(255,115,250,0.08); }
   @media(max-width:600px){ .nav-cancel-btn { display: none; } }
   .nav-discord-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: #fff;
-    background: var(--blurple); border: none; border-radius: 999px; cursor: pointer;
-    padding: 7px 16px 7px 10px;
-    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    display: inline-flex; align-items: center;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 600;
+    color: var(--muted); background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; cursor: pointer;
+    padding: 9px 18px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
   }
-  .nav-discord-btn img { width: 16px; height: 16px; display: block; }
+  .nav-discord-btn img { display: none; }
   .btn-icon { width: 18px; height: 18px; display: block; border-radius: 22%; }
-  .nav-discord-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(88,101,242,0.4); filter: brightness(1.08); }
-  .nav-discord-btn.is-logout { background: var(--red); }
-  .nav-discord-btn.is-logout:hover { box-shadow: 0 4px 16px rgba(212,18,18,0.45); }
-  .nav-discord-btn.is-checking { background: var(--muted); cursor: default; pointer-events: none; }
-  .nav-discord-btn.is-checking:hover { transform: none; box-shadow: none; filter: none; }
+  .nav-discord-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.08); }
+  .nav-discord-btn.is-logout { color: #ff8a8a; border-color: rgba(212,18,18,0.4); background: rgba(212,18,18,0.08); }
+  .nav-discord-btn.is-logout:hover { background: rgba(212,18,18,0.16); border-color: rgba(212,18,18,0.6); }
+  .nav-discord-btn.is-checking { opacity: 0.6; cursor: default; pointer-events: none; }
+  .nav-discord-btn.is-checking:hover { color: var(--muted); background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.14); }
   @keyframes compareIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
   .compare-animate-in { animation: compareIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
   .js-lite-login.loading { opacity: 0.6; pointer-events: none; }
@@ -158,24 +179,79 @@
   }
 
   .lite-page {
-    position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 140px 24px 200px; text-align: center;
-    display: flex; flex-direction: column;
+    position: relative; z-index: 1; margin: 0 auto; text-align: center;
+    padding: 0 clamp(36px, 6vw, 110px) 160px;
   }
-  .lite-page > .lite-eyebrow, .lite-page > h1, .lite-page > .lite-sub { order: 1; }
-  .lite-page > #compare, .lite-page > .lite-compare { order: 2; }
-  .lite-page > #lite-reviews-section { order: 3; }
-  .lite-page > .lite-card { order: 4; }
-  .lite-page.reorder-plans-first > #compare, .lite-page.reorder-plans-first > .lite-compare { order: 5; }
-  .lite-page.reorder-plans-first > #lite-reviews-section { order: 6; }
-  .lite-page.reorder-plans-first > .lite-card { order: 2; }
+  .hero-split {
+    min-height: 100vh; padding-top: 96px;
+    display: flex; align-items: center; justify-content: center; gap: clamp(44px, 6vw, 100px);
+    text-align: left;
+  }
+  .hero-copy { flex: 1; min-width: 0; max-width: 680px; }
+  .hero-copy .lite-sub { margin: 0; max-width: 600px; font-size: 16.5px; }
+  .lite-sub strong { color: var(--frost-blue); font-weight: 600; }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; animation: fadeDown 0.6s ease 0.24s both; }
+  .hero-stat {
+    flex: 0 0 auto; display: flex; flex-direction: column; gap: 3px;
+    background: rgba(17,29,43,0.65); border: 1px solid var(--border); border-radius: 14px;
+    padding: 14px 22px; text-align: left;
+  }
+  .hero-stat-num { font-family: 'Space Mono', monospace; font-size: 23px; font-weight: 700; color: var(--frost-blue); }
+  .hero-stat-label { font-family: 'Space Mono', monospace; font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; }
+  .hero-pricing-card {
+    flex-shrink: 0; width: 430px; text-align: center; scroll-margin-top: 110px;
+    padding: 56px 36px; gap: 38px;
+    animation: cardIn 0.7s cubic-bezier(0.22,1,0.36,1) 0.3s both;
+  }
+  .plan-trial-line { display: flex; align-items: baseline; justify-content: center; gap: 13px; }
+  .plan-trial-days {
+    font-family: 'Space Mono', monospace; font-size: 78px; font-weight: 700; line-height: 1;
+    color: var(--frost-blue); text-shadow: 0 0 30px rgba(79,200,248,0.55);
+  }
+  .plan-trial-label { font-size: 21px; font-weight: 600; color: var(--text); }
+  .plan-perks { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+  .plan-perk {
+    font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted);
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: 999px; padding: 6px 11px;
+  }
+  .plan-note { font-size: 11.5px; color: var(--muted); line-height: 1.6; margin: 0; }
+  .plan-note strong { color: var(--frost-blue); }
+  .below-split {
+    display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 4vw, 80px);
+    align-items: start; margin: 40px auto 0; text-align: center;
+
+    max-width: 1210px;
+  }
+  .below-split .lite-compare-row { grid-template-columns: 0.8fr 1fr 1fr; }
+  .below-split .lite-compare-cell { padding: 13px 14px; font-size: 14px; }
+  .below-split .lite-compare-head .lite-compare-cell { padding: 15px 14px; font-size: 12.5px; }
+  .below-split .review-card { padding: 16px; }
+  .below-split .lite-reviews-grid { gap: 14px; }
+  .compare-col { min-width: 0; }
+  .below-split .lite-compare { max-width: none; margin: 14px 0 0; }
+  .below-split #lite-reviews-section { max-width: none; margin: 0; padding-top: 0; border-top: none; }
+  @media(max-width:1020px){
+    .below-split { grid-template-columns: 1fr; }
+    .below-split .lite-compare { max-width: 620px; margin: 14px auto 0; }
+    .below-split #lite-reviews-section { max-width: 620px; margin: 120px auto 0; padding-top: 48px; border-top: 1px solid var(--border); }
+  }
+  @media(max-width:860px){
+    .hero-split { flex-direction: column; justify-content: center; text-align: center; gap: 44px; min-height: auto; padding-top: 140px; }
+    .hero-copy { max-width: 520px; text-align: center; }
+    .hero-copy .lite-sub { margin: 0 auto; }
+    .hero-stats { justify-content: center; }
+    .hero-pricing-card { width: 100%; max-width: 400px; }
+  }
   .lite-eyebrow {
     font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
     letter-spacing: 3px; color: var(--boost); margin-bottom: 16px;
     animation: fadeDown 0.6s ease both;
   }
   .lite-page h1 {
-    font-family: 'Space Mono', monospace; font-size: clamp(34px, 6vw, 54px);
-    font-weight: 700; letter-spacing: -2px; margin-bottom: 14px;
+    font-family: 'Space Mono', monospace; font-size: clamp(38px, 5vw, 72px);
+    font-weight: 700; letter-spacing: -2px; margin-bottom: 18px;
     animation: fadeDown 0.6s ease 0.08s both;
   }
   .lite-grad {
@@ -272,6 +348,7 @@
   }
 
   .lite-card {
+    max-width: 620px; margin-left: auto; margin-right: auto;
     margin-top: 200px; position: relative; overflow: hidden; scroll-margin-top: 90px;
     background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
     border: 1px solid var(--border); border-radius: 20px;
@@ -442,37 +519,55 @@
   }
   .btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); transform: translateY(-2px); }
 
-  .plans-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-    margin-bottom: 24px; text-align: left;
-  }
   .plan-card {
     background: rgba(8,12,16,0.5); border: 1px solid var(--border); border-radius: 16px;
-    padding: 22px 20px; display: flex; flex-direction: column; gap: 10px;
+    padding: 26px 24px; display: flex; flex-direction: column; gap: 14px;
   }
-  .plan-card--sub { border-color: rgba(79,200,248,0.3); }
-  .plan-badge {
-    align-self: flex-start; font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1.5px; color: var(--boost);
-    background: rgba(255,115,250,0.12); padding: 4px 10px; border-radius: 999px;
+  .plan-card--sub {
+    border: 2px solid var(--frost-blue);
+    box-shadow: 0 0 36px rgba(79,200,248,0.28);
+    background: linear-gradient(180deg, rgba(79,200,248,0.08), rgba(8,12,16,0.5));
+    position: relative;
   }
-  .plan-badge--sub { color: var(--frost-blue); background: rgba(79,200,248,0.12); }
-  .plan-title { font-family: 'Space Mono', monospace; font-size: 21px; font-weight: 700; }
-  .plan-period { font-size: 12.5px; color: var(--muted); font-weight: 500; }
-  .plan-desc { font-size: 13px; color: var(--muted); line-height: 1.6; flex: 1; margin: 0; }
+  .plan-title { font-size: 15px; font-weight: 500; color: var(--muted); }
+  .plan-amount { font-family: 'Space Mono', monospace; font-size: 16.5px; font-weight: 700; color: var(--text); }
+  .plan-period { font-size: 15px; color: var(--muted); font-weight: 500; }
+  .plan-per-day { font-size: 12px; color: var(--muted); opacity: 0.55; font-weight: 500; margin-top: 3px; min-height: 17px; }
   .plan-card .btn-secondary, .plan-card .btn-lite-download { width: 100%; margin-top: 4px; }
+
+  .billing-toggle {
+    position: relative;
+    display: inline-flex; background: rgba(8,12,16,0.6); border: 1px solid var(--border);
+    border-radius: 999px; padding: 4px; gap: 4px; align-self: center;
+  }
+  .billing-toggle-indicator {
+    position: absolute; top: 4px; bottom: 4px; left: 4px; width: 0;
+    background: var(--frost-blue); border-radius: 999px; z-index: 0;
+    transition: left 0.4s ease-in-out, width 0.4s ease-in-out;
+  }
+  .billing-toggle-btn {
+    position: relative; z-index: 1;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: none; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-size: 12.5px; font-weight: 700; color: var(--muted);
+    padding: 7px 14px; border-radius: 999px; transition: color 0.4s ease-in-out;
+  }
+  .billing-toggle-btn.active { color: #06121c; }
+  .billing-save-badge {
+    font-size: 10px; font-weight: 800; color: var(--green); background: rgba(61,255,114,0.15);
+    padding: 2px 6px; border-radius: 999px;
+  }
+
+  .billing-toggle-btn.active .billing-save-badge { background: rgba(6,18,28,0.6); }
+
+  .plan-amount { display: inline-block; width: 5ch; text-align: left; }
+  .plan-period { display: inline-block; width: 8ch; text-align: left; transition: opacity 0.18s ease-in-out; }
+  .plan-per-day { transition: opacity 0.18s ease-in-out; }
   .btn-lite-download.plan-blue {
     background: linear-gradient(100deg, var(--frost-blue), var(--frost-deep));
     box-shadow: 0 0 28px rgba(79,200,248,0.35);
   }
   .btn-lite-download.plan-blue:hover { box-shadow: 0 10px 40px rgba(79,200,248,0.55); }
-  .plans-divider {
-    display: flex; align-items: center; gap: 14px; margin: 6px 0 24px;
-    font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
-    letter-spacing: 1px; color: var(--muted);
-  }
-  .plans-divider::before, .plans-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  @media(max-width:600px){ .plans-grid { grid-template-columns: 1fr; } }
 
   .signout {
     display: inline-block; margin-top: 24px; background: none; border: none; cursor: pointer;
@@ -564,12 +659,12 @@
 <div class="nav-desktop">
   <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
   <div class="nav-center">
+    <a class="nav-anchor" href="#plans" data-glow-early="600">Plans</a>
     <a class="nav-anchor" href="#compare" data-glow-early="130" id="compareNavLink">Compare</a>
     <a class="nav-anchor" href="#lite-reviews-section" id="reviewsNavLink">Reviews</a>
-    <a class="nav-anchor" href="#plans">Plans</a>
   </div>
   <div class="nav-right">
-    <button type="button" class="nav-discord-btn js-lite-login" id="navAuthBtn" data-mode="login"><img id="navAuthBtnIcon" src="icons/discord.webp" alt=""/><span id="navAuthBtnText">Login with Discord</span></button>
+    <button type="button" class="nav-discord-btn js-lite-login" id="navAuthBtn" data-mode="login"><img id="navAuthBtnIcon" src="icons/discord.webp" alt=""/><span id="navAuthBtnText">Sign in</span></button>
     <a class="nav-cancel-btn" href="https://frostclient.eu/lite/cancel">Cancel Subscription</a>
     <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
   </div>
@@ -582,20 +677,50 @@
 </a>
 </nav>
 <div class="nav-mobile-menu" id="navMobileMenu">
+  <a href="#plans">Plans</a>
   <a href="#compare">Compare</a>
   <a href="#lite-reviews-section">Reviews</a>
-  <a href="#plans">Plans</a>
-  <button type="button" id="navMobileAuthBtn">Login with Discord</button>
+  <button type="button" id="navMobileAuthBtn">Sign in</button>
   <a href="https://frostclient.eu/lite/cancel">Cancel Subscription</a>
   <a href="https://frostclient.eu">← Back to Home</a>
 </div>
 
 <div class="lite-page">
-  <div class="lite-eyebrow">Exclusive Access</div>
-  <h1>FrostClient <span class="lite-grad">Lite</span></h1>
-  <p class="lite-sub">A lightweight build of Frost. Unlock it by boosting our Discord server with 2 boosts, or by subscribing for €2.90/month.</p>
+  <div class="hero-split">
+    <div class="hero-copy">
+      <div class="lite-eyebrow">Exclusive Access</div>
+      <h1>FrostClient <span class="lite-grad">Lite</span></h1>
+      <p class="lite-sub">The fastest build of Frost — <strong>maximum optimization</strong> squeezing out <strong>200–400 extra FPS</strong> over the regular client depending on your machine, with extended support and exclusive perks on top.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="hero-stat-num">+200–400</span><span class="hero-stat-label">FPS vs regular Frost</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">Max</span><span class="hero-stat-label">Optimization</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">Extended</span><span class="hero-stat-label">Support</span></div>
+      </div>
+    </div>
+    <div class="plan-card plan-card--sub hero-pricing-card" id="plans">
+      <div class="billing-toggle">
+        <span class="billing-toggle-indicator" aria-hidden="true"></span>
+        <button type="button" class="billing-toggle-btn active" data-billing="monthly">Monthly</button>
+        <button type="button" class="billing-toggle-btn" data-billing="annual">Annual <span class="billing-save-badge">Save 28%</span></button>
+      </div>
+      <div class="plan-trial-line"><span class="plan-trial-days js-trial-days">1</span><span class="plan-trial-label js-trial-label">day free</span></div>
+      <div class="plan-price-block">
+        <div class="plan-title">then €<span class="plan-amount">2.90</span><span class="plan-period">&nbsp;/ month</span></div>
+        <div class="plan-per-day"></div>
+      </div>
+      <a class="btn-lite-download plan-blue js-whop-subscribe" id="whopSubscribeBtnHero" href="#" target="_blank" rel="noopener"><span class="js-sub-cta-text">Start 1 day free</span></a>
+      <div class="plan-perks">
+        <span class="plan-perk">Cancel anytime</span>
+        <span class="plan-perk">No hidden fees</span>
+        <span class="plan-perk">Secured payment</span>
+      </div>
+      <p class="plan-note">The base FrostClient stays <strong>free</strong> — Lite is a voluntary subscription for players who want more.</p>
+    </div>
+  </div>
 
-  <div class="section-label" id="compare" style="margin-top:32px;">Compare</div>
+  <div class="below-split">
+  <div class="compare-col">
+  <div class="section-label" id="compare">Compare</div>
   <div class="lite-compare">
     <div class="lite-compare-row lite-compare-head">
       <div class="lite-compare-cell"></div>
@@ -609,8 +734,8 @@
     </div>
     <div class="lite-compare-row">
       <div class="lite-compare-cell">FPS</div>
-      <div class="lite-compare-cell lite-col-frost">~700</div>
-      <div class="lite-compare-cell lite-col-lite">~1000</div>
+      <div class="lite-compare-cell lite-col-frost">+300</div>
+      <div class="lite-compare-cell lite-col-lite">+700</div>
     </div>
     <div class="lite-compare-row">
       <div class="lite-compare-cell">Support</div>
@@ -643,8 +768,9 @@
       <div class="lite-compare-cell lite-col-lite">✓</div>
     </div>
     <div class="lite-compare-row lite-compare-row--cta">
-      <a class="lite-compare-see-plans" href="#plans">See Plans ↓</a>
+      <a class="lite-compare-see-plans" href="#plans">Choose your plan ↑</a>
     </div>
+  </div>
   </div>
 
   <div id="lite-reviews-section">
@@ -653,58 +779,32 @@
     <div class="lite-reviews-grid" id="liteReviewsGrid"></div>
     <a href="https://frostclient.eu/reviews" class="lite-reviews-view-more">View More →</a>
   </div>
+  </div>
 
-  <div class="lite-card" id="plans">
+  <div class="lite-card">
     <div class="state active" id="stateLoading">
       <div class="spinner"></div>
       <p class="state-text" style="margin-bottom:0;">Checking your account status...</p>
     </div>
     <div class="state" id="stateLogin">
-      <div class="section-label">Plans</div>
-      <div class="plans-grid">
-        <div class="plan-card">
-          <span class="plan-badge">Free</span>
-          <div class="plan-title">2 Boosts</div>
-          <p class="plan-desc">Boost the MCPACKS Discord server with 2 boosts. Lite unlocks automatically and stays unlocked as long as you keep boosting.</p>
-          <button type="button" class="btn-secondary js-lite-login"><img class="btn-icon" src="icons/discord.webp" alt=""/>Login</button>
-        </div>
-        <div class="plan-card plan-card--sub">
-          <span class="plan-badge plan-badge--sub">Subscription</span>
-          <div class="plan-title">€2.90<span class="plan-period">&nbsp;/ month</span></div>
-          <p class="plan-desc">Subscribe for €2.90/month via Whop. Your Discord role unlocks Lite automatically and stays active while your subscription runs.</p>
-          <a class="btn-lite-download plan-blue" id="whopSubscribeBtn" href="#" target="_blank" rel="noopener"><img class="btn-icon" src="icons/whop.webp" alt=""/>Subscribe</a>
-        </div>
-      </div>
-
+      <div class="state-title">Already subscribed?</div>
+      <p class="state-text">Sign in with Discord to check your access and download FrostClient Lite.</p>
+      <button type="button" class="btn-secondary js-lite-login"><img class="btn-icon" src="icons/discord.webp" alt=""/>Sign in with Discord</button>
       <p class="state-note" id="loginNote" style="text-align:center;">Logging in only reads your username and your membership of our server. Nothing else.</p>
     </div>
     <div class="state" id="stateNotMember">
       <div class="user-chip" id="chipNotMember"></div>
       <div class="state-title">You're not on our server</div>
-      <p class="state-text">FrostClient Lite is a perk for boosters of the MCPACKS Discord server. Join the server, boost it, and come back here.</p>
+      <p class="state-text">FrostClient Lite is available by subscription, or as a free-month perk for boosters of the MCPACKS Discord server. Join the server to get started.</p>
       <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank">Join the Discord server</a>
       <br/><button type="button" class="signout js-signout">Sign out</button>
     </div>
     <div class="state" id="stateNotBooster">
       <div class="user-chip" id="chipNotBooster"></div>
       <div class="state-title">Unlock FrostClient Lite</div>
-      <p class="state-text">You're on our server, but Lite needs <strong style="color:var(--boost);">2 boosts</strong> or an active <strong style="color:var(--frost-blue);">€2.90/month subscription</strong>.</p>
-      <div class="section-label">Plans</div>
-      <div class="plans-grid">
-        <div class="plan-card">
-          <span class="plan-badge">Free</span>
-          <div class="plan-title">2 Boosts</div>
-          <p class="plan-desc">Boost the MCPACKS Discord server with 2 boosts. Lite unlocks automatically and stays unlocked as long as you keep boosting.</p>
-          <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank"><img class="btn-icon" src="icons/discord.webp" alt=""/>Boost the server</a>
-        </div>
-        <div class="plan-card plan-card--sub">
-          <span class="plan-badge plan-badge--sub">Subscription</span>
-          <div class="plan-title">€2.90<span class="plan-period">&nbsp;/ month</span></div>
-          <p class="plan-desc">Subscribe for €2.90/month via Whop. Your Discord role unlocks Lite automatically and stays active while your subscription runs.</p>
-          <a class="btn-lite-download plan-blue" id="whopSubscribeBtnNotBooster" href="#" target="_blank" rel="noopener"><img class="btn-icon" src="icons/whop.webp" alt=""/>Subscribe</a>
-        </div>
-      </div>
-      <button type="button" class="signout js-signout">Sign out</button>
+      <p class="state-text">Get <strong style="color:var(--frost-blue);">instant access</strong> by picking a plan in the card above, or boost the MCPACKS Discord server <strong style="color:var(--boost);">3 times</strong> and reach out on Discord for a free month.</p>
+      <a class="btn-lite-download plan-blue" href="#plans">Choose your plan ↑</a>
+      <br/><button type="button" class="signout js-signout">Sign out</button>
     </div>
     <div class="state" id="stateEligible">
       <span class="sparkle" style="top:18px; left:14%;">✦</span>
@@ -807,8 +907,99 @@
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
   const WHOP_CHECKOUT_URL = 'https://whop.com/checkout/plan_oKGeLuyTvJb5u';
-  document.querySelectorAll('#whopSubscribeBtn, #whopSubscribeBtnNotBooster').forEach(function (btn) {
+  const WHOP_CHECKOUT_URL_ANNUAL = 'https://whop.com/checkout/plan_KxAYo6SKBjbzL';
+  document.querySelectorAll('.js-whop-subscribe').forEach(function (btn) {
+    btn.dataset.monthlyHref = WHOP_CHECKOUT_URL;
+    btn.dataset.annualHref = WHOP_CHECKOUT_URL_ANNUAL;
     btn.href = WHOP_CHECKOUT_URL;
+  });
+  const BILLING_PLANS = {
+    monthly: { amount: 2.90, period: ' / month', perDay: '', trialDays: 1, periodWidth: '8ch' },
+    annual: { amount: 24.90, period: ' / year', perDay: '€1.99 / month, billed yearly', trialDays: 3, periodWidth: '7ch' },
+  };
+  function easeInOut(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function animateNumber(from, to, render) {
+    const dur = 650;
+    const start = performance.now();
+    function frame(now) {
+      const t = Math.min(1, (now - start) / dur);
+      render(from + (to - from) * easeInOut(t), t >= 1);
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function fadeSwap(el, text) {
+    if (!el) return;
+    el.style.opacity = '0';
+    setTimeout(function () {
+      el.textContent = text;
+      el.style.opacity = '';
+    }, 180);
+  }
+  function moveToggleIndicator(toggle) {
+    const indicator = toggle.querySelector('.billing-toggle-indicator');
+    const active = toggle.querySelector('.billing-toggle-btn.active');
+    if (!indicator || !active) return;
+    indicator.style.left = active.offsetLeft + 'px';
+    indicator.style.width = active.offsetWidth + 'px';
+  }
+  document.querySelectorAll('.billing-toggle').forEach(function (toggle) {
+    const card = toggle.closest('.plan-card');
+    if (!card) return;
+    const link = card.querySelector('.js-whop-subscribe');
+    const amountEl = card.querySelector('.plan-amount');
+    const periodEl = card.querySelector('.plan-period');
+    const perDayEl = card.querySelector('.plan-per-day');
+    const ctaEl = link ? link.querySelector('.js-sub-cta-text') : null;
+    const trialDaysEl = card.querySelector('.js-trial-days');
+    const trialLabelEl = card.querySelector('.js-trial-label');
+    moveToggleIndicator(toggle);
+    window.addEventListener('resize', function () { moveToggleIndicator(toggle); });
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { moveToggleIndicator(toggle); });
+    }
+    toggle.querySelectorAll('.billing-toggle-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (btn.classList.contains('active')) return;
+        const billing = btn.dataset.billing;
+        const plan = BILLING_PLANS[billing];
+        if (!plan) return;
+        toggle.querySelectorAll('.billing-toggle-btn').forEach(function (b) {
+          b.classList.toggle('active', b === btn);
+        });
+        moveToggleIndicator(toggle);
+        if (amountEl) {
+          const fromAmount = parseFloat(amountEl.textContent) || 0;
+          animateNumber(fromAmount, plan.amount, function (val, done) {
+            amountEl.textContent = (done ? plan.amount : val).toFixed(2);
+          });
+        }
+        if (ctaEl) {
+          const fromDays = parseInt(ctaEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+          animateNumber(fromDays, plan.trialDays, function (val, done) {
+            const days = done ? plan.trialDays : Math.round(val);
+            ctaEl.textContent = 'Start ' + days + (days === 1 ? ' day' : ' days') + ' free';
+          });
+        }
+        if (trialDaysEl) {
+          const fromTrial = parseInt(trialDaysEl.textContent, 10) || 0;
+          animateNumber(fromTrial, plan.trialDays, function (val, done) {
+            const days = done ? plan.trialDays : Math.round(val);
+            trialDaysEl.textContent = String(days);
+            if (trialLabelEl) trialLabelEl.textContent = days === 1 ? 'day free' : 'days free';
+          });
+        }
+        fadeSwap(periodEl, plan.period);
+        if (periodEl) setTimeout(function () { periodEl.style.width = plan.periodWidth; }, 180);
+        fadeSwap(perDayEl, plan.perDay);
+        if (link) link.href = billing === 'annual' ? link.dataset.annualHref : link.dataset.monthlyHref;
+      });
+    });
   });
   const TOKEN_KEY = 'frostLiteToken';
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
@@ -895,31 +1086,21 @@
   const navMobileAuthBtn = document.getElementById('navMobileAuthBtn');
   if (navMobileAuthBtn) navMobileAuthBtn.addEventListener('click', () => navAuthBtn.click());
   const compareNavLink = document.getElementById('compareNavLink');
-  const compareLabel = document.getElementById('compare');
-  const compareTable = document.querySelector('.lite-compare');
   const reviewsNavLink = document.getElementById('reviewsNavLink');
-  const reviewsSection = document.getElementById('lite-reviews-section');
-  const litePageEl = document.querySelector('.lite-page');
+  const belowSplit = document.querySelector('.below-split');
   function setCompareVisible(visible, animate) {
-    const display = visible ? '' : 'none';
     if (compareNavLink) compareNavLink.style.display = visible ? '' : 'none';
-    if (compareLabel) compareLabel.style.display = display;
-    if (compareTable) compareTable.style.display = display;
     if (reviewsNavLink) reviewsNavLink.style.display = visible ? '' : 'none';
-    if (reviewsSection) reviewsSection.style.display = display;
-    if (visible && animate) {
-      [compareLabel, compareTable, reviewsSection].forEach(el => {
-        if (!el) return;
-        el.classList.remove('compare-animate-in');
-        void el.offsetWidth;
-        el.classList.add('compare-animate-in');
-      });
+    if (belowSplit) belowSplit.style.display = visible ? '' : 'none';
+    if (visible && animate && belowSplit) {
+      belowSplit.classList.remove('compare-animate-in');
+      void belowSplit.offsetWidth;
+      belowSplit.classList.add('compare-animate-in');
     }
   }
   function setAuthPhase(phase) {
     navAuthBtn.classList.remove('is-logout', 'is-checking');
     navAuthBtnIcon.style.display = phase === 'loggedOut' ? '' : 'none';
-    if (litePageEl) litePageEl.classList.toggle('reorder-plans-first', phase === 'noAccess');
     if (phase === 'checking') {
       navAuthBtn.dataset.mode = 'checking';
       navAuthBtn.classList.add('is-checking');
@@ -938,7 +1119,7 @@
       hidePromoToast(true);
     } else {
       navAuthBtn.dataset.mode = 'login';
-      navAuthBtnText.textContent = 'Login with Discord';
+      navAuthBtnText.textContent = 'Sign in';
       setCompareVisible(true, false);
     }
     if (navMobileAuthBtn) navMobileAuthBtn.textContent = navAuthBtnText.textContent;
@@ -1210,6 +1391,18 @@
   window.addEventListener('scroll', updateActive, { passive: true });
   window.addEventListener('resize', updateActive);
   updateActive();
+})();
+</script>
+
+<script>
+(function () {
+  const navEl = document.querySelector('nav');
+  if (!navEl) return;
+  function updateNav() {
+    navEl.classList.toggle('nav-scrolled', window.scrollY > 40);
+  }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
 })();
 </script>
 
