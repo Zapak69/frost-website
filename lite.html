@@ -121,13 +121,14 @@
     }
   }
   .nav-cancel-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted);
-    border: 1px solid var(--border); border-radius: 999px;
-    padding: 7px 16px; text-decoration: none;
-    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    display: inline-flex; align-items: center;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 600;
+    color: var(--muted); background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.14); border-radius: 8px;
+    padding: 9px 18px; text-decoration: none;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
   }
-  .nav-cancel-btn:hover { border-color: var(--boost); color: var(--boost); background: rgba(255,115,250,0.08); }
+  .nav-cancel-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.08); }
   @media(max-width:600px){ .nav-cancel-btn { display: none; } }
   .nav-discord-btn {
     display: inline-flex; align-items: center;
@@ -403,33 +404,10 @@
     border-radius: 999px; padding: 8px 22px 8px 8px; margin-bottom: 26px;
   }
   .user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--border); display: block; }
-  .user-chip.booster .user-avatar {
-    border-color: var(--boost);
-    animation: avatarGlow 2.4s ease-in-out infinite;
-  }
-  @keyframes avatarGlow {
-    0%, 100% { box-shadow: 0 0 10px rgba(255,115,250,0.35); }
-    50% { box-shadow: 0 0 22px rgba(255,115,250,0.7); }
-  }
   .user-meta { text-align: left; }
   .user-name { font-size: 15px; font-weight: 600; line-height: 1.2; }
   .user-tag { font-size: 12px; color: var(--muted); }
 
-  .booster-badge {
-    position: relative; display: inline-flex; align-items: center; gap: 7px;
-    font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1.5px; color: #fff;
-    background: linear-gradient(100deg, var(--boost), var(--boost-deep));
-    padding: 6px 14px; border-radius: 999px; margin-bottom: 20px;
-    box-shadow: 0 0 24px rgba(255,115,250,0.35);
-    overflow: hidden;
-  }
-  .booster-badge svg { width: 13px; height: 13px; }
-  .booster-badge::after {
-    content: ''; position: absolute; top: 0; bottom: 0; width: 40%;
-    background: linear-gradient(105deg, transparent, rgba(255,255,255,0.55), transparent);
-    animation: shimmer 2.6s ease-in-out infinite;
-  }
   @keyframes shimmer {
     0% { left: -60%; } 55% { left: 120%; } 100% { left: 120%; }
   }
@@ -473,19 +451,6 @@
     background: linear-gradient(105deg, transparent, rgba(255,255,255,0.35), transparent);
     animation: shimmer 3s ease-in-out infinite;
   }
-  @keyframes liteUnlockPop {
-    0%   { transform: scale(0.85); box-shadow: 0 0 0 rgba(255,115,250,0); }
-    55%  { transform: scale(1.06); box-shadow: 0 0 44px rgba(255,115,250,0.75); }
-    100% { transform: scale(1); box-shadow: 0 0 28px rgba(255,115,250,0.35); }
-  }
-  .btn-lite-download.just-unlocked { animation: liteUnlockPop 0.55s cubic-bezier(0.34,1.56,0.64,1) both; }
-  @keyframes liteDownloadPulse {
-    0%   { transform: scale(1); }
-    45%  { transform: scale(1.05); box-shadow: 0 0 55px rgba(255,115,250,0.9); }
-    100% { transform: scale(1); }
-  }
-  .btn-lite-download.clicked { animation: liteDownloadPulse 0.4s ease; }
-
   .update-icon {
     width: 54px; height: 54px; margin: 0 auto 18px;
     color: var(--frost-blue);
@@ -497,16 +462,6 @@
     0%   { transform: rotate(0deg); }
     65%  { transform: rotate(360deg); }
     100% { transform: rotate(360deg); }
-  }
-
-  .sparkle {
-    position: absolute; font-size: 14px; color: var(--boost); pointer-events: none;
-    animation: twinkle 2.8s ease-in-out infinite; opacity: 0;
-    text-shadow: 0 0 10px rgba(255,115,250,0.8);
-  }
-  @keyframes twinkle {
-    0%, 100% { opacity: 0; transform: translateY(0) scale(0.7); }
-    50% { opacity: 1; transform: translateY(-8px) scale(1.1); }
   }
 
   .btn-secondary {
@@ -806,22 +761,6 @@
       <a class="btn-lite-download plan-blue" href="#plans">Choose your plan ↑</a>
       <br/><button type="button" class="signout js-signout">Sign out</button>
     </div>
-    <div class="state" id="stateEligible">
-      <span class="sparkle" style="top:18px; left:14%;">✦</span>
-      <span class="sparkle" style="top:44px; right:12%; animation-delay:0.9s;">✦</span>
-      <span class="sparkle" style="bottom:120px; left:8%; animation-delay:1.7s;">✦</span>
-      <div class="user-chip booster" id="chipEligible"></div>
-      <br/>
-      <span class="booster-badge">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.6 19 8l-7 14.4L5 8l7-6.4Zm0 3.1L8.1 8.3 12 16.5l3.9-8.2L12 4.7Z"/></svg>
-        <span id="badgeLabelText">Server Booster</span>
-      </span>
-      <div class="state-title">Access unlocked</div>
-      <p class="state-text" id="eligibleText">Thanks for supporting Frost! Your exclusive FrostClient Lite build is ready.</p>
-      <a class="btn-lite-download" id="liteDownloadBtn" href="#" rel="noopener">Download FrostClient Lite</a>
-      <br/><a class="signout" href="https://frostclient.eu/lite/cancel">Subscribed via Whop? Manage / cancel it</a>
-      <br/><button type="button" class="signout js-signout">Sign out</button>
-    </div>
     <div class="state" id="stateError">
       <div class="state-title">Something went wrong</div>
       <p class="state-text" id="errorText">We couldn't verify your Discord account. Please try again.</p>
@@ -1040,13 +979,9 @@
     });
     const note = document.getElementById('gameReturnNote');
     if (note) note.style.display = 'block';
-    if (status === 'eligible') {
-      const dlBtn = document.getElementById('liteDownloadBtn');
-      if (dlBtn) dlBtn.style.display = 'none';
-    }
   }
 
-  const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateEligible', 'stateError', 'stateUpdating'];
+  const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateError', 'stateUpdating'];
 
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
@@ -1078,6 +1013,13 @@
   }
   function clearToken() {
     try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    setAccessFlag(false);
+  }
+  function setAccessFlag(has) {
+    try {
+      if (has) localStorage.setItem('frostLiteAccess', '1');
+      else localStorage.removeItem('frostLiteAccess');
+    } catch (e) {}
   }
 
   const navAuthBtn = document.getElementById('navAuthBtn');
@@ -1111,12 +1053,6 @@
       navAuthBtn.classList.add('is-logout');
       navAuthBtnText.textContent = 'Logout';
       setCompareVisible(true, true);
-    } else if (phase === 'hasAccess') {
-      navAuthBtn.dataset.mode = 'logout';
-      navAuthBtn.classList.add('is-logout');
-      navAuthBtnText.textContent = 'Logout';
-      setCompareVisible(false, false);
-      hidePromoToast(true);
     } else {
       navAuthBtn.dataset.mode = 'login';
       navAuthBtnText.textContent = 'Sign in';
@@ -1137,6 +1073,7 @@
     if (!data || !data.ok) { setAuthPhase('loggedOut'); showError(); afterResult('error', data); return; }
 
     if (data.status === 'not_member') {
+      setAccessFlag(false);
       setAuthPhase('noAccess');
       fillChip('chipNotMember', data.user);
       show('stateNotMember');
@@ -1144,6 +1081,7 @@
       return;
     }
     if (data.status === 'not_booster') {
+      setAccessFlag(false);
       setAuthPhase('noAccess');
       fillChip('chipNotBooster', data.user);
       show('stateNotBooster');
@@ -1151,19 +1089,9 @@
       return;
     }
     if (data.status === 'eligible') {
-      setAuthPhase('hasAccess');
-      fillChip('chipEligible', data.user, data.boostDays != null
-        ? 'Boosting for ' + data.boostDays + (data.boostDays === 1 ? ' day' : ' days')
-        : null);
-      document.getElementById('badgeLabelText').textContent =
-        data.accessVia === 'subscriber' ? 'Lite Subscriber' : 'Server Booster';
-      const btn = document.getElementById('liteDownloadBtn');
-      try { btn.href = atob(data.dl); } catch (e) { btn.href = '#'; }
-      show('stateEligible');
-      btn.classList.remove('just-unlocked');
-      void btn.offsetWidth;
-      btn.classList.add('just-unlocked');
+      setAccessFlag(true);
       afterResult('eligible', data);
+      window.location.replace('https://frostclient.eu/lite/download');
       return;
     }
     setAuthPhase('loggedOut');
@@ -1259,11 +1187,6 @@
   const gameReturnRetryBtn = document.getElementById('gameReturnRetryBtn');
   if (gameReturnRetryBtn) gameReturnRetryBtn.addEventListener('click', retryNotifyGame);
 
-  const dlBtn = document.getElementById('liteDownloadBtn');
-  dlBtn.addEventListener('click', () => {
-    dlBtn.classList.add('clicked');
-    setTimeout(() => dlBtn.classList.remove('clicked'), 450);
-  });
   (function init() {
     const params = new URLSearchParams(window.location.search);
 
