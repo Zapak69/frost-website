@@ -212,42 +212,6 @@
   }
   .btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); transform: translateY(-2px); }
 
-  .plans-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-    margin-bottom: 24px; text-align: left;
-  }
-  .plan-card {
-    background: rgba(8,12,16,0.5); border: 1px solid var(--border); border-radius: 16px;
-    padding: 22px 20px; display: flex; flex-direction: column; gap: 10px;
-  }
-  .plan-card--sub {
-    border: 2px solid var(--frost-blue);
-    box-shadow: 0 0 36px rgba(79,200,248,0.28);
-    background: linear-gradient(180deg, rgba(79,200,248,0.08), rgba(8,12,16,0.5));
-    position: relative;
-  }
-  @media(min-width:601px){ .plan-card--sub { transform: scale(1.035); } }
-  .plan-card--boost { opacity: 0.82; }
-  .plan-badge {
-    align-self: flex-start; font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1.5px; color: var(--boost);
-    background: rgba(255,115,250,0.12); padding: 4px 10px; border-radius: 999px;
-  }
-  .plan-badge--sub { color: var(--frost-blue); background: rgba(79,200,248,0.12); }
-  .plan-badges-row { display: flex; gap: 6px; align-self: flex-start; }
-  .plan-badge--value {
-    color: #06121c; background: var(--green); font-weight: 800;
-    box-shadow: 0 0 14px rgba(61,255,114,0.5);
-  }
-  .plan-title { font-family: 'Space Mono', monospace; font-size: 21px; font-weight: 700; }
-  .plan-period { font-size: 12.5px; color: var(--muted); font-weight: 500; }
-  .plan-per-day { font-size: 12px; color: var(--frost-blue); font-weight: 600; margin-top: -6px; }
-  .plan-desc { font-size: 13px; color: var(--muted); line-height: 1.6; flex: 1; margin: 0; }
-  .plan-desc strong { color: var(--text); }
-  .plan-microcopy { font-size: 11.5px; color: var(--muted); text-align: center; margin-top: 2px; }
-  .plan-card .btn-secondary, .plan-card .btn-lite-download { width: 100%; margin-top: 4px; }
-  @media(max-width:600px){ .plans-grid { grid-template-columns: 1fr; } }
-
   .signout {
     display: inline-block; margin-top: 24px; background: none; border: none; cursor: pointer;
     color: var(--muted); font-family: 'Space Grotesk', sans-serif; font-size: 12.5px;
@@ -337,27 +301,9 @@
     <div class="state" id="stateNotBooster">
       <div class="user-chip" id="chipNotBooster"></div>
       <div class="state-title">Unlock FrostClient Lite</div>
-      <p class="state-text">Get <strong style="color:var(--frost-blue);">instant access</strong> for €2.90/month, or boost <strong style="color:var(--boost);">3 times</strong> for a free month.</p>
-      <div class="plans-grid">
-        <div class="plan-card plan-card--sub">
-          <div class="plan-badges-row">
-            <span class="plan-badge plan-badge--sub">Subscription</span>
-            <span class="plan-badge plan-badge--value">★ Best Value</span>
-          </div>
-          <div class="plan-title">€2.90<span class="plan-period">&nbsp;/ month</span></div>
-          <div class="plan-per-day">≈ €0.10 / day</div>
-          <p class="plan-desc">Subscribe via Whop for <strong>instant Lite access</strong> — no boosting, no waiting. Stays active for as long as your subscription runs.</p>
-          <a class="btn-lite-download plan-blue" id="whopSubscribeBtnNotBooster" href="#" target="_blank" rel="noopener"><img class="btn-icon" src="../icons/whop.webp" alt=""/>Get Instant Access</a>
-          <p class="plan-microcopy">Cancel anytime · No commitment</p>
-        </div>
-        <div class="plan-card plan-card--boost">
-          <span class="plan-badge">Community Perk</span>
-          <div class="plan-title">3 Boosts</div>
-          <p class="plan-desc">Boost the MCPACKS Discord server 3 times, then reach out on Discord for a free month of Lite. A manual, one-time perk — not automatic or permanent.</p>
-          <a class="btn-secondary" href="https://discord.gg/Kn8ydsABU8" target="_blank"><img class="btn-icon" src="../icons/discord.webp" alt=""/>Boost the server</a>
-        </div>
-      </div>
-      <button type="button" class="signout js-signout">Sign out</button>
+      <p class="state-text">Get <strong style="color:var(--frost-blue);">instant access</strong> with a subscription, or boost the MCPACKS Discord server <strong style="color:var(--boost);">3 times</strong> and reach out on Discord for a free month.</p>
+      <a class="btn-lite-download plan-blue" href="https://frostclient.eu/lite">See plans</a>
+      <br/><button type="button" class="signout js-signout">Sign out</button>
     </div>
     <div class="state" id="stateEligible">
       <span class="sparkle" style="top:18px; left:14%;">✦</span>
@@ -460,9 +406,6 @@
 <script>
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
-  const WHOP_CHECKOUT_URL = 'https://whop.com/checkout/plan_oKGeLuyTvJb5u';
-  const whopBtn = document.getElementById('whopSubscribeBtnNotBooster');
-  if (whopBtn) whopBtn.href = WHOP_CHECKOUT_URL;
 
   const TOKEN_KEY = 'frostLiteToken';
   const OAUTH_STATE_KEY = 'frostLiteOauthState';

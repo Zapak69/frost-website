@@ -647,7 +647,7 @@
       <h1>FrostClient <span class="lite-grad">Lite</span></h1>
       <p class="lite-sub">The fastest build of Frost — <strong>maximum optimization</strong> squeezing out <strong>200–400 extra FPS</strong> over the regular client depending on your machine, with extended support and exclusive perks on top.</p>
       <div class="hero-stats">
-        <div class="hero-stat"><span class="hero-stat-num">+200–400</span><span class="hero-stat-label">FPS vs regular Frost</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">+200–400</span><span class="hero-stat-label">FPS</span></div>
         <div class="hero-stat"><span class="hero-stat-num">Max</span><span class="hero-stat-label">Optimization</span></div>
         <div class="hero-stat"><span class="hero-stat-num">Extended</span><span class="hero-stat-label">Support</span></div>
       </div>
@@ -1021,6 +1021,9 @@
       else localStorage.removeItem('frostLiteAccess');
     } catch (e) {}
   }
+  function hasLiteAccess() {
+    try { return localStorage.getItem('frostLiteAccess') === '1'; } catch (e) { return false; }
+  }
 
   const navAuthBtn = document.getElementById('navAuthBtn');
   const navAuthBtnText = document.getElementById('navAuthBtnText');
@@ -1253,7 +1256,18 @@
     }
 
     const token = loadToken();
-    if (token) { recheck(token); return; }
+    if (token) {
+      // Skip the network round-trip entirely if the last check already confirmed access -
+      // /lite/download re-verifies for real on its own, so this is a pure speed win with no
+      // correctness cost: if access was revoked since, that page (not this redirect) is what
+      // catches it and shows the right state.
+      if (hasLiteAccess() && !gameSession()) {
+        window.location.replace('https://frostclient.eu/lite/download');
+        return;
+      }
+      recheck(token);
+      return;
+    }
 
     show('stateLogin');
   })();
