@@ -19,7 +19,10 @@
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
-  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  body {
+    background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden;
+    display: flex; flex-direction: column; min-height: 100vh;
+  }
   .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
   .topo-bg svg { width: 100%; height: 100%; opacity: 0.07; }
   #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
@@ -66,7 +69,8 @@
   .nav-signin-btn.loading { opacity: 0.6; pointer-events: none; }
   .nav-signin-btn.is-logged-in { color: var(--frost-blue); }
 
-  .lite-page { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding: 140px 24px 100px; text-align: center; }
+  .lite-page { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding: 140px 24px 100px; text-align: center; width: 100%; flex: 1; min-width: 0; }
+  .lite-page.centered { display: flex; flex-direction: column; justify-content: center; padding: 68px 24px 40px; }
   .lite-eyebrow {
     font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
     letter-spacing: 3px; color: var(--green); margin-bottom: 16px;
@@ -143,6 +147,19 @@
   }
   .btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); transform: translateY(-2px); }
 
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: linear-gradient(100deg, var(--frost-blue), var(--frost-deep));
+    color: #fff; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 15.5px; font-weight: 600;
+    padding: 14px 30px; border-radius: 12px; width: 100%;
+    box-shadow: 0 0 24px rgba(79,200,248,0.35);
+    transition: transform 0.2s, box-shadow 0.25s, filter 0.2s;
+    margin-bottom: 14px;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 34px rgba(79,200,248,0.55); filter: brightness(1.06); }
+  .btn-primary:active { transform: translateY(0) scale(0.98); }
+
   footer {
     border-top: 1px solid var(--border); padding: 40px 48px; position: relative; z-index: 1;
     font-size: 13px; color: var(--muted);
@@ -190,9 +207,11 @@
 </nav>
 
 <div class="lite-page">
-  <div class="lite-eyebrow">Purchase Complete</div>
-  <h1>Thank you for <span class="lite-grad">subscribing</span>!</h1>
-  <p class="lite-sub">Sign in with Discord below and we'll grant your FrostClient Lite role automatically — no extra steps on Whop needed.</p>
+  <div id="liteHero">
+    <div class="lite-eyebrow">Purchase Complete</div>
+    <h1>Thank you for <span class="lite-grad">subscribing</span>!</h1>
+    <p class="lite-sub">Sign in with Discord below and we'll grant your FrostClient Lite role automatically — no extra steps on Whop needed.</p>
+  </div>
 
   <div class="lite-card">
     <div class="state active" id="stateLogin">
@@ -214,7 +233,8 @@
     <div class="state" id="stateNoPayment">
       <div class="state-title">No purchase found</div>
       <p class="state-text">This page is only for right after subscribing on Whop. If you already have access, sign in from the download page instead.</p>
-      <a class="btn-secondary" href="https://frostclient.eu/lite">Go to the login page</a>
+      <a class="btn-primary" href="https://frostclient.eu/lite/download">Download Lite</a>
+      <a class="btn-secondary" href="https://frostclient.eu/lite">See plans</a>
     </div>
 
     <div class="state" id="stateError">
@@ -293,8 +313,12 @@
 
   const states = ['stateLogin', 'stateClaiming', 'stateNoPayment', 'stateError'];
   const TOKEN_KEY = 'frostLiteToken';
+  const liteHero = document.getElementById('liteHero');
+  const litePageEl = document.querySelector('.lite-page');
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
+    if (liteHero) liteHero.style.display = id === 'stateNoPayment' ? 'none' : '';
+    if (litePageEl) litePageEl.classList.toggle('centered', id === 'stateNoPayment');
   }
 
   function showError(msg, detail) {
@@ -323,7 +347,7 @@
           return;
         }
         try { localStorage.setItem(TOKEN_KEY, data.token); } catch (e) {}
-        window.location.href = 'https://frostclient.eu/lite';
+        window.location.href = 'https://frostclient.eu/lite/download';
       })
       .catch(() => showError('Network error while contacting the server. Please try again.'));
   }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>FAQ | Frost</title>
+<title>Transferring Old Settings | Frost</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
@@ -100,37 +100,6 @@
   .legal-page a { color: var(--frost-blue); text-decoration: none; }
   .legal-page a:hover { text-decoration: underline; }
 
-  .faq-list { margin-bottom: 8px; }
-  .faq-item {
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 12px;
-    background: var(--surface);
-    overflow: hidden;
-  }
-  .faq-item summary {
-    list-style: none;
-    cursor: pointer;
-    padding: 18px 22px;
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    font-weight: 700; font-size: 15px; color: var(--text);
-    transition: background 0.15s ease;
-  }
-  .faq-item summary::-webkit-details-marker { display: none; }
-  .faq-item summary:hover { background: var(--surface2); }
-  .faq-item summary::after {
-    content: '+';
-    flex-shrink: 0;
-    font-size: 20px; font-weight: 400;
-    color: var(--frost-blue);
-    transition: transform 0.25s ease;
-  }
-  .faq-item[open] summary::after { transform: rotate(45deg); }
-  .faq-item[open] summary { border-bottom: 1px solid var(--border); }
-  .faq-item-body { padding: 16px 22px 20px; }
-  .faq-item-body p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
-  .faq-item-body p:last-child { margin-bottom: 0; }
-
   .install-steps { counter-reset: step; margin-bottom: 8px; }
   .install-step { display: flex; gap: 20px; margin-bottom: 28px; }
   .install-step-num {
@@ -155,6 +124,37 @@
   .note-box strong { color: var(--frost-blue); }
   .note-box.amber { border-color: var(--amber); background: rgba(232,184,79,0.08); }
   .note-box.amber strong { color: var(--amber); }
+
+  .code-block {
+    position: relative;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 100px 18px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; line-height: 1.9;
+    color: var(--frost-blue);
+    white-space: pre;
+    overflow-x: auto;
+    margin-bottom: 24px;
+  }
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); font-family: 'Space Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    padding: 7px 12px; border-radius: 6px; cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .copy-btn:hover { border-color: var(--frost-blue); color: var(--text); }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); }
+
+  .file-chip {
+    display: inline-block; font-family: 'Space Mono', monospace; font-size: 13px;
+    background: rgba(79,200,248,0.1); color: var(--frost-blue);
+    padding: 2px 8px; border-radius: 6px;
+  }
 
   [id] { scroll-margin-top: 96px; }
   @keyframes faqHighlightFlash {
@@ -200,136 +200,72 @@
 </div>
 
 <div class="legal-page">
-  <div class="legal-eyebrow">Support</div>
-  <h1>Frequently Asked Questions</h1>
-  <p class="legal-meta">Last updated: July 5, 2026</p>
+  <div class="legal-eyebrow">Guide</div>
+  <h1>Transferring Old Settings</h1>
+  <p class="legal-meta">Last updated: July 27, 2026</p>
 
-  <h2>General</h2>
-  <div class="faq-list">
-    <details class="faq-item" id="what-is-frost">
-      <summary>What is Frost?</summary>
-      <div class="faq-item-body">
-        <p>Frost is a free Minecraft client built around speed, customization, and simplicity. It ships with 60+ built-in mods, a friend list, custom capes, a mod browser, and both Vulkan and OpenGL rendering — no manual file installs or mod manager required.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="is-free">
-      <summary>Is Frost really free?</summary>
-      <div class="faq-item-body">
-        <p>Yes. Frost is, and always will be, free to download and use. During Early Access, downloads are gated behind an access code, but the client itself doesn't cost anything.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="is-trusted">
-      <summary>Is Frost Client trusted?</summary>
-      <div class="faq-item-body">
-        <p>Yes. Our previous client, FoxClient, went through a public legit-check on our Discord — the <strong>legit-check</strong> channel has 600+ reactions from people vouching it was genuinely safe to use, and that same trust carries over to Frost.</p>
-        <p>Right now, during Early Access, we only collect the public IP address used to activate and track Early Access keys — nothing else. Once Frost fully releases, we won't collect any user data at all.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="banned">
-      <summary>Will using Frost get me banned on servers?</summary>
-      <div class="faq-item-body">
-        <p>Frost is a client-side utility mod, similar to other Minecraft clients. Some servers restrict certain mods or clients in their rules, so always check a server's policy before joining. Sharing or leaking Early Access builds is against our own terms and can get your access revoked — see the notice shown when you redeem a code.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="migrate-settings">
-      <summary>How do I move my settings to a new Frost version?</summary>
-      <div class="faq-item-body">
-        <p>If installing a new version created a separate instance instead of updating your old one in place, see our <a href="settings">guide on transferring old settings</a> — it walks through copying your config and options over so you don't lose your setup.</p>
-      </div>
-    </details>
+  <p class="section-intro">Sometimes when you reinstall or update a Frost modpack through the Modrinth App, it creates a brand new profile folder instead of updating your old one in place — you'll notice this because your old instance is still there, and a second one with a number after its name shows up next to it. Your keybinds, mod settings, and video options live inside the old instance's folder and won't move over automatically. Here's how to bring them across.</p>
+
+  <div class="note-box">
+    <strong>Which files matter?</strong> The <span class="file-chip">config</span> folder (all your mods' settings) and the <span class="file-chip">options.txt</span> file (keybinds, video settings, sound, language, etc.) — copying just these two is enough to get your setup back exactly how it was.
   </div>
 
-  <h2 id="vulkan-vs-opengl">Vulkan vs. OpenGL</h2>
-  <div class="faq-list">
-    <details class="faq-item" id="vulkan-difference">
-      <summary>What's the difference between Vulkan and OpenGL?</summary>
-      <div class="faq-item-body">
-        <p>Both are graphics renderers Frost can run on. Vulkan is the newer, lower-overhead option and gives the biggest FPS boost on most modern systems. OpenGL is the older, more broadly compatible option — it runs on more hardware and drivers, just with less of a performance gain.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="which-renderer">
-      <summary>Which one should I download?</summary>
-      <div class="faq-item-body">
-        <p>Start with Vulkan for the best performance. If it fails to launch or crashes on startup, that's usually fixable — see our <a href="vulkan">Vulkan setup guide</a> for the Java arguments that solve it on most systems. Prefer not to bother with that at all? Grab the OpenGL build instead, it works with no extra setup.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="download-opengl">
-      <summary>How do I download the OpenGL version?</summary>
-      <div class="faq-item-body">
-        <p>On Modrinth, just head to the modpack's <strong>Versions</strong> tab, then pick your Minecraft version and select the OpenGL build from the list — Vulkan and OpenGL are published as separate versions for each supported Minecraft release.</p>
-      </div>
-    </details>
-  </div>
-
-  <h2 id="lite">FrostClient Lite</h2>
-  <div class="faq-list">
-    <details class="faq-item" id="lite-after-purchase">
-      <summary>What do I do after purchasing Lite?</summary>
-      <div class="faq-item-body">
-        <p>After checkout, you're redirected to our <a href="https://frostclient.eu/lite/thank-you">thank-you page</a> — just sign in with Discord there. Once you're signed in, your subscription is verified automatically and you'll get access to download FrostClient Lite right away.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="lite-closed-thank-you">
-      <summary>I closed the thank-you page — how do I get my access?</summary>
-      <div class="faq-item-body">
-        <p>If this happened, go to your <a href="https://whop.com/joined/frostclien/discord-Jl94oOe3dVCuOp/app/" target="_blank">Whop dashboard and click Discord</a>. Sign in with Discord there, then click <strong>Claim Access</strong> — you should get the Lite Discord role right away. If you don't, contact us in a ticket on Discord.</p>
-        <p>Once you have the role, head to <a href="https://frostclient.eu/lite/download">frostclient.eu/lite/download</a> and continue from there.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="lite-vs-frost">
-      <summary>What's the difference between Frost and Lite?</summary>
-      <div class="faq-item-body">
-        <p>Lite is a special build focused purely on performance — it pushes optimization further than the regular client, giving on average around <strong>100–400 more FPS</strong> than classic Frost, depending on your hardware. On top of that, Lite subscribers get a badge before their nametag in-game, a special Discord role, priority tickets, and staff pings on Discord.</p>
-      </div>
-    </details>
-    <details class="faq-item" id="lite-cancel">
-      <summary>How do I cancel my Lite subscription?</summary>
-      <div class="faq-item-body">
-        <p>Head to <a href="https://frostclient.eu/lite/cancel">frostclient.eu/lite/cancel</a> — the instructions to cancel are right there.</p>
-      </div>
-    </details>
-  </div>
-
-  <h2 id="installation">Installation</h2>
-  <p class="section-intro">Frost is distributed as a <code>.mrpack</code> modpack file through Modrinth. Installing it takes two steps once you have your download.</p>
+  <h2 id="find-folders">Finding Both Instance Folders</h2>
+  <p>You need two folders open side by side: your <strong>old</strong> instance (with your settings) and your <strong>new</strong> one (the empty copy). There are two ways to get to either of them.</p>
 
   <div class="install-steps">
-    <div class="install-step" id="install-modrinth-app">
+    <div class="install-step" id="step-modrinth-way">
       <div class="install-step-num">1</div>
       <div class="install-step-content">
-        <h3>Install the Modrinth App</h3>
-        <p>Frost installs through the <a href="https://modrinth.com/app" target="_blank">Modrinth App</a> — download and install it first if you don't already have it.</p>
+        <h3>Easiest: use the Modrinth App itself</h3>
+        <p>In your Library, find the instance, click the <strong>⋯</strong> (three dots) next to it, and choose <strong>Open Modpack Folder</strong>. Do this once for the old instance and once for the new one — no typing required.</p>
       </div>
     </div>
-    <div class="install-step" id="install-redeem">
+    <div class="install-step" id="step-manual-way">
       <div class="install-step-num">2</div>
       <div class="install-step-content">
-        <h3>Download Frost</h3>
-        <p>Click the download button on the <a href="https://frostclient.eu">homepage</a> — pick your renderer and version and download the <code>.mrpack</code> file from modrinth where you will be redirected.</p>
+        <h3>Manual: via the profiles folder</h3>
+        <p>Press <strong>Win + R</strong>, paste the path below, and press Enter. Both instances live here as separate folders — the old one keeps its plain name, the new one has a number after it, e.g. <span class="file-chip">FrostClient 1.21.11 - Lite (2)</span>.</p>
+        <div class="code-block"><button type="button" class="copy-btn" id="copyPathBtn">Copy</button><span id="pathText">%appdata%\ModrinthApp\profiles\</span></div>
       </div>
     </div>
-    <div class="install-step" id="install-open-mrpack">
+  </div>
+
+  <h2 id="copy-files">Copying Your Settings Over</h2>
+  <div class="install-steps">
+    <div class="install-step" id="step-copy">
       <div class="install-step-num">3</div>
       <div class="install-step-content">
-        <h3>Open the downloaded .mrpack file</h3>
-        <p>That's it — just double-click the downloaded file. The Modrinth App picks it up automatically and installs Frost Client for you, no manual setup required.</p>
+        <h3>Copy from the old instance</h3>
+        <p>Inside the old instance's folder, select the <span class="file-chip">config</span> folder and the <span class="file-chip">options.txt</span> file, then copy them (Ctrl+C).</p>
       </div>
     </div>
-    <div class="install-step" id="install-launch">
+    <div class="install-step" id="step-paste">
       <div class="install-step-num">4</div>
       <div class="install-step-content">
-        <h3>Launch from the Modrinth App</h3>
-        <p>Once the install finishes, you'll find Frost listed as an instance in the Modrinth App — select it and press Play.</p>
+        <h3>Paste into the new instance</h3>
+        <p>Open the new instance's folder (the one with the number) and paste (Ctrl+V). If Windows asks about replacing the existing <span class="file-chip">config</span> folder or <span class="file-chip">options.txt</span>, confirm the replace/merge.</p>
+      </div>
+    </div>
+    <div class="install-step" id="step-launch">
+      <div class="install-step-num">5</div>
+      <div class="install-step-content">
+        <h3>Launch the new instance</h3>
+        <p>Your keybinds, mod configs, and video/sound settings should now match your old setup exactly.</p>
       </div>
     </div>
   </div>
 
-  <div class="note-box amber" id="cracked">
-    <strong>Don't own Minecraft?</strong> The official Modrinth App requires a premium (Microsoft-authenticated) Minecraft account. If you want to play on a cracked/offline account, use <a href="https://git.astralium.su/didirus/AstralRinth/releases" target="_blank">AstralRinth</a> instead — a fork of the Modrinth App with offline account support. Install it the same way as the Modrinth App above, then follow the same steps: open the downloaded <code>.mrpack</code> file and Frost installs itself inside AstralRinth too.
+  <div class="note-box amber">
+    <strong>Tip:</strong> Anything else you want to bring over — worlds (<span class="file-chip">saves</span>), screenshots, resource packs — works the exact same way: just copy that folder from the old instance into the new one too.
   </div>
 
-  <h2 id="support">Support</h2>
-  <p>Still stuck, or found a bug? Come find us on <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord</a> — that's where the team and community hang out and where support happens fastest.</p>
+  <div class="note-box amber">
+    <strong>Don't copy over your mods folder.</strong> If you also bring over the <span class="file-chip">mods</span> folder, never choose "Replace All" when Windows asks — that overwrites the new instance's mods with your old, possibly outdated ones, which can downgrade Frost and stop it from working correctly. Let the new instance's own mods stay as they are; only merge in files that don't already exist there.
+  </div>
+
+  <h2 id="support">Still stuck?</h2>
+  <p>Come find us on <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord</a> — the team and community are there and can help you sort it out.</p>
 </div>
 
 <footer>
@@ -348,20 +284,27 @@
 
 <script>
 (function () {
+  const copyBtn = document.getElementById('copyPathBtn');
+  const pathEl = document.getElementById('pathText');
+  copyBtn.addEventListener('click', () => {
+    const text = pathEl.textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      const original = copyBtn.textContent;
+      copyBtn.textContent = 'Copied!';
+      copyBtn.classList.add('copied');
+      setTimeout(() => { copyBtn.textContent = original; copyBtn.classList.remove('copied'); }, 1500);
+    });
+  });
+
   const params = new URLSearchParams(window.location.search);
   let target = null;
-
   for (const key of params.keys()) {
     const el = document.getElementById(key);
     if (el) { target = el; break; }
   }
   if (!target) return;
-
-  if (target.tagName === 'DETAILS') target.open = true;
-
   target.classList.add('faq-highlight');
   setTimeout(() => target.classList.remove('faq-highlight'), 1800);
-
   setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 })();
 </script>
