@@ -14,6 +14,8 @@ is-trusted           -> https://frostclient.eu/faq?is-trusted
                          "Is Frost Client trusted?"
 banned               -> https://frostclient.eu/faq?banned
                          "Will using Frost get me banned on servers?"
+migrate-settings     -> https://frostclient.eu/faq?migrate-settings
+                         "How do I move my settings to a new Frost version?"
 
 Vulkan vs. OpenGL
 -----------------
@@ -25,6 +27,19 @@ which-renderer       -> https://frostclient.eu/faq?which-renderer
                          "Which one should I download?"
 download-opengl      -> https://frostclient.eu/faq?download-opengl
                          "How do I download the OpenGL version?"
+
+FrostClient Lite
+-----------------
+lite                 -> https://frostclient.eu/faq?lite
+                         (whole section)
+lite-after-purchase  -> https://frostclient.eu/faq?lite-after-purchase
+                         "What do I do after purchasing Lite?"
+lite-closed-thank-you -> https://frostclient.eu/faq?lite-closed-thank-you
+                         "I closed the thank-you page — how do I get my access?"
+lite-vs-frost        -> https://frostclient.eu/faq?lite-vs-frost
+                         "What's the difference between Frost and Lite?"
+lite-cancel          -> https://frostclient.eu/faq?lite-cancel
+                         "How do I cancel my Lite subscription?"
 
 Installation
 -------------
