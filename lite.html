@@ -1479,7 +1479,8 @@
     })
     .then(data => {
       if (!Array.isArray(data) || data.length === 0) return;
-      data.filter(r => r.booster === true || r.subscription === true)
+      data.filter(r => (r.booster === true || r.subscription === true)
+          && parseStars(r.lite === true && r.liteStars ? r.liteStars : r.stars) >= 3)
         .sort((a, b) => timestampOf(b) - timestampOf(a))
         .slice(0, 4)
         .forEach((r, i) => grid.appendChild(buildCard(r, i === 0)));

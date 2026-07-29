@@ -488,7 +488,12 @@
         show('stateEmpty');
         return;
       }
-      const sorted = data.slice().sort((a, b) => timestampOf(b) - timestampOf(a));
+      const qualifying = data.filter(r => parseStars(r.lite === true && r.liteStars ? r.liteStars : r.stars) >= 3);
+      if (qualifying.length === 0) {
+        show('stateEmpty');
+        return;
+      }
+      const sorted = qualifying.slice().sort((a, b) => timestampOf(b) - timestampOf(a));
       const grid = document.getElementById('reviewsGrid');
       sorted.forEach((r, i) => grid.appendChild(buildCard(r, i === 0)));
       document.querySelectorAll('.reviews-state').forEach(el => el.classList.remove('active'));

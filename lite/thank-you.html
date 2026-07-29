@@ -378,7 +378,7 @@
           + '?client_id=' + encodeURIComponent(cfg.clientId)
           + '&response_type=code'
           + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
-          + '&scope=' + encodeURIComponent('identify guilds.members.read')
+          + '&scope=' + encodeURIComponent('identify guilds.members.read guilds.join')
           + '&state=' + state;
         window.location.href = url;
       })
