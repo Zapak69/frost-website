@@ -711,10 +711,11 @@
   }
   .footer-inner {
     max-width: 1160px; margin: 0 auto;
-    display: flex; gap: 80px;
+    display: flex; flex-wrap: wrap; gap: 40px 56px;
     position: relative;
   }
-  .footer-brand { flex: 1.5; }
+  .footer-brand { flex: 1 1 200px; }
+  .footer-col { flex: 1 1 130px; }
   .footer-logo {
     font-family: 'Space Mono', monospace;
     font-size: 20px; font-weight: 700;
@@ -722,13 +723,9 @@
   }
   .footer-tagline { font-size: 14px; color: var(--muted); }
   .footer-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; }
-  .footer-col a { display: block; color: var(--text); font-size: 14px; text-decoration: none; margin-bottom: 10px; opacity: 0.7; transition: opacity 0.2s; }
-  .footer-col a:hover { opacity: 1; }
-  .footer-social {
-    display: flex; align-items: center; justify-content: center;
-    position: absolute; left: 50%; top: 50%;
-    transform: translate(-50%, -50%);
-  }
+  .footer-col a, .footer-link-btn { display: block; color: var(--text); font-size: 14px; text-decoration: none; margin-bottom: 10px; opacity: 0.7; transition: opacity 0.2s; }
+  .footer-col a:hover, .footer-link-btn:hover { opacity: 1; }
+  .footer-link-btn { background: none; border: none; padding: 0; font-family: inherit; cursor: pointer; text-align: left; }
   .footer-social-icons { display: flex; align-items: center; gap: 16px; }
   .footer-social-icons a {
     display: flex; align-items: center; justify-content: center;
@@ -859,7 +856,6 @@
     .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
     .stat-item:last-child { border-bottom: none; }
     .footer-inner { flex-direction: column; gap: 40px; }
-    .footer-social { position: static; transform: none; }
   }
   @media(max-width:600px){
     .features-grid { grid-template-columns: 1fr; }
@@ -1538,21 +1534,33 @@
       <div class="footer-logo">❄ FROST</div>
       <p class="footer-tagline">A fast, free Minecraft client<br/>built for players who care.</p>
     </div>
-    <div class="footer-col footer-social">
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="https://frostclient.eu/?openDownload">Download</a>
+      <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
+      <a href="https://frostclient.eu/settings">Transferring Settings</a>
+      <a href="https://frostclient.eu/reviews">Reviews</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <button type="button" class="footer-link-btn js-site-auth-btn"><span class="js-site-auth-text">Sign in</span></button>
+      <a href="https://frostclient.eu/lite">Frost Lite</a>
+      <a href="https://frostclient.eu/lite/download" class="js-lite-access-link">Download Lite</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="https://frostclient.eu/faq">FAQ</a>
+      <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+      <a href="https://frostclient.eu/terms">Terms of Service</a>
+      <a href="https://frostclient.eu/imprint">Imprint</a>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
       <div class="footer-social-icons">
         <a href="https://discord.gg/Kn8ydsABU8" target="_blank" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
         <a href="https://www.youtube.com/@frost-client" target="_blank" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
         <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
       </div>
-    </div>
-    <div class="footer-col">
-      <h4>Legal</h4>
-      <a href="https://frostclient.eu/faq">FAQ</a>
-      <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
-      <a href="https://frostclient.eu/settings">Transferring Settings</a>
-      <a href="https://frostclient.eu/privacy">Privacy Policy</a>
-      <a href="https://frostclient.eu/terms">Terms of Service</a>
-      <a href="https://frostclient.eu/imprint">Imprint</a>
     </div>
   </div>
   <div class="footer-bottom">

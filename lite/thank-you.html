@@ -160,18 +160,23 @@
   .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 34px rgba(79,200,248,0.55); filter: brightness(1.06); }
   .btn-primary:active { transform: translateY(0) scale(0.98); }
 
-  footer {
-    border-top: 1px solid var(--border); padding: 40px 48px; position: relative; z-index: 1;
-    font-size: 13px; color: var(--muted);
-  }
-  .footer-inner {
-    max-width: 900px; margin: 0 auto;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .footer-logo-sm { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--frost-blue); font-size: 16px; }
-  .footer-links { display: flex; gap: 24px; }
-  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
-  .footer-links a:hover { color: var(--text); }
+  footer { border-top: 1px solid var(--border); padding: 60px 48px 40px; position: relative; z-index: 1; }
+  .footer-inner { max-width: 1160px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px 56px; }
+  .footer-brand { flex: 1 1 200px; }
+  .footer-col { flex: 1 1 130px; }
+  .footer-logo { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; color: var(--frost-blue); margin-bottom: 12px; }
+  .footer-tagline { font-size: 14px; color: var(--muted); }
+  .footer-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; }
+  .footer-col a, .footer-link-btn { display: block; color: var(--text); font-size: 14px; text-decoration: none; margin-bottom: 10px; opacity: 0.7; transition: opacity 0.2s; }
+  .footer-col a:hover, .footer-link-btn:hover { opacity: 1; }
+  .footer-link-btn { background: none; border: none; padding: 0; font-family: inherit; cursor: pointer; text-align: left; }
+  .footer-social-icons { display: flex; align-items: center; gap: 16px; }
+  .footer-social-icons a { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: var(--surface2, #162233); border: 1px solid var(--border); margin-bottom: 0; opacity: 1; transition: border-color 0.2s, transform 0.15s, background 0.2s; }
+  .footer-social-icons a:hover { border-color: var(--frost-blue); background: var(--bg2, #0d1520); transform: translateY(-2px); }
+  .footer-social-icons img { width: 20px; height: 20px; object-fit: contain; opacity: 0.85; transition: opacity 0.2s; }
+  .footer-social-icons a:hover img { opacity: 1; }
+  .footer-bottom { max-width: 1160px; margin: 32px auto 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 24px; font-size: 13px; color: var(--muted); }
+  @media(max-width:900px){ .footer-inner { flex-direction: column; gap: 40px; } }
   @media(max-width:600px){
     nav { padding: 0 20px; }
     .lite-card { padding: 36px 22px; }
@@ -247,17 +252,44 @@
 </div>
 
 <footer>
-<div class="footer-inner">
-  <span class="footer-logo-sm">❄ FROST</span>
-  <div class="footer-links">
-    <a href="https://frostclient.eu/faq">FAQ</a>
-    <a href="https://frostclient.eu/privacy">Privacy Policy</a>
-    <a href="https://frostclient.eu/terms">Terms of Service</a>
-    <a href="https://frostclient.eu/imprint">Imprint</a>
-    <a href="https://frostclient.eu">Home</a>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">❄ FROST</div>
+      <p class="footer-tagline">A fast, free Minecraft client<br/>built for players who care.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="https://frostclient.eu/?openDownload">Download</a>
+      <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
+      <a href="https://frostclient.eu/settings">Transferring Settings</a>
+      <a href="https://frostclient.eu/reviews">Reviews</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <button type="button" class="footer-link-btn js-site-auth-btn"><span class="js-site-auth-text">Sign in</span></button>
+      <a href="https://frostclient.eu/lite">Frost Lite</a>
+      <a href="https://frostclient.eu/lite/download" class="js-lite-access-link">Download Lite</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="https://frostclient.eu/faq">FAQ</a>
+      <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+      <a href="https://frostclient.eu/terms">Terms of Service</a>
+      <a href="https://frostclient.eu/imprint">Imprint</a>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <div class="footer-social-icons">
+        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" aria-label="Discord"><img src="../icons/discord.webp" alt="Discord"/></a>
+        <a href="https://www.youtube.com/@frost-client" target="_blank" aria-label="YouTube"><img src="../icons/youtube.webp" alt="YouTube"/></a>
+        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" aria-label="TikTok"><img src="../icons/tiktok.webp" alt="TikTok"/></a>
+      </div>
+    </div>
   </div>
-  <span>© Frost 2026</span>
-</div>
+  <div class="footer-bottom">
+    <span>© Frost 2026. All rights reserved.</span>
+    <span>Not affiliated with Minecraft or Mojang.</span>
+  </div>
 </footer>
 
 <script>
