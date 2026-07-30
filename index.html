@@ -157,7 +157,7 @@
   .nav-inner {
     position: relative;
     height: 100%;
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center;
     padding: 0 48px;
   }
   .nav-logo {
@@ -172,8 +172,8 @@
   .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
   .nav-logo span { color: var(--text); }
   .nav-links {
-    display: flex; gap: 36px; list-style: none;
-    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: flex; justify-content: center; align-items: center; gap: 36px; list-style: none;
+    flex: 1; min-width: 0;
   }
   .nav-links a {
     color: var(--muted); font-size: 14px; font-weight: 500;

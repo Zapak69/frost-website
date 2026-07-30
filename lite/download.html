@@ -56,6 +56,18 @@
   .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
   .nav-back:hover { color: var(--text); }
   .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-signin-btn {
+    display: inline-flex; align-items: center;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 600;
+    color: var(--muted); background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; cursor: pointer;
+    padding: 9px 18px; text-decoration: none;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .nav-signin-btn img { display: none; }
+  .nav-signin-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.08); }
+  .nav-signin-btn.loading { opacity: 0.6; pointer-events: none; }
+  .nav-signin-btn.is-logged-in { color: var(--frost-blue); }
   .btn-icon { width: 18px; height: 18px; display: block; border-radius: 22%; }
   .js-lite-login.loading { opacity: 0.6; pointer-events: none; }
 
@@ -247,6 +259,7 @@
   <a class="nav-logo" href="https://frostclient.eu"><img src="../favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
   <div class="nav-right">
     <a class="nav-back" href="https://frostclient.eu/lite">← Back to Lite</a>
+    <button type="button" class="nav-signin-btn js-site-auth-btn"><img src="../icons/discord.webp" alt=""/><span class="js-site-auth-text">Sign in</span></button>
   </div>
 </nav>
 
@@ -523,5 +536,6 @@
   })();
 })();
 </script>
+<script src="../site-auth.js"></script>
 </body>
 </html>
