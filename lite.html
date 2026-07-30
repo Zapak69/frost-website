@@ -219,6 +219,9 @@
   }
   .plan-note { font-size: 11.5px; color: var(--muted); line-height: 1.6; margin: 0; }
   .plan-note strong { color: var(--frost-blue); }
+  .plan-terms-note { font-size: 11px; color: var(--muted); line-height: 1.6; margin: 8px 0 0; }
+  .plan-terms-note a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+  .plan-terms-note a:hover { color: var(--text); }
   .below-split {
     display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 4vw, 80px);
     align-items: start; margin: 40px auto 0; text-align: center;
@@ -481,7 +484,7 @@
   .plan-card--sub {
     border: 2px solid var(--frost-blue);
     box-shadow: 0 0 36px rgba(79,200,248,0.28);
-    background: linear-gradient(180deg, rgba(79,200,248,0.08), rgba(8,12,16,0.5));
+    background: linear-gradient(180deg, #1c1e22, #101113);
     position: relative;
   }
   .plan-title { font-size: 15px; font-weight: 500; color: var(--muted); }
@@ -670,6 +673,7 @@
         <span class="plan-perk">Secured payment</span>
       </div>
       <p class="plan-note">The base FrostClient stays <strong>free</strong> — Lite is a voluntary subscription for players who want more.</p>
+      <p class="plan-terms-note">By subscribing, you agree to our <a href="https://frostclient.eu/terms">Terms of Service</a>.</p>
     </div>
   </div>
 
@@ -1054,7 +1058,7 @@
     } else if (phase === 'noAccess') {
       navAuthBtn.dataset.mode = 'logout';
       navAuthBtn.classList.add('is-logout');
-      navAuthBtnText.textContent = 'Logout';
+      navAuthBtnText.textContent = 'Manage';
       setCompareVisible(true, true);
     } else {
       navAuthBtn.dataset.mode = 'login';
@@ -1141,9 +1145,7 @@
   document.querySelectorAll('.js-lite-login').forEach(loginBtn => {
     loginBtn.addEventListener('click', () => {
       if (loginBtn.dataset.mode === 'logout') {
-        clearToken();
-        setAuthPhase('loggedOut');
-        show('stateLogin');
+        if (window.FrostAccount) window.FrostAccount.open();
         return;
       }
       loginBtn.classList.add('loading');
@@ -1177,6 +1179,11 @@
           showError('Network error while contacting the server. Please try again.');
         });
     });
+  });
+
+  document.addEventListener('frostAccountLogout', () => {
+    setAuthPhase('loggedOut');
+    show('stateLogin');
   });
 
   document.querySelectorAll('.js-signout').forEach(btn => btn.addEventListener('click', () => {
@@ -1488,5 +1495,6 @@
     .catch(() => {});
 })();
 </script>
+<script src="site-auth.js"></script>
 </body>
 </html>
