@@ -1264,10 +1264,7 @@
 
     const token = loadToken();
     if (token) {
-      // Skip the network round-trip entirely if the last check already confirmed access -
-      // /lite/download re-verifies for real on its own, so this is a pure speed win with no
-      // correctness cost: if access was revoked since, that page (not this redirect) is what
-      // catches it and shows the right state.
+
       if (hasLiteAccess() && !gameSession()) {
         window.location.replace('https://frostclient.eu/lite/download');
         return;

@@ -65,14 +65,6 @@
     });
   }
 
-  // ===== Account modal ("Manage" popup) =====
-  // Built and injected once, on demand, from this shared script so every page that just
-  // includes site-auth.js gets it for free - no need to copy the same markup/CSS into every
-  // page's own <style>/<body>. lite.html has its own separate login/logout state machine (it
-  // needs richer states this script doesn't know about - not_member, not_booster, etc.) so it
-  // can't just use .js-site-auth-btn directly, but it still calls window.FrostAccount.open()
-  // from its own "logout" click handler, and listens for the 'frostAccountLogout' event fired
-  // below to run its own post-logout UI update - keeps the two totally decoupled.
   var modalBuilt = false;
   var modalEls = null;
 
@@ -119,9 +111,7 @@
       '.frost-account-badge{display:inline-flex;align-items:center;gap:5px;font-family:"Space Mono",monospace;font-size:10px;font-weight:700;',
       'letter-spacing:0.5px;padding:5px 10px;border-radius:6px;white-space:nowrap;}',
       '.frost-account-badge-lite{background:linear-gradient(90deg,var(--boost,#ff73fa),var(--boost-deep,#b845ff));color:#1a0a1f;border:1px solid transparent;}',
-      // Booster badge is deliberately NOT a solid fill - same Lite pink family, but only as an
-      // outline, with a plain gray/translucent interior, so it never gets mistaken for actually
-      // having a paid/gifted Lite subscription (the two badges can and do show side by side).
+
       '.frost-account-badge-booster{background:rgba(255,255,255,0.06);color:var(--boost,#ff73fa);border:1px solid var(--boost,#ff73fa);}',
       '.frost-account-badge-free{background:rgba(255,255,255,0.06);color:var(--muted,#6b8fa8);border:1px solid var(--border,rgba(79,200,248,0.15));}',
       '.frost-account-rows{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--border,rgba(79,200,248,0.15));margin-bottom:22px;}',
@@ -143,23 +133,12 @@
       'border:1px solid var(--border,rgba(79,200,248,0.15));background:rgba(255,255,255,0.04);color:var(--text,#e8f4fc);transition:border-color 0.2s,background 0.2s,transform 0.2s;cursor:pointer;}',
       '.frost-account-btn:hover{border-color:rgba(255,255,255,0.28);background:rgba(255,255,255,0.08);transform:translateY(-1px);}',
       '.frost-account-btn-download{background:linear-gradient(100deg,var(--frost-blue,#4fc8f8),var(--frost-deep,#1a7fc4));border:none;color:#06121c;font-weight:700;}',
-      // .frost-account-btn:hover sets its own "background" (a translucent white overlay meant
-      // for the plain ghost buttons) - without repeating it here too, that shared rule would
-      // silently replace this button's blue gradient with that dull overlay on hover instead of
-      // just brightening it, since a later same-specificity rule only wins for the properties
-      // it actually sets, not the ones it doesn't touch.
+
       '.frost-account-btn-download:hover{background:linear-gradient(100deg,var(--frost-blue,#4fc8f8),var(--frost-deep,#1a7fc4));filter:brightness(1.12);transform:translateY(-1px);}',
       '.frost-account-btn-subscribe{width:100%;background:linear-gradient(100deg,var(--boost,#ff73fa),var(--boost-deep,#b845ff));border:none;color:#1a0a1f;font-weight:700;}',
-      // Same reasoning as .frost-account-btn-download:hover above - re-declare "background" so
-      // the shared ghost-button hover rule doesn't wipe out this gradient.
+
       '.frost-account-btn-subscribe:hover{background:linear-gradient(100deg,var(--boost,#ff73fa),var(--boost-deep,#b845ff));filter:brightness(1.12);transform:translateY(-1px);}',
-      // Cancel Subscription's hover: two stacked "rows" (emoji above, text below) inside a
-      // one-row-tall, overflow-hidden window - by default shifted up so only the text row
-      // shows through it; on hover it shifts back down, so the text visually slides down and
-      // out the bottom of the window while the emoji slides down into view from the top, in
-      // the same motion. The window itself is a plain inline span sized to exactly one row and
-      // left inside the button\'s own normal padding/height (untouched, so it stays the same
-      // size as its Manage Whop sibling) - only the sliding pair inside it is 2 rows tall.
+
       '.frost-account-slide-window{display:block;height:19px;line-height:19px;overflow:hidden;}',
       '.frost-account-slide{display:block;transition:transform 0.35s cubic-bezier(0.22,1,0.36,1);transform:translateY(-19px);}',
       '.frost-account-slide-row{display:block;height:19px;line-height:19px;}',
@@ -278,10 +257,6 @@
       document.dispatchEvent(new CustomEvent('frostAccountLogout'));
     });
 
-    // Whop ID itself is always the real value in the DOM now - blurred + covered by a drifting
-    // particle overlay by default (see injectModalStyles), both cleared on :hover in pure CSS.
-    // The copy button still works from the dataset copy regardless of hover/blur state, so it's
-    // usable on touch devices too where hover never fires.
     modalEls.copyBtn.addEventListener('click', function () {
       var real = modalEls.whopIdVal.dataset.real || '';
       if (!real) return;
@@ -314,9 +289,6 @@
     els.badgeBooster.style.display = isBooster ? '' : 'none';
     els.badgeFree.style.display = (!data.liteActive && !isBooster) ? '' : 'none';
 
-    // Name/email/Whop ID only ever come from a linked Whop purchase - if this Discord
-    // account never subscribed (whop is null), hide these rows entirely rather than
-    // showing an empty/placeholder value for something that was never asked for.
     var whop = data.whop || null;
     var gift = data.gift || null;
     var hasLite = data.liteActive === true;
@@ -330,11 +302,6 @@
       els.whopIdVal.textContent = whop.whopId || '—';
     }
 
-    // Valid until / Download only make sense with some kind of active access (a paid Whop
-    // subscription OR a gift from the Discord bot command) - hidden entirely for someone with
-    // no Lite at all rather than showing an empty dash. Cancel Subscription / Manage Whop go
-    // a step further and also require an actual Whop purchase specifically - a gifted-only
-    // player has nothing on Whop to cancel or manage.
     els.validRow.style.display = hasLite ? '' : 'none';
     if (hasLite) {
       var validUntilIso = (whop && whop.validUntil) || (gift && gift.until) || null;
@@ -342,8 +309,7 @@
     }
     els.downloadBtn.style.display = hasLite ? '' : 'none';
     els.actionsRow.style.display = (hasLite && whop) ? '' : 'none';
-    // Free (no Lite at all) and Gifted (has Lite, but not through Whop) accounts both lack a
-    // way to become a paying subscriber from this popup otherwise - shown for either.
+
     els.subscribeBtn.style.display = whop ? 'none' : '';
 
     els.memberSince.textContent = formatDate(data.memberSince);
@@ -363,10 +329,6 @@
     }
   }
 
-  // Prefetched silently on page load (see prefetchAccountInfo below) so clicking "Manage"
-  // usually has data already in hand and can render instantly - no "Loading account..." flash
-  // for what's normally a near-instant popup. Falls back to fetching on demand (with the
-  // loading state) if the prefetch hasn't resolved yet, e.g. clicked right as the page loads.
   var accountDataCache = null;
   var accountDataPromise = null;
 
@@ -411,9 +373,7 @@
     }
 
     if (accountDataCache) {
-      // Show the cached copy immediately, then quietly re-check in the background in case
-      // something changed (e.g. the subscription renewed) since it was last fetched - never
-      // shows a loading state for this refresh, only updates the already-visible content.
+
       handleResult(accountDataCache, false);
       fetchAccountInfo(token).then(function (data) { handleResult(data, true); }).catch(function () {});
       return;
