@@ -92,6 +92,34 @@
   }
   .lite-card + .lite-card { margin-top: 24px; }
 
+  .save-card {
+    display: none;
+    text-align: center;
+    border-color: var(--boost);
+    background: linear-gradient(180deg, rgba(184,69,255,0.10), rgba(17,29,43,0.92));
+  }
+  .save-card::before { background: linear-gradient(90deg, transparent, var(--boost), transparent); }
+  .save-card .card-title { color: var(--boost); }
+  .save-card h2 {
+    font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px; margin-bottom: 10px;
+  }
+  .save-card p { font-size: 14.5px; color: var(--muted); line-height: 1.65; max-width: 440px; margin: 0 auto; }
+  .save-card .btn-save {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 22px; border: none; cursor: pointer;
+    background: linear-gradient(100deg, var(--boost), var(--boost-deep));
+    color: #1a0a1f; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14.5px;
+    padding: 13px 30px; border-radius: 12px;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .save-card .btn-save:hover { transform: translateY(-2px); }
+  .save-card .btn-save:disabled { opacity: 0.6; cursor: default; transform: none; }
+  .save-card .save-result { margin-top: 18px; font-size: 14px; }
+  .save-card .save-result.success { color: var(--frost-blue); }
+  .save-card .save-result.error { color: var(--muted); }
+
   .card-title {
     font-family: 'Space Mono', monospace; font-size: 12px; text-transform: uppercase;
     letter-spacing: 2px; color: var(--frost-blue); margin-bottom: 22px; text-align: center;
@@ -188,6 +216,14 @@
   <div class="lite-eyebrow">Subscription Management</div>
   <h1>Cancel your <span class="lite-grad">€3/month</span> subscription</h1>
   <p class="lite-sub">Your FrostClient Lite subscription is billed and managed by Whop, not by us — cancel it directly on whop.com using the steps below.</p>
+
+  <div class="lite-card save-card" id="saveCard">
+    <div class="card-title">Before you go</div>
+    <h2>Get 3 more days, on us</h2>
+    <p>Not ready to leave? We'll add 3 free days to your subscription right now — no strings attached, and it doesn't stop you from cancelling later if you still want to.</p>
+    <button type="button" class="btn-save" id="claimOfferBtn">🎁 Claim 3 free days</button>
+    <div class="save-result" id="saveResult" style="display:none;"></div>
+  </div>
 
   <div class="lite-card">
     <div class="card-title">How to cancel</div>
@@ -301,6 +337,57 @@
     cursorGlow.style.opacity = isInteractive ? '0' : '1';
   });
   document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+})();
+</script>
+<script>
+(function () {
+  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const TOKEN_KEY = 'frostLiteToken';
+
+  function loadToken() {
+    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+  }
+
+  const token = loadToken();
+  if (!token) return;
+
+  const card = document.getElementById('saveCard');
+  const claimBtn = document.getElementById('claimOfferBtn');
+  const resultEl = document.getElementById('saveResult');
+
+  fetch(LITE_API_URL + '?action=retentionOfferStatus&token=' + encodeURIComponent(token), { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data && data.ok && data.eligible) {
+        card.style.display = 'block';
+      }
+    })
+    .catch(function () {});
+
+  claimBtn.addEventListener('click', function () {
+    claimBtn.disabled = true;
+    claimBtn.textContent = 'Claiming...';
+    fetch(LITE_API_URL + '?action=claimRetentionOffer&token=' + encodeURIComponent(token), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        claimBtn.style.display = 'none';
+        if (data && data.ok) {
+          resultEl.textContent = 'Done — 3 free days added to your subscription. Thanks for staying!';
+          resultEl.className = 'save-result success';
+        } else {
+          resultEl.textContent = "This offer isn't available for your account right now — you can still cancel below.";
+          resultEl.className = 'save-result error';
+        }
+        resultEl.style.display = '';
+      })
+      .catch(function () {
+        claimBtn.disabled = false;
+        claimBtn.textContent = 'Claim 3 free days';
+        resultEl.textContent = 'Network error — please try again.';
+        resultEl.className = 'save-result error';
+        resultEl.style.display = '';
+      });
+  });
 })();
 </script>
 <script src="../site-auth.js"></script>

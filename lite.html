@@ -663,15 +663,15 @@
     <div class="plan-card plan-card--sub hero-pricing-card" id="plans">
       <div class="billing-toggle">
         <span class="billing-toggle-indicator" aria-hidden="true"></span>
-        <button type="button" class="billing-toggle-btn active" data-billing="monthly">Monthly</button>
-        <button type="button" class="billing-toggle-btn" data-billing="annual">Annual <span class="billing-save-badge">Save 28%</span></button>
+        <button type="button" class="billing-toggle-btn" data-billing="monthly">Monthly</button>
+        <button type="button" class="billing-toggle-btn active" data-billing="annual">Annual <span class="billing-save-badge">2 months free</span></button>
       </div>
-      <div class="plan-trial-line"><span class="plan-trial-days js-trial-days">1</span><span class="plan-trial-label js-trial-label">day free</span></div>
+      <div class="plan-trial-line"><span class="plan-trial-days js-trial-days">3</span><span class="plan-trial-label js-trial-label">days free</span></div>
       <div class="plan-price-block">
-        <div class="plan-title">then €<span class="plan-amount">2.90</span><span class="plan-period">&nbsp;/ month</span></div>
-        <div class="plan-per-day"></div>
+        <div class="plan-title">then €<span class="plan-amount">29.00</span><span class="plan-period">&nbsp;/ year</span></div>
+        <div class="plan-per-day">€2.42 / month, billed yearly</div>
       </div>
-      <a class="btn-lite-download plan-blue js-whop-subscribe" id="whopSubscribeBtnHero" href="#"><span class="js-sub-cta-text">Start 1 day free</span></a>
+      <a class="btn-lite-download plan-blue js-whop-subscribe" id="whopSubscribeBtnHero" href="#"><span class="js-sub-cta-text">Start 3 days free</span></a>
       <div class="plan-perks">
         <span class="plan-perk">Cancel anytime</span>
         <span class="plan-perk">No hidden fees</span>
@@ -882,15 +882,15 @@
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
   const WHOP_CHECKOUT_URL = 'https://whop.com/checkout/plan_oKGeLuyTvJb5u';
-  const WHOP_CHECKOUT_URL_ANNUAL = 'https://whop.com/checkout/plan_KxAYo6SKBjbzL';
+  const WHOP_CHECKOUT_URL_ANNUAL = 'https://whop.com/checkout/plan_YDenpzviXSDXW';
   document.querySelectorAll('.js-whop-subscribe').forEach(function (btn) {
     btn.dataset.monthlyHref = WHOP_CHECKOUT_URL;
     btn.dataset.annualHref = WHOP_CHECKOUT_URL_ANNUAL;
-    btn.href = WHOP_CHECKOUT_URL;
+    btn.href = WHOP_CHECKOUT_URL_ANNUAL;
   });
   const BILLING_PLANS = {
     monthly: { amount: 2.90, period: ' / month', perDay: '', trialDays: 1, periodWidth: '8ch' },
-    annual: { amount: 24.90, period: ' / year', perDay: '€1.99 / month, billed yearly', trialDays: 3, periodWidth: '7ch' },
+    annual: { amount: 29.00, period: ' / year', perDay: '€2.42 / month, billed yearly', trialDays: 3, periodWidth: '7ch' },
   };
   function easeInOut(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
