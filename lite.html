@@ -889,8 +889,8 @@
     btn.href = WHOP_CHECKOUT_URL;
   });
   const BILLING_PLANS = {
-    monthly: { amount: 2.90, period: ' / month', perDay: '', trialDays: 1, periodWidth: '8ch' },
-    annual: { amount: 29.00, period: ' / year', perDay: '€2.42 / month, billed yearly', trialDays: 3, periodWidth: '7ch' },
+    monthly: { amount: 2.90, period: ' / month', perDay: '', trialDays: 1, periodWidth: '8ch', cta: null },
+    annual: { amount: 29.00, period: ' / year', perDay: '€2.42 / month, billed yearly', trialDays: 3, periodWidth: '7ch', cta: 'Subscribe' },
   };
   function easeInOut(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -955,11 +955,15 @@
           });
         }
         if (ctaEl) {
-          const fromDays = parseInt(ctaEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
-          animateNumber(fromDays, plan.trialDays, function (val, done) {
-            const days = done ? plan.trialDays : Math.round(val);
-            ctaEl.textContent = 'Start ' + days + (days === 1 ? ' day' : ' days') + ' free';
-          });
+          if (plan.cta) {
+            fadeSwap(ctaEl, plan.cta);
+          } else {
+            const fromDays = parseInt(ctaEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+            animateNumber(fromDays, plan.trialDays, function (val, done) {
+              const days = done ? plan.trialDays : Math.round(val);
+              ctaEl.textContent = 'Start ' + days + (days === 1 ? ' day' : ' days') + ' free';
+            });
+          }
         }
         if (trialDaysEl) {
           const fromTrial = parseInt(trialDaysEl.textContent, 10) || 0;
