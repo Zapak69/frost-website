@@ -441,7 +441,7 @@
   .btn-lite-download {
     position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
     background: linear-gradient(100deg, var(--boost), var(--boost-deep));
-    color: #fff; text-decoration: none;
+    color: #fff; text-decoration: none; text-align: center;
     font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700;
     padding: 15px 34px; border-radius: 12px; overflow: hidden;
     box-shadow: 0 0 28px rgba(255,115,250,0.35);
@@ -889,8 +889,8 @@
     btn.href = WHOP_CHECKOUT_URL;
   });
   const BILLING_PLANS = {
-    monthly: { amount: 2.90, period: ' / month', perDay: '', trialDays: 1, periodWidth: '8ch', cta: null },
-    annual: { amount: 29.00, period: ' / year', perDay: '€2.42 / month, billed yearly', trialDays: 3, periodWidth: '7ch', cta: 'Subscribe' },
+    monthly: { amount: 2.90, period: ' / month', perDay: '', trialDays: 1, trialUnit: 'day', periodWidth: '8ch', cta: 'Start 1 day free' },
+    annual: { amount: 29.00, period: ' / year', perDay: '€2.42 / month, billed yearly', trialDays: 2, trialUnit: 'month', periodWidth: '7ch', cta: 'Subscribe' },
   };
   function easeInOut(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -915,6 +915,21 @@
       el.style.opacity = '';
     }, 180);
   }
+  function typewriterSwap(el, text, tokenBox) {
+    if (!el) return;
+    const myToken = ++tokenBox.v;
+    const STEP_MS = 22;
+    const from = el.textContent;
+    const maxLen = Math.max(from.length, text.length);
+    let i = 0;
+    (function step() {
+      if (myToken !== tokenBox.v) return;
+      el.textContent = text.slice(0, i) + from.slice(i);
+      if (i >= maxLen) return;
+      i++;
+      setTimeout(step, STEP_MS);
+    })();
+  }
   function moveToggleIndicator(toggle) {
     const indicator = toggle.querySelector('.billing-toggle-indicator');
     const active = toggle.querySelector('.billing-toggle-btn.active');
@@ -930,6 +945,7 @@
     const periodEl = card.querySelector('.plan-period');
     const perDayEl = card.querySelector('.plan-per-day');
     const ctaEl = link ? link.querySelector('.js-sub-cta-text') : null;
+    const ctaTypewriterToken = { v: 0 };
     const trialDaysEl = card.querySelector('.js-trial-days');
     const trialLabelEl = card.querySelector('.js-trial-label');
     moveToggleIndicator(toggle);
@@ -955,22 +971,15 @@
           });
         }
         if (ctaEl) {
-          if (plan.cta) {
-            fadeSwap(ctaEl, plan.cta);
-          } else {
-            const fromDays = parseInt(ctaEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
-            animateNumber(fromDays, plan.trialDays, function (val, done) {
-              const days = done ? plan.trialDays : Math.round(val);
-              ctaEl.textContent = 'Start ' + days + (days === 1 ? ' day' : ' days') + ' free';
-            });
-          }
+          typewriterSwap(ctaEl, plan.cta, ctaTypewriterToken);
         }
         if (trialDaysEl) {
           const fromTrial = parseInt(trialDaysEl.textContent, 10) || 0;
+          const unit = plan.trialUnit || 'day';
           animateNumber(fromTrial, plan.trialDays, function (val, done) {
             const days = done ? plan.trialDays : Math.round(val);
             trialDaysEl.textContent = String(days);
-            if (trialLabelEl) trialLabelEl.textContent = days === 1 ? 'day free' : 'days free';
+            if (trialLabelEl) trialLabelEl.textContent = (days === 1 ? unit : unit + 's') + ' free';
           });
         }
         fadeSwap(periodEl, plan.period);
