@@ -618,7 +618,7 @@
     const curve = document.querySelector('#timeChart .chart-curve');
     if (curve) {
       curve.style.transition = 'none';
-      curve.style.transform = 'scaleX(' + (zoomingIn ? 0.85 : 1.15) + ')';
+      curve.style.transform = 'scaleX(' + (zoomingIn ? 1.25 : 1.12) + ')';
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           curve.style.transition = '';
