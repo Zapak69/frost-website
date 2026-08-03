@@ -1114,8 +1114,22 @@
     font-family: 'Space Grotesk', sans-serif; color: var(--text);
     transition: border-color 0.2s, background 0.2s, transform 0.2s;
   }
+  @keyframes pollOptionIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.92); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .poll-options.animate-in .poll-option { animation: pollOptionIn 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+  .poll-options.animate-in .poll-option:nth-child(1) { animation-delay: 0.04s; }
+  .poll-options.animate-in .poll-option:nth-child(2) { animation-delay: 0.09s; }
+  .poll-options.animate-in .poll-option:nth-child(3) { animation-delay: 0.14s; }
+  .poll-options.animate-in .poll-option:nth-child(4) { animation-delay: 0.19s; }
   .poll-option:hover { border-color: rgba(255,202,40,0.5); background: rgba(255,202,40,0.06); transform: translateY(-2px); }
-  .poll-option.selected { border-color: #ffca28; background: rgba(255,202,40,0.12); box-shadow: 0 0 0 1px #ffca28 inset; }
+  @keyframes pollSelectPulse {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.07); }
+    100% { transform: scale(1); }
+  }
+  .poll-option.selected { border-color: #ffca28; background: rgba(255,202,40,0.12); box-shadow: 0 0 0 1px #ffca28 inset; animation: pollSelectPulse 0.35s cubic-bezier(0.34,1.56,0.64,1); }
   .poll-option-icon { width: 36px; height: 36px; object-fit: contain; }
   .poll-option-label { font-size: 13.5px; font-weight: 700; letter-spacing: 0.5px; }
   .poll-option-pct { display: none; font-family: 'Space Mono', monospace; font-size: 19px; font-weight: 700; color: #ffca28; }
@@ -1123,7 +1137,11 @@
   .poll-option-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ffca28, #ffa726); transition: width 0.7s cubic-bezier(0.22,1,0.36,1); }
   .poll-option.voted { cursor: default; }
   .poll-option.voted:hover { transform: none; background: rgba(255,255,255,0.03); border-color: var(--border); }
-  .poll-option.voted.winner { border-color: #ffca28; background: rgba(255,202,40,0.1); box-shadow: 0 0 24px rgba(255,202,40,0.2); }
+  @keyframes pollWinnerGlow {
+    0%, 100% { box-shadow: 0 0 24px rgba(255,202,40,0.2); }
+    50% { box-shadow: 0 0 38px rgba(255,202,40,0.45); }
+  }
+  .poll-option.voted.winner { border-color: #ffca28; background: rgba(255,202,40,0.1); box-shadow: 0 0 24px rgba(255,202,40,0.2); animation: pollWinnerGlow 2.2s ease-in-out infinite; }
   .poll-note { text-align: center; font-size: 11.5px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
   .poll-submit-btn {
     width: 100%; padding: 13px; border: none; border-radius: 10px; cursor: pointer;
@@ -1133,7 +1151,11 @@
   }
   .poll-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(255,193,7,0.35); }
   .poll-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
-  .poll-thanks { display: none; text-align: center; font-size: 15px; font-weight: 700; color: #ffca28; padding: 4px 0 2px; }
+  @keyframes pollThanksIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .poll-thanks { display: none; text-align: center; font-size: 15px; font-weight: 700; color: #ffca28; padding: 4px 0 2px; animation: pollThanksIn 0.5s cubic-bezier(0.16,1,0.3,1) both; }
 </style>
 </head>
 <body>
@@ -1807,7 +1829,33 @@ for (let i = 0; i < 100; i++) particles.push({
     }
   }
   updateToastContent();
-  setTimeout(() => { repositionToast(); toast.classList.add('show'); }, 1600);
+  let openedViaVoteParam = false;
+  try { openedViaVoteParam = new URLSearchParams(location.search).has('vote'); } catch (e) {}
+  if (openedViaVoteParam) {
+    try {
+      const url = new URL(location.href);
+      url.searchParams.delete('vote');
+      history.replaceState(null, '', url.pathname + url.search + url.hash);
+    } catch (e) {}
+  } else {
+    setTimeout(() => { repositionToast(); toast.classList.add('show'); }, 1600);
+  }
+
+  function animatePct(el, toVal) {
+    const fromVal = parseInt(el.dataset.pct || '0', 10) || 0;
+    el.dataset.pct = toVal;
+    if (fromVal === toVal) { el.textContent = toVal + '%'; return; }
+    const start = performance.now();
+    const DUR = 700;
+    function tick(now) {
+      const t = Math.min(1, (now - start) / DUR);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(fromVal + (toVal - fromVal) * eased) + '%';
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = toVal + '%';
+    }
+    requestAnimationFrame(tick);
+  }
 
   function renderResults(votes) {
     const total = ANSWERS.reduce((sum, a) => sum + (votes[a] || 0), 0) || 1;
@@ -1824,7 +1872,7 @@ for (let i = 0; i < 100; i++) particles.push({
       opt.classList.toggle('winner', answer === winner && maxCount > 0);
       opt.classList.toggle('selected', answer === votedAnswer);
       const pctEl = opt.querySelector('.poll-option-pct');
-      if (pctEl) { pctEl.style.display = 'block'; pctEl.textContent = pct + '%'; }
+      if (pctEl) { pctEl.style.display = 'block'; animatePct(pctEl, pct); }
       const fill = opt.querySelector('.poll-option-bar-fill');
       if (fill) fill.style.width = pct + '%';
     });
@@ -1833,9 +1881,19 @@ for (let i = 0; i < 100; i++) particles.push({
     thanksEl.style.display = 'block';
   }
 
+  let optionsAnimTimer = null;
+  function playOptionsEntrance() {
+    optionsWrap.classList.remove('animate-in');
+    void optionsWrap.offsetWidth;
+    optionsWrap.classList.add('animate-in');
+    clearTimeout(optionsAnimTimer);
+    optionsAnimTimer = setTimeout(() => optionsWrap.classList.remove('animate-in'), 750);
+  }
+
   function openModal() {
     modal.classList.add('active');
     toast.classList.remove('show');
+    playOptionsEntrance();
     if (votedAnswer) {
       fetch(POLL_RESULTS_URL, { cache: 'no-store' })
         .then(r => r.json())
@@ -1890,6 +1948,8 @@ for (let i = 0; i < 100; i++) particles.push({
         .catch(() => { submitBtn.disabled = false; });
     });
   }
+
+  if (openedViaVoteParam) openModal();
 })();
 const scrollBar  = document.getElementById('scroll-bar');
 const navEl      = document.querySelector('nav');

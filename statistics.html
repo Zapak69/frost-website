@@ -690,7 +690,9 @@
       }
     }
   });
-  function renderBarChart(svgId, emptyId, items) {
+  const POLL_ICONS = { CRYSTAL: 'icons/crystal.png', MACE: 'icons/mace.png', SMP: 'icons/smp.png', UHC: 'icons/uhc.png' };
+  function pollIcon(label) { return POLL_ICONS[String(label || '').toUpperCase()] || null; }
+  function renderBarChart(svgId, emptyId, items, iconFn) {
     const svg = document.getElementById(svgId);
     const emptyEl = document.getElementById(emptyId);
     svg.innerHTML = '';
@@ -716,7 +718,13 @@
       const barW = Math.max(3, (v.count / maxCount) * barMaxW);
       const pct = Math.round((v.count / total) * 100);
 
-      const label = svgEl('text', { x: LABEL_W - 10, y: y + BAR_H / 2 + 4, 'text-anchor': 'end', class: 'chart-version-label' });
+      const iconUrl = iconFn ? iconFn(v.label) : null;
+      if (iconUrl) {
+        svg.appendChild(svgEl('image', { href: iconUrl, x: 4, y: y + BAR_H / 2 - 10, width: 20, height: 20 }));
+      }
+      const label = svgEl('text', iconUrl
+        ? { x: 32, y: y + BAR_H / 2 + 4, class: 'chart-version-label' }
+        : { x: LABEL_W - 10, y: y + BAR_H / 2 + 4, 'text-anchor': 'end', class: 'chart-version-label' });
       label.textContent = v.label;
       svg.appendChild(label);
 
@@ -735,6 +743,7 @@
       renderTimeChart();
       renderBarChart('versionChart', 'versionChartEmpty', lastData.versionBreakdown || []);
       renderBarChart('ratingChart', 'ratingChartEmpty', lastData.ratingBreakdown || []);
+      renderBarChart('pollChart', 'pollChartEmpty', lastData.pollBreakdown || [], pollIcon);
     }, 200);
   });
 
@@ -795,7 +804,7 @@
     renderTimeChart();
     renderBarChart('versionChart', 'versionChartEmpty', data.versionBreakdown || []);
     renderBarChart('ratingChart', 'ratingChartEmpty', data.ratingBreakdown || []);
-    renderBarChart('pollChart', 'pollChartEmpty', data.pollBreakdown || []);
+    renderBarChart('pollChart', 'pollChartEmpty', data.pollBreakdown || [], pollIcon);
   }
 
   let lastSessions = [];
