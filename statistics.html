@@ -98,11 +98,13 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .stat-tile, .chart-card, .player-card {
+  .stat-tile, .chart-card {
     animation: fadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
+  .player-card { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+  .player-card.player-card-enter { animation: fadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
   @media (prefers-reduced-motion: reduce) {
-    .state.active, .stat-tile, .chart-card, .player-card { animation: none; }
+    .state.active, .stat-tile, .chart-card, .player-card, .player-card.player-card-enter { animation: none; transition: none; }
   }
 
   .section-title {
@@ -197,7 +199,7 @@
     transform-origin: center center;
     transition: opacity 0.18s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .chart-svg.chart-range-zoom { opacity: 0; transform: scale(0.92); }
+  .chart-svg.chart-range-zoom { opacity: 0; transform: scaleX(0.8); }
   @media (prefers-reduced-motion: reduce) {
     .chart-svg { transition: none; }
   }
@@ -753,6 +755,10 @@
     const grid = document.getElementById('playerGrid');
     const emptyNote = document.getElementById('emptyNote');
     const countEl = document.getElementById('trackerCount');
+    const oldRects = new Map();
+    grid.querySelectorAll('.player-card').forEach(card => {
+      oldRects.set(card.dataset.username, card.getBoundingClientRect());
+    });
     grid.innerHTML = '';
 
     const counts = serverCounts(sessions);
@@ -789,10 +795,11 @@
       sorted.sort((a, b) => dirSign * a.username.localeCompare(b.username));
     }
 
-    sorted.forEach((s, i) => {
+    const newCards = [];
+    sorted.forEach(s => {
       const card = document.createElement('div');
       card.className = 'player-card';
-      card.style.animationDelay = Math.min(i * 30, 300) + 'ms';
+      card.dataset.username = s.username;
       const avatarUrl = 'https://mc-heads.net/avatar/' + encodeURIComponent(s.username) + '/80';
       const serverPop = (typeof s.serverOnline === 'number')
         ? s.serverOnline + (typeof s.serverMax === 'number' && s.serverMax > 0 ? ' / ' + s.serverMax : '')
@@ -808,7 +815,34 @@
         '<div class="player-row"><span>Version</span><strong>' + escapeHtml(s.version || 'unknown') + '</strong></div>' +
         '<div class="player-row"><span>On this server</span><strong>' + formatDuration(now - (s.serverSince || now)) + '</strong></div>';
       grid.appendChild(card);
+      if (!oldRects.has(s.username)) newCards.push(card);
     });
+    const moved = [];
+    grid.querySelectorAll('.player-card').forEach(card => {
+      const old = oldRects.get(card.dataset.username);
+      if (!old) return;
+      const fresh = card.getBoundingClientRect();
+      const dx = old.left - fresh.left, dy = old.top - fresh.top;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+      card.style.transition = 'none';
+      card.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      moved.push(card);
+    });
+    newCards.forEach((card, i) => {
+      card.classList.add('player-card-enter');
+      card.style.animationDelay = Math.min(i * 30, 300) + 'ms';
+    });
+
+    if (moved.length) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          moved.forEach(card => {
+            card.style.transition = '';
+            card.style.transform = '';
+          });
+        });
+      });
+    }
   }
 
   function updateSortDirBtn() {
