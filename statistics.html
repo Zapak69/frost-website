@@ -359,7 +359,7 @@
       </div>
     </div>
     <div class="player-search-row">
-      <input type="text" id="playerSearch" class="player-search-input" placeholder="Search by username…" autocomplete="off" spellcheck="false"/>
+      <input type="text" id="playerSearch" class="player-search-input" placeholder="Search by username or server…" autocomplete="off" spellcheck="false"/>
     </div>
     <div id="serverFilter" class="server-filter"></div>
     <div id="playerGrid" class="player-grid"></div>
@@ -899,7 +899,10 @@
       countLabel = serverFilter;
     }
     if (sessionSearch) {
-      filtered = filtered.filter(s => s.username.toLowerCase().includes(sessionSearch));
+      filtered = filtered.filter(s =>
+        s.username.toLowerCase().includes(sessionSearch) ||
+        (s.server || '').toLowerCase().includes(sessionSearch)
+      );
     }
 
     if (!filtered.length) {
