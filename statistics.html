@@ -612,15 +612,28 @@
 
   let lastSessions = [];
   let serverFilter = null;
+  const SOLO_FILTER = '__solo__';
 
-  function renderServerFilter(sessions) {
+  function serverCounts(sessions) {
+    const counts = {};
+    sessions.forEach(s => { counts[s.server] = (counts[s.server] || 0) + 1; });
+    return counts;
+  }
+
+  function renderServerFilter(sessions, counts) {
     const el = document.getElementById('serverFilter');
     el.innerHTML = '';
     if (!sessions.length) return;
-    const counts = {};
-    sessions.forEach(s => { counts[s.server] = (counts[s.server] || 0) + 1; });
-    if (serverFilter && !counts[serverFilter]) serverFilter = null;
-    const servers = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+    const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const shared = entries.filter(([, count]) => count >= 2);
+    const soloCount = entries.filter(([, count]) => count === 1).length;
+
+    if (serverFilter === SOLO_FILTER) {
+      if (soloCount === 0) serverFilter = null;
+    } else if (serverFilter && !counts[serverFilter]) {
+      serverFilter = null;
+    }
 
     const allChip = document.createElement('button');
     allChip.type = 'button';
@@ -629,7 +642,7 @@
     allChip.addEventListener('click', () => { serverFilter = null; renderSessions(lastSessions); });
     el.appendChild(allChip);
 
-    servers.forEach(([server, count]) => {
+    shared.forEach(([server, count]) => {
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'server-chip' + (serverFilter === server ? ' active' : '');
@@ -638,6 +651,16 @@
       chip.addEventListener('click', () => { serverFilter = server; renderSessions(lastSessions); });
       el.appendChild(chip);
     });
+
+    if (soloCount > 0) {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'server-chip' + (serverFilter === SOLO_FILTER ? ' active' : '');
+      chip.title = 'Players each on a different server';
+      chip.innerHTML = 'Other <span class="count">' + soloCount + '</span>';
+      chip.addEventListener('click', () => { serverFilter = SOLO_FILTER; renderSessions(lastSessions); });
+      el.appendChild(chip);
+    }
   }
 
   function renderSessions(sessions) {
@@ -647,7 +670,8 @@
     const countEl = document.getElementById('trackerCount');
     grid.innerHTML = '';
 
-    renderServerFilter(sessions);
+    const counts = serverCounts(sessions);
+    renderServerFilter(sessions, counts);
 
     if (!sessions.length) {
       emptyNote.style.display = '';
@@ -656,8 +680,16 @@
     }
     emptyNote.style.display = 'none';
 
-    const filtered = serverFilter ? sessions.filter(s => s.server === serverFilter) : sessions;
-    countEl.textContent = filtered.length + ' online on ' + (serverFilter || 'a server');
+    let filtered = sessions;
+    let countLabel = 'a server';
+    if (serverFilter === SOLO_FILTER) {
+      filtered = sessions.filter(s => counts[s.server] === 1);
+      countLabel = 'a different server each';
+    } else if (serverFilter) {
+      filtered = sessions.filter(s => s.server === serverFilter);
+      countLabel = serverFilter;
+    }
+    countEl.textContent = filtered.length + ' online on ' + countLabel;
 
     const sorted = filtered.slice().sort((a, b) => a.username.localeCompare(b.username));
     const now = Date.now();
