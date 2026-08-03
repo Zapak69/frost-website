@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Statistics | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b; --surface2: #162233;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+    --red: #ff5c5c;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; min-height: 100vh; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.06; }
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue);
+    text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none;
+  }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+
+  .page { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 140px 24px 100px; }
+
+  .gate { max-width: 460px; margin: 60px auto 0; text-align: center; }
+  .gate-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--muted); margin-bottom: 16px;
+  }
+  .gate h1 {
+    font-family: 'Space Mono', monospace; font-size: clamp(26px, 4.5vw, 36px);
+    font-weight: 700; letter-spacing: -1px; margin-bottom: 14px;
+  }
+  .gate p { font-size: 14.5px; color: var(--muted); line-height: 1.7; margin-bottom: 28px; }
+  .gate.denied h1 { color: var(--red); }
+
+  .spinner {
+    width: 30px; height: 30px; margin: 0 auto 20px;
+    border: 3px solid rgba(79,200,248,0.2); border-top-color: var(--frost-blue);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .btn-discord {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    background: #5865F2; color: #fff; text-decoration: none; border: none; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600;
+    padding: 14px 28px; border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .btn-discord:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(88,101,242,0.4); }
+  .btn-discord.loading { opacity: 0.6; pointer-events: none; }
+  .btn-discord img { width: 18px; height: 18px; }
+
+  .state { display: none; }
+  .state.active { display: block; }
+
+  .section-title {
+    font-family: 'Space Mono', monospace; font-size: 12px; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--muted); margin-bottom: 14px;
+  }
+
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 44px; }
+  .stat-tile {
+    background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
+    border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px;
+  }
+  .stat-tile .num {
+    font-family: 'Space Mono', monospace; font-size: 24px; font-weight: 700; color: var(--frost-blue);
+    margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .stat-tile .label { font-size: 12px; color: var(--muted); }
+
+  .tracker-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tracker-head h2 { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+  .tracker-count { font-size: 13.5px; color: var(--muted); }
+  .tracker-empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14.5px; }
+
+  .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+  .player-card {
+    background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
+    border: 1px solid var(--border); border-radius: 16px; padding: 20px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .player-card-top { display: flex; align-items: center; gap: 12px; }
+  .player-avatar { width: 48px; height: 48px; border-radius: 10px; border: 1px solid var(--border); image-rendering: pixelated; flex-shrink: 0; background: var(--surface2); }
+  .player-name { font-weight: 700; font-size: 15.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .player-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 10px; }
+  .player-row strong { color: var(--text); font-family: 'Space Mono', monospace; font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 65%; }
+
+  .tracker-refresh-note { text-align: center; margin-top: 28px; font-size: 12.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,340 C60,320 180,380 360,340 S580,255 740,330 S980,400 1160,345 S1360,290 1500,335"/>
+    <path class="tline" d="M-100,500 C20,480 140,540 320,500 S540,405 700,490 S940,545 1120,490 S1320,440 1500,490"/>
+    <path class="tline" d="M-100,660 C-20,640 100,700 280,660 S500,560 660,645 S900,705 1080,650 S1280,598 1500,648"/>
+  </svg>
+</div>
+<canvas id="particles"></canvas>
+
+<nav>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <a class="nav-back" href="https://frostclient.eu">← Back to Frost</a>
+</nav>
+
+<div class="page">
+
+  <div id="stateLoading" class="state active">
+    <div class="gate"><div class="spinner"></div></div>
+  </div>
+
+  <div id="stateLogin" class="state">
+    <div class="gate">
+      <div class="gate-eyebrow">Owner Only</div>
+      <h1>Statistics</h1>
+      <p>Sign in with Discord to continue. Only one specific account can ever access this page — everyone else will see Access Denied.</p>
+      <button type="button" class="btn-discord" id="loginBtn">
+        <img src="icons/discord.webp" alt=""/> Sign in with Discord
+      </button>
+    </div>
+  </div>
+
+  <div id="stateWorking" class="state">
+    <div class="gate"><div class="spinner"></div><p>Verifying…</p></div>
+  </div>
+
+  <div id="stateDenied" class="state">
+    <div class="gate denied">
+      <div class="gate-eyebrow">Owner Only</div>
+      <h1>Access Denied</h1>
+      <p>This Discord account doesn't have access to this page.</p>
+      <button type="button" class="btn-discord" id="switchAccountBtn" style="background:rgba(255,255,255,0.06);">
+        Try a different account
+      </button>
+    </div>
+  </div>
+
+  <div id="stateError" class="state">
+    <div class="gate">
+      <div class="gate-eyebrow">Owner Only</div>
+      <h1>Something went wrong</h1>
+      <p id="errorText">Please try again.</p>
+      <button type="button" class="btn-discord" id="retryBtn" style="background:rgba(255,255,255,0.06);">Retry</button>
+    </div>
+  </div>
+
+  <div id="stateData" class="state">
+    <div class="section-title">Frost Client — Stats</div>
+    <div class="stats-row">
+      <div class="stat-tile"><div class="num" id="statOnline">—</div><div class="label">Online now</div></div>
+      <div class="stat-tile"><div class="num" id="statAvg">—</div><div class="label">Avg. online (24h)</div></div>
+      <div class="stat-tile"><div class="num" id="statPeak">—</div><div class="label">All-time peak</div></div>
+      <div class="stat-tile"><div class="num" id="statPlaytime">—</div><div class="label">Total playtime</div></div>
+      <div class="stat-tile"><div class="num" id="statVersion">—</div><div class="label">Most played version</div></div>
+    </div>
+
+    <div class="tracker-head">
+      <h2>Where's everyone playing?</h2>
+      <span class="tracker-count" id="trackerCount"></span>
+    </div>
+    <div id="playerGrid" class="player-grid"></div>
+    <div id="emptyNote" class="tracker-empty" style="display:none;">No online Frost players are currently on a multiplayer server.</div>
+    <p class="tracker-refresh-note">Refreshes automatically every 30 seconds.</p>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  for (let i = 0; i < 80; i++) particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 1.5 + 0.5,
+    speed: Math.random() * 0.4 + 0.1,
+    drift: (Math.random() - 0.5) * 0.3,
+    opacity: Math.random() * 0.4 + 0.1
+  });
+  (function animateParticles() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
+      ctx.fill();
+      p.y += p.speed; p.x += p.drift;
+      if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+      if (p.x > W + 10) p.x = -10;
+      if (p.x < -10) p.x = W + 10;
+    }
+    requestAnimationFrame(animateParticles);
+  })();
+})();
+</script>
+<script>
+(function () {
+  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const TOKEN_KEY = 'frostStatisticsToken';
+  const OAUTH_STATE_KEY = 'frostStatisticsOauthState';
+
+  const states = ['stateLoading', 'stateLogin', 'stateWorking', 'stateDenied', 'stateError', 'stateData'];
+  function show(id) {
+    states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
+  }
+
+  function saveToken(t) { try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {} }
+  function loadToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
+  function clearToken() { try { localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+
+  function showError(msg) {
+    document.getElementById('errorText').textContent = msg || 'Please try again.';
+    show('stateError');
+  }
+
+  function formatDuration(ms) {
+    const totalMinutes = Math.max(0, Math.floor(ms / 60000));
+    const days = Math.floor(totalMinutes / 1440);
+    const hours = Math.floor((totalMinutes % 1440) / 60);
+    const minutes = totalMinutes % 60;
+    if (days > 0) return days + 'd ' + hours + 'h';
+    if (hours > 0) return hours + 'h ' + minutes + 'm';
+    return minutes + 'm';
+  }
+
+  function formatNumber(n) {
+    const rounded = Math.round(n * 10) / 10;
+    const text = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+    const parts = text.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return parts.join('.');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  let refreshTimer = null;
+
+  function renderStats(data) {
+    document.getElementById('statOnline').textContent = formatNumber(data.onlineNow || 0);
+    document.getElementById('statAvg').textContent = formatNumber(data.avgOnline || 0);
+    document.getElementById('statPeak').textContent = formatNumber(data.peakOnline || 0);
+    document.getElementById('statPlaytime').textContent = formatDuration(data.totalPlaytimeMs || 0);
+    document.getElementById('statVersion').textContent = data.topVersion || 'n/a';
+  }
+
+  function renderSessions(sessions) {
+    const grid = document.getElementById('playerGrid');
+    const emptyNote = document.getElementById('emptyNote');
+    const countEl = document.getElementById('trackerCount');
+    grid.innerHTML = '';
+
+    if (!sessions.length) {
+      emptyNote.style.display = '';
+      countEl.textContent = '';
+      return;
+    }
+    emptyNote.style.display = 'none';
+    countEl.textContent = sessions.length + ' online on a server';
+
+    const sorted = sessions.slice().sort((a, b) => a.username.localeCompare(b.username));
+    const now = Date.now();
+    sorted.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'player-card';
+      const avatarUrl = 'https://mc-heads.net/avatar/' + encodeURIComponent(s.username) + '/80';
+      card.innerHTML =
+        '<div class="player-card-top">' +
+          '<img class="player-avatar" src="' + avatarUrl + '" alt="" width="48" height="48"/>' +
+          '<div class="player-name">' + escapeHtml(s.username) + '</div>' +
+        '</div>' +
+        '<div class="player-row"><span>Server</span><strong title="' + escapeHtml(s.server) + '">' + escapeHtml(s.server) + '</strong></div>' +
+        '<div class="player-row"><span>Version</span><strong>' + escapeHtml(s.version || 'unknown') + '</strong></div>' +
+        '<div class="player-row"><span>On this server</span><strong>' + formatDuration(now - (s.serverSince || now)) + '</strong></div>';
+      grid.appendChild(card);
+    });
+  }
+
+  function applyData(data) {
+    if (!data || data.ok !== true) {
+      if (data && data.error === 'forbidden') {
+        clearToken();
+        show('stateDenied');
+        return;
+      }
+      if (data && data.error === 'token_expired') {
+        clearToken();
+        show('stateLogin');
+        return;
+      }
+      showError('Could not load statistics. Please try again.');
+      return;
+    }
+    renderStats(data);
+    renderSessions(data.sessions || []);
+    show('stateData');
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(function () {
+      const token = loadToken();
+      if (!token) return;
+      fetch(LITE_API_URL + '?action=statisticsCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
+        .then(r => r.json())
+        .then(d => { if (d && d.ok) { renderStats(d); renderSessions(d.sessions || []); } })
+        .catch(() => {});
+    }, 30000);
+  }
+
+  function startLogin() {
+    const loginBtn = document.getElementById('loginBtn');
+    loginBtn.classList.add('loading');
+    fetch(LITE_API_URL + '?action=statisticsConfig', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(cfg => {
+        if (!cfg.ok || !cfg.clientId) {
+          loginBtn.classList.remove('loading');
+          showError('Discord sign-in is not configured yet.');
+          return;
+        }
+        let csrfState = '';
+        try {
+          const buf = new Uint8Array(16);
+          crypto.getRandomValues(buf);
+          csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+          sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+        } catch (e) {}
+        const url = 'https://discord.com/oauth2/authorize'
+          + '?client_id=' + encodeURIComponent(cfg.clientId)
+          + '&response_type=code'
+          + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
+          + '&scope=' + encodeURIComponent('identify')
+          + '&state=' + csrfState;
+        window.location.href = url;
+      })
+      .catch(() => {
+        loginBtn.classList.remove('loading');
+        showError('Network error while contacting the server. Please try again.');
+      });
+  }
+  document.getElementById('loginBtn').addEventListener('click', startLogin);
+  document.getElementById('switchAccountBtn').addEventListener('click', () => { clearToken(); show('stateLogin'); });
+  document.getElementById('retryBtn').addEventListener('click', () => { show('stateLogin'); });
+
+  (function init() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has('code')) {
+      show('stateWorking');
+      const code = params.get('code');
+      const returnedState = params.get('state') || '';
+      let storedState = '';
+      try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
+      try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('code');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+
+      if (storedState && returnedState !== storedState) {
+        showError('Sign-in session mismatch. Please try again.');
+        return;
+      }
+      fetch(LITE_API_URL + '?action=statisticsAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
+        .then(r => r.json())
+        .then(function (data) {
+          if (data && data.ok && data.token) saveToken(data.token);
+          applyData(data);
+        })
+        .catch(() => showError('Network error while contacting the server. Please try again.'));
+      return;
+    }
+
+    if (params.has('error')) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('error');
+      cleanUrl.searchParams.delete('error_description');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+      show('stateLogin');
+      return;
+    }
+
+    const token = loadToken();
+    if (!token) { show('stateLogin'); return; }
+    show('stateLoading');
+    fetch(LITE_API_URL + '?action=statisticsCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
+      .then(r => r.json())
+      .then(applyData)
+      .catch(() => showError('Network error while contacting the server. Please try again.'));
+  })();
+})();
+</script>
+</body>
+</html>
