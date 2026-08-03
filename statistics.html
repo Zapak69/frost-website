@@ -119,6 +119,14 @@
   .copy-btn:hover { color: var(--text); border-color: var(--frost-blue); background: rgba(79,200,248,0.1); }
   .copy-btn.copied { color: var(--frost-blue); border-color: var(--frost-blue); }
 
+  .stats-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+  .logout-btn {
+    background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--muted); font-family: 'Space Grotesk', sans-serif; font-size: 12.5px; font-weight: 600;
+    padding: 7px 14px; cursor: pointer; transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .logout-btn:hover { color: var(--text); border-color: var(--frost-blue); background: rgba(79,200,248,0.1); }
+
   .tracker-refresh-note { text-align: center; margin-top: 28px; font-size: 12.5px; color: var(--muted); }
 
   .chart-section { margin-bottom: 44px; }
@@ -207,7 +215,10 @@
   </div>
 
   <div id="stateData" class="state">
-    <div class="section-title">Frost Client — Stats</div>
+    <div class="stats-head">
+      <div class="section-title" style="margin-bottom:0;">Frost Client — Stats</div>
+      <button type="button" class="logout-btn" id="logoutBtn">Log out</button>
+    </div>
     <div class="stats-row">
       <div class="stat-tile"><div class="num" id="statOnline">—</div><div class="label">Online now</div></div>
       <div class="stat-tile"><div class="num" id="statAvg">—</div><div class="label">Avg. online (24h)</div></div>
@@ -231,7 +242,7 @@
       </div>
       <div class="chart-card">
         <div class="chart-subline" id="timeChartSubline"></div>
-        <svg id="timeChart" class="chart-svg" viewBox="0 0 1000 300"></svg>
+        <svg id="timeChart" class="chart-svg" viewBox="0 0 1000 300" preserveAspectRatio="none"></svg>
         <div class="chart-tooltip" id="timeChartTooltip"></div>
         <div class="chart-empty" id="timeChartEmpty" style="display:none;">Not enough history yet for this range.</div>
       </div>
@@ -695,6 +706,12 @@
   document.getElementById('loginBtn').addEventListener('click', startLogin);
   document.getElementById('switchAccountBtn').addEventListener('click', () => { clearToken(); show('stateLogin'); });
   document.getElementById('retryBtn').addEventListener('click', () => { show('stateLogin'); });
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    if (refreshTimer) clearInterval(refreshTimer);
+    clearToken();
+    try { localStorage.removeItem(OWNER_TOKEN_KEY); } catch (e) {}
+    show('stateLogin');
+  });
 
   (function init() {
     const params = new URLSearchParams(window.location.search);
