@@ -194,7 +194,6 @@
   .chart-subline strong { color: var(--text); font-family: 'Space Mono', monospace; }
   .chart-svg { display: block; width: 100%; height: 220px; overflow: visible; }
   .chart-curve {
-    transform-origin: right center;
     transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   }
   @media (prefers-reduced-motion: reduce) {
@@ -553,6 +552,7 @@
     svg.appendChild(defs);
     const curveWindow = svgEl('g', { 'clip-path': 'url(#chart-curve-clip)' });
     const curveGroup = svgEl('g', { class: 'chart-curve' });
+    curveGroup.style.transformOrigin = (W - PAD_R) + 'px ' + (H / 2) + 'px';
     curveGroup.appendChild(svgEl('path', { d: areaPath, fill: CHART_ACCENT, opacity: '0.1', stroke: 'none' }));
     curveGroup.appendChild(svgEl('path', { d: linePath, fill: 'none', stroke: CHART_ACCENT, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
 
@@ -564,9 +564,9 @@
     lastLabel.textContent = last.tooltip;
     svg.appendChild(lastLabel);
 
-    curveGroup.appendChild(svgEl('circle', { cx: xPix(last.t), cy: yPix(last.value), r: 4, fill: CHART_ACCENT, stroke: '#0d141c', 'stroke-width': 2 }));
     curveWindow.appendChild(curveGroup);
     svg.appendChild(curveWindow);
+    svg.appendChild(svgEl('circle', { cx: xPix(last.t), cy: yPix(last.value), r: 4, fill: CHART_ACCENT, stroke: '#0d141c', 'stroke-width': 2 }));
 
     const crosshair = svgEl('line', { x1: 0, x2: 0, y1: PAD_T, y2: H - PAD_B, stroke: CHART_MUTED, 'stroke-width': 1, opacity: 0 });
     svg.appendChild(crosshair);
