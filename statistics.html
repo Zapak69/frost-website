@@ -196,8 +196,8 @@
 <nav>
   <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
   <div class="nav-right">
-    <button type="button" class="nav-logout-btn" id="navLogoutBtn">Log out</button>
     <a class="nav-back" href="https://frostclient.eu">← Back to Frost</a>
+    <button type="button" class="nav-logout-btn" id="navLogoutBtn">Log out</button>
   </div>
 </nav>
 
@@ -264,7 +264,7 @@
       </div>
       <div class="chart-card">
         <div class="chart-subline" id="timeChartSubline"></div>
-        <svg id="timeChart" class="chart-svg" viewBox="0 0 1000 300" preserveAspectRatio="none"></svg>
+        <svg id="timeChart" class="chart-svg" viewBox="0 0 1000 300"></svg>
         <div class="chart-tooltip" id="timeChartTooltip"></div>
         <div class="chart-empty" id="timeChartEmpty" style="display:none;">Not enough history yet for this range.</div>
       </div>
@@ -462,7 +462,15 @@
     }
     emptyEl.style.display = 'none';
 
-    const W = 1000, H = 300, PAD_L = 46, PAD_R = 12, PAD_T = 16, PAD_B = 30;
+    // The viewBox is set to the SVG's own measured pixel size (not a fixed abstract unit
+    // space) so 1 viewBox unit == 1 real CSS pixel everywhere. That's what keeps text (whose
+    // font-size is set in real px via CSS) crisp and constant-sized instead of getting
+    // stretched huge on an ultra-wide 4K card or shrunk to nothing on a narrow mobile one -
+    // both are the SVG uniformly scaling its whole coordinate space to fit the box otherwise.
+    const rect0 = svg.getBoundingClientRect();
+    const W = Math.max(1, Math.round(rect0.width)), H = Math.max(1, Math.round(rect0.height));
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    const PAD_L = 46, PAD_R = 12, PAD_T = 16, PAD_B = 30;
     const plotW = W - PAD_L - PAD_R, plotH = H - PAD_T - PAD_B;
     const xs = points.map(p => p.t);
     const xMin = Math.min.apply(null, xs), xMax = Math.max.apply(null, xs);
@@ -558,14 +566,19 @@
     const emptyEl = document.getElementById(emptyId);
     svg.innerHTML = '';
 
+    // Same "viewBox == real measured pixels" fix as renderTimeChart - measured BEFORE the
+    // viewBox changes, since the card's rendered width comes from its CSS width (100%), not
+    // from the SVG's own (auto) height/aspect ratio.
+    const W = Math.max(1, Math.round(svg.getBoundingClientRect().width));
+
     if (!items || !items.length) {
       emptyEl.style.display = '';
-      svg.setAttribute('viewBox', '0 0 1000 40');
+      svg.setAttribute('viewBox', '0 0 ' + W + ' 40');
       return;
     }
     emptyEl.style.display = 'none';
 
-    const W = 1000, LABEL_W = 140, VALUE_W = 110, BAR_H = 26, GAP = 14, PAD_TOP = 8;
+    const LABEL_W = 140, VALUE_W = 110, BAR_H = 26, GAP = 14, PAD_TOP = 8;
     const H = items.length * (BAR_H + GAP) + PAD_TOP;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
 
@@ -589,6 +602,21 @@
       svg.appendChild(valueLabel);
     });
   }
+
+  // Re-measure and re-render on resize (debounced) - the charts size their viewBox to the
+  // actual rendered pixel box (see renderTimeChart/renderBarChart), so a width change (window
+  // resize, orientation change, or the page's own responsive max-width kicking in) needs a
+  // fresh render or the old viewBox would stay stretched/shrunk relative to the new box.
+  let chartResizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(chartResizeTimer);
+    chartResizeTimer = setTimeout(() => {
+      if (!lastData) return;
+      renderTimeChart();
+      renderBarChart('versionChart', 'versionChartEmpty', lastData.versionBreakdown || []);
+      renderBarChart('ratingChart', 'ratingChartEmpty', lastData.ratingBreakdown || []);
+    }, 200);
+  });
 
   let refreshTimer = null;
   function fetchStatistics() {
