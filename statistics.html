@@ -158,6 +158,15 @@
   .copy-btn:hover { color: var(--text); border-color: var(--frost-blue); background: rgba(79,200,248,0.1); }
   .copy-btn.copied { color: var(--frost-blue); border-color: var(--frost-blue); }
 
+  .player-search-row { margin-bottom: 14px; }
+  .player-search-input {
+    width: 100%; max-width: 320px;
+    background: rgba(8,12,16,0.6); border: 1px solid var(--border); border-radius: 10px;
+    padding: 9px 14px; font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; color: var(--text);
+    outline: none; transition: border-color 0.2s, background 0.2s;
+  }
+  .player-search-input::placeholder { color: var(--muted); }
+  .player-search-input:focus { border-color: var(--frost-blue); background: rgba(8,12,16,0.85); }
   .server-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
   .server-chip {
     background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 20px;
@@ -175,7 +184,7 @@
   .chart-grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 44px; }
   .chart-grid .chart-section { margin-bottom: 0; }
   @media (min-width: 900px) {
-    .chart-grid { grid-template-columns: 1fr 1fr; }
+    .chart-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
   }
   .range-switch { display: flex; gap: 4px; background: rgba(8,12,16,0.6); border: 1px solid var(--border); border-radius: 10px; padding: 4px; }
   .range-btn {
@@ -280,6 +289,7 @@
       <div class="stat-tile"><div class="num" id="statVersion">—</div><div class="label">Most played version</div></div>
       <div class="stat-tile"><div class="num" id="statReviewCount">—</div><div class="label">Total reviews</div></div>
       <div class="stat-tile"><div class="num" id="statAvgRating">—</div><div class="label">Avg. rating</div></div>
+      <div class="stat-tile"><div class="num" id="statPollVotes">—</div><div class="label">Poll votes</div></div>
     </div>
 
     <div class="chart-section">
@@ -323,6 +333,16 @@
           <div class="chart-empty" id="ratingChartEmpty" style="display:none;">No reviews yet.</div>
         </div>
       </div>
+
+      <div class="chart-section">
+        <div class="tracker-head">
+          <h2>Best PvP poll</h2>
+        </div>
+        <div class="chart-card">
+          <svg id="pollChart" class="chart-svg-version" viewBox="0 0 1000 190"></svg>
+          <div class="chart-empty" id="pollChartEmpty" style="display:none;">No votes yet.</div>
+        </div>
+      </div>
     </div>
 
     <div class="tracker-head">
@@ -337,6 +357,9 @@
         <button type="button" class="sort-dir-btn" id="sortDirBtn" title="Toggle sort direction">↑</button>
         <span class="tracker-count" id="trackerCount"></span>
       </div>
+    </div>
+    <div class="player-search-row">
+      <input type="text" id="playerSearch" class="player-search-input" placeholder="Search by username…" autocomplete="off" spellcheck="false"/>
     </div>
     <div id="serverFilter" class="server-filter"></div>
     <div id="playerGrid" class="player-grid"></div>
@@ -760,6 +783,7 @@
     animateStatNumber('statPeak', data.peakOnline || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statPlaytime', data.totalPlaytimeMs || 0, v => formatDuration(Math.round(v)));
     animateStatNumber('statReviewCount', data.totalReviews || 0, v => formatNumber(Math.round(v)));
+    animateStatNumber('statPollVotes', data.totalPollVotes || 0, v => formatNumber(Math.round(v)));
     document.getElementById('statVersion').textContent = data.topVersion || 'n/a';
     if (data.totalReviews) {
       animateStatNumber('statAvgRating', data.avgRating || 0, v => v.toFixed(1) + ' ★');
@@ -771,10 +795,12 @@
     renderTimeChart();
     renderBarChart('versionChart', 'versionChartEmpty', data.versionBreakdown || []);
     renderBarChart('ratingChart', 'ratingChartEmpty', data.ratingBreakdown || []);
+    renderBarChart('pollChart', 'pollChartEmpty', data.pollBreakdown || []);
   }
 
   let lastSessions = [];
   let serverFilter = null;
+  let sessionSearch = '';
   let sessionSort = 'name';
   const SORT_DEFAULT_DIR = { name: 'asc', players: 'desc', playtime: 'desc', serverPop: 'desc' };
   let sessionSortDir = SORT_DEFAULT_DIR.name;
@@ -848,6 +874,7 @@
 
     if (!sessions.length) {
       emptyNote.style.display = '';
+      emptyNote.textContent = 'No online Frost players are currently on a multiplayer server.';
       countEl.textContent = '';
       return;
     }
@@ -861,6 +888,16 @@
     } else if (serverFilter) {
       filtered = sessions.filter(s => s.server === serverFilter);
       countLabel = serverFilter;
+    }
+    if (sessionSearch) {
+      filtered = filtered.filter(s => s.username.toLowerCase().includes(sessionSearch));
+    }
+
+    if (!filtered.length) {
+      emptyNote.style.display = '';
+      emptyNote.textContent = sessionSearch ? 'No players match your search.' : 'No players match this filter.';
+      countEl.textContent = '0 online on ' + countLabel;
+      return;
     }
     countEl.textContent = filtered.length + ' online on ' + countLabel;
 
@@ -948,6 +985,16 @@
     sessionSortDir = sessionSortDir === 'asc' ? 'desc' : 'asc';
     updateSortDirBtn();
     renderSessions(lastSessions);
+  });
+
+  let searchDebounce = null;
+  document.getElementById('playerSearch').addEventListener('input', function () {
+    const value = this.value;
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => {
+      sessionSearch = value.trim().toLowerCase();
+      renderSessions(lastSessions);
+    }, 150);
   });
 
   document.getElementById('playerGrid').addEventListener('click', function (e) {

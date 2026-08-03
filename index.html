@@ -1075,6 +1075,65 @@
   @media(max-width:600px){
     .promo-toast { left: 16px; right: 16px; bottom: 16px; max-width: none; }
   }
+
+  .poll-toast {
+    position: fixed; z-index: 150;
+    left: 24px; bottom: 24px; max-width: 320px;
+    background: linear-gradient(180deg, rgba(17,29,43,0.97), rgba(12,20,30,0.97));
+    border: 1px solid rgba(255,202,40,0.4); border-radius: 16px;
+    padding: 18px 20px;
+    display: flex; align-items: flex-start; gap: 12px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.45), 0 0 24px rgba(255,193,7,0.06);
+    transform: translateY(140%); opacity: 0; pointer-events: none;
+    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease, bottom 0.3s ease;
+  }
+  .poll-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .poll-toast-body { display: flex; flex-direction: column; gap: 10px; }
+  .poll-toast-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+  .poll-toast-text strong { color: #ffca28; }
+  .poll-toast-cta {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #ffca28, #ffa726); color: #1a0f00;
+    font-size: 13px; font-weight: 700; border: none; cursor: pointer;
+    padding: 8px 16px; border-radius: 8px;
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .poll-toast-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(255,193,7,0.4); }
+  @media(max-width:600px){
+    .poll-toast { left: 16px; right: 16px; max-width: none; }
+  }
+
+  .modal-box--poll { max-width: 480px; }
+  .poll-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .poll-option {
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    background: rgba(255,255,255,0.03); border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 18px 12px; cursor: pointer; min-height: 96px;
+    font-family: 'Space Grotesk', sans-serif; color: var(--text);
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .poll-option:hover { border-color: rgba(255,202,40,0.5); background: rgba(255,202,40,0.06); transform: translateY(-2px); }
+  .poll-option.selected { border-color: #ffca28; background: rgba(255,202,40,0.12); box-shadow: 0 0 0 1px #ffca28 inset; }
+  .poll-option-icon { width: 36px; height: 36px; object-fit: contain; }
+  .poll-option-label { font-size: 13.5px; font-weight: 700; letter-spacing: 0.5px; }
+  .poll-option-pct { display: none; font-family: 'Space Mono', monospace; font-size: 19px; font-weight: 700; color: #ffca28; }
+  .poll-option-bar { position: absolute; left: 0; bottom: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.06); }
+  .poll-option-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ffca28, #ffa726); transition: width 0.7s cubic-bezier(0.22,1,0.36,1); }
+  .poll-option.voted { cursor: default; }
+  .poll-option.voted:hover { transform: none; background: rgba(255,255,255,0.03); border-color: var(--border); }
+  .poll-option.voted.winner { border-color: #ffca28; background: rgba(255,202,40,0.1); box-shadow: 0 0 24px rgba(255,202,40,0.2); }
+  .poll-note { text-align: center; font-size: 11.5px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
+  .poll-submit-btn {
+    width: 100%; padding: 13px; border: none; border-radius: 10px; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; font-weight: 700;
+    background: linear-gradient(135deg, #ffca28, #ffa726); color: #1a0f00;
+    transition: transform 0.2s, box-shadow 0.25s, opacity 0.2s;
+  }
+  .poll-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(255,193,7,0.35); }
+  .poll-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .poll-thanks { display: none; text-align: center; font-size: 15px; font-weight: 700; color: #ffca28; padding: 4px 0 2px; }
 </style>
 </head>
 <body>
@@ -1113,6 +1172,12 @@
   <div class="promo-toast-body">
     <div class="promo-toast-text"><strong>Limited offer:</strong> subscribe to FrostClient Lite now and get your first day for free!</div>
     <a href="lite" class="promo-toast-cta">Get Lite →</a>
+  </div>
+</div>
+<div class="poll-toast" id="pollToast">
+  <div class="poll-toast-body">
+    <div class="poll-toast-text"><strong>Got 10 seconds?</strong> Answer one quick question.</div>
+    <button type="button" class="poll-toast-cta" id="pollToastCta">Vote Now →</button>
   </div>
 </div>
 <nav>
@@ -1427,6 +1492,42 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="pollModal">
+  <div class="modal-box modal-box--poll">
+    <button type="button" class="modal-close" id="pollModalCloseBtn" aria-label="Close">✕</button>
+    <div class="modal-title" style="text-align:center;">What's the best PvP right now?</div>
+    <div class="poll-options" id="pollOptions">
+      <button type="button" class="poll-option" data-answer="CRYSTAL">
+        <img src="icons/crystal.png" alt="" class="poll-option-icon"/>
+        <span class="poll-option-label">Crystal</span>
+        <span class="poll-option-pct"></span>
+        <div class="poll-option-bar"><div class="poll-option-bar-fill"></div></div>
+      </button>
+      <button type="button" class="poll-option" data-answer="MACE">
+        <img src="icons/mace.png" alt="" class="poll-option-icon"/>
+        <span class="poll-option-label">Mace</span>
+        <span class="poll-option-pct"></span>
+        <div class="poll-option-bar"><div class="poll-option-bar-fill"></div></div>
+      </button>
+      <button type="button" class="poll-option" data-answer="SMP">
+        <img src="icons/smp.png" alt="" class="poll-option-icon"/>
+        <span class="poll-option-label">SMP</span>
+        <span class="poll-option-pct"></span>
+        <div class="poll-option-bar"><div class="poll-option-bar-fill"></div></div>
+      </button>
+      <button type="button" class="poll-option" data-answer="UHC">
+        <img src="icons/uhc.png" alt="" class="poll-option-icon"/>
+        <span class="poll-option-label">UHC</span>
+        <span class="poll-option-pct"></span>
+        <div class="poll-option-bar"><div class="poll-option-bar-fill"></div></div>
+      </button>
+    </div>
+    <div class="poll-note" id="pollNote">Your vote is final and can't be changed later — please answer honestly and think it over.</div>
+    <button type="button" class="poll-submit-btn" id="pollSubmitBtn" disabled>Submit Vote</button>
+    <div class="poll-thanks" id="pollThanks">Thank you for your answer.</div>
+  </div>
+</div>
+
 <script>
 (function () {
   const VERSION_PAGE = 'https://modrinth.com/modpack/frost-client/version/';
@@ -1664,6 +1765,131 @@ for (let i = 0; i < 100; i++) particles.push({
     toast.classList.remove('show');
     try { localStorage.setItem(KEY, '1'); } catch (e) {}
   });
+})();
+(function () {
+  const POLL_VOTE_URL = 'https://bot.frostclient.eu/poll-vote';
+  const POLL_RESULTS_URL = 'https://bot.frostclient.eu/poll-votes';
+  const VOTED_KEY = 'frostPollVotedAnswer';
+  const ANSWERS = ['CRYSTAL', 'MACE', 'SMP', 'UHC'];
+
+  const toast = document.getElementById('pollToast');
+  const toastText = toast ? toast.querySelector('.poll-toast-text') : null;
+  const toastCta = document.getElementById('pollToastCta');
+  const modal = document.getElementById('pollModal');
+  const closeBtn = document.getElementById('pollModalCloseBtn');
+  const optionsWrap = document.getElementById('pollOptions');
+  const options = optionsWrap ? Array.from(optionsWrap.querySelectorAll('.poll-option')) : [];
+  const submitBtn = document.getElementById('pollSubmitBtn');
+  const thanksEl = document.getElementById('pollThanks');
+  const noteEl = document.getElementById('pollNote');
+  if (!toast || !modal || !optionsWrap || !submitBtn || !thanksEl) return;
+  const promoToast = document.getElementById('promoToast');
+  function repositionToast() {
+    if (promoToast && promoToast.classList.contains('show')) {
+      toast.style.bottom = (promoToast.getBoundingClientRect().height + 24 + 16) + 'px';
+    } else {
+      toast.style.bottom = '';
+    }
+  }
+  const promoCloseBtn = document.getElementById('promoToastClose');
+  if (promoCloseBtn) promoCloseBtn.addEventListener('click', repositionToast);
+
+  let votedAnswer = null;
+  try { votedAnswer = localStorage.getItem(VOTED_KEY); } catch (e) {}
+  function updateToastContent() {
+    if (!toastText || !toastCta) return;
+    if (votedAnswer) {
+      toastText.innerHTML = '<strong>Thanks for voting!</strong> See how everyone else answered.';
+      toastCta.textContent = 'Show Answers →';
+    } else {
+      toastText.innerHTML = '<strong>Got 10 seconds?</strong> Answer one quick question.';
+      toastCta.textContent = 'Vote Now →';
+    }
+  }
+  updateToastContent();
+  setTimeout(() => { repositionToast(); toast.classList.add('show'); }, 1600);
+
+  function renderResults(votes) {
+    const total = ANSWERS.reduce((sum, a) => sum + (votes[a] || 0), 0) || 1;
+    let maxCount = -1, winner = null;
+    ANSWERS.forEach(a => {
+      const c = votes[a] || 0;
+      if (c > maxCount) { maxCount = c; winner = a; }
+    });
+    options.forEach(opt => {
+      const answer = opt.dataset.answer;
+      const count = votes[answer] || 0;
+      const pct = Math.round((count / total) * 100);
+      opt.classList.add('voted');
+      opt.classList.toggle('winner', answer === winner && maxCount > 0);
+      opt.classList.toggle('selected', answer === votedAnswer);
+      const pctEl = opt.querySelector('.poll-option-pct');
+      if (pctEl) { pctEl.style.display = 'block'; pctEl.textContent = pct + '%'; }
+      const fill = opt.querySelector('.poll-option-bar-fill');
+      if (fill) fill.style.width = pct + '%';
+    });
+    submitBtn.style.display = 'none';
+    if (noteEl) noteEl.style.display = 'none';
+    thanksEl.style.display = 'block';
+  }
+
+  function openModal() {
+    modal.classList.add('active');
+    toast.classList.remove('show');
+    if (votedAnswer) {
+      fetch(POLL_RESULTS_URL, { cache: 'no-store' })
+        .then(r => r.json())
+        .then(data => { if (data && data.ok) renderResults(data.votes); })
+        .catch(() => {});
+    }
+  }
+  function closeModal() {
+    modal.classList.remove('active');
+    updateToastContent();
+    setTimeout(() => { repositionToast(); toast.classList.add('show'); }, 400);
+  }
+
+  if (toastCta) toastCta.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+  });
+
+  if (votedAnswer) {
+    options.forEach(opt => opt.classList.add('voted'));
+    submitBtn.style.display = 'none';
+    if (noteEl) noteEl.style.display = 'none';
+    thanksEl.style.display = 'block';
+  } else {
+    let selected = null;
+    options.forEach(opt => {
+      opt.addEventListener('click', () => {
+        if (opt.classList.contains('voted')) return;
+        options.forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        selected = opt.dataset.answer;
+        submitBtn.disabled = false;
+      });
+    });
+    submitBtn.addEventListener('click', () => {
+      if (!selected || submitBtn.disabled) return;
+      submitBtn.disabled = true;
+      fetch(POLL_VOTE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer: selected })
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (!data || !data.ok) { submitBtn.disabled = false; return; }
+          votedAnswer = selected;
+          try { localStorage.setItem(VOTED_KEY, selected); } catch (e) {}
+          renderResults(data.votes);
+        })
+        .catch(() => { submitBtn.disabled = false; });
+    });
+  }
 })();
 const scrollBar  = document.getElementById('scroll-bar');
 const navEl      = document.querySelector('nav');
