@@ -1133,15 +1133,7 @@
   .poll-option-icon { width: 36px; height: 36px; object-fit: contain; }
   .poll-option-label { font-size: 13.5px; font-weight: 700; letter-spacing: 0.5px; }
   .poll-option-pct { display: none; font-family: 'Space Mono', monospace; font-size: 19px; font-weight: 700; color: #ffca28; }
-  .poll-option-your-badge {
-    display: none;
-    position: absolute; top: 7px; left: 7px;
-    background: #ffca28; color: #1a0f00;
-    font-size: 9px; font-weight: 800; letter-spacing: 0.2px;
-    padding: 3px 8px; border-radius: 20px;
-    font-family: 'Space Grotesk', sans-serif;
-  }
-  .poll-option.voted.selected .poll-option-your-badge {
+  .poll-option.voted.selected {
     display: block;
     animation: pollThanksIn 0.4s cubic-bezier(0.16,1,0.3,1) both;
     animation-delay: 0.15s;
@@ -1536,28 +1528,24 @@
         <img src="icons/crystal.png" alt="" class="poll-option-icon"/>
         <span class="poll-option-label">Crystal</span>
         <span class="poll-option-pct"></span>
-        <span class="poll-option-your-badge">✓ Your pick</span>
         <div class="poll-option-bar"><div class="poll-option-bar-fill"></div></div>
       </button>
       <button type="button" class="poll-option" data-answer="MACE">
         <img src="icons/mace.png" alt="" class="poll-option-icon"/>
         <span class="poll-option-label">Mace</span>
         <span class="poll-option-pct"></span>
-        <span class="poll-option-your-badge">✓ Your pick</span>
         <div class="poll-option-bar"><div class="poll-option-bar-fill"></div></div>
       </button>
       <button type="button" class="poll-option" data-answer="SMP">
         <img src="icons/smp.png" alt="" class="poll-option-icon"/>
         <span class="poll-option-label">SMP</span>
         <span class="poll-option-pct"></span>
-        <span class="poll-option-your-badge">✓ Your pick</span>
         <div class="poll-option-bar"><div class="poll-option-bar-fill"></div></div>
       </button>
       <button type="button" class="poll-option" data-answer="UHC">
         <img src="icons/uhc.png" alt="" class="poll-option-icon"/>
         <span class="poll-option-label">UHC</span>
         <span class="poll-option-pct"></span>
-        <span class="poll-option-your-badge">✓ Your pick</span>
         <div class="poll-option-bar"><div class="poll-option-bar-fill"></div></div>
       </button>
     </div>
