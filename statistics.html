@@ -196,10 +196,9 @@
   .chart-subline strong { color: var(--text); font-family: 'Space Mono', monospace; }
   .chart-svg {
     display: block; width: 100%; height: 220px; overflow: visible;
-    transform-origin: center center;
-    transition: opacity 0.18s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    transform-origin: right center;
+    transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .chart-svg.chart-range-zoom { opacity: 0; transform: scaleX(0.8); }
   @media (prefers-reduced-motion: reduce) {
     .chart-svg { transition: none; }
   }
@@ -475,6 +474,7 @@
 
   let lastData = null;
   let currentRange = '24h';
+  const RANGE_ORDER = ['1h', '12h', '24h', 'week', 'month', 'year', 'all'];
 
   function seriesForRange(range) {
     if (range === '1h' || range === '12h' || range === '24h') {
@@ -601,13 +601,21 @@
     const btn = e.target.closest('.range-btn');
     if (!btn || btn.classList.contains('active')) return;
     document.querySelectorAll('.range-btn').forEach(b => b.classList.toggle('active', b === btn));
+    const oldIdx = RANGE_ORDER.indexOf(currentRange);
+    const newIdx = RANGE_ORDER.indexOf(btn.dataset.range);
+    const zoomingIn = newIdx < oldIdx;
     currentRange = btn.dataset.range;
+    renderTimeChart();
+
     const svg = document.getElementById('timeChart');
-    svg.classList.add('chart-range-zoom');
-    setTimeout(() => {
-      renderTimeChart();
-      requestAnimationFrame(() => requestAnimationFrame(() => svg.classList.remove('chart-range-zoom')));
-    }, 180);
+    svg.style.transition = 'none';
+    svg.style.transform = 'scaleX(' + (zoomingIn ? 0.85 : 1.15) + ')';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        svg.style.transition = '';
+        svg.style.transform = '';
+      });
+    });
   });
   function renderBarChart(svgId, emptyId, items) {
     const svg = document.getElementById(svgId);
