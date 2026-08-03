@@ -119,6 +119,17 @@
   .copy-btn:hover { color: var(--text); border-color: var(--frost-blue); background: rgba(79,200,248,0.1); }
   .copy-btn.copied { color: var(--frost-blue); border-color: var(--frost-blue); }
 
+  .server-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .server-chip {
+    background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 20px;
+    padding: 6px 14px; font-family: 'Space Grotesk', sans-serif; font-size: 12.5px; font-weight: 600;
+    color: var(--muted); cursor: pointer; transition: color 0.2s, background 0.2s, border-color 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .server-chip:hover { color: var(--text); border-color: var(--frost-blue); }
+  .server-chip.active { background: var(--frost-blue); color: #06121c; border-color: var(--frost-blue); }
+  .server-chip .count { opacity: 0.75; font-family: 'Space Mono', monospace; }
+
   .stats-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
   .logout-btn {
     background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 8px;
@@ -272,6 +283,7 @@
       <h2>Where's everyone playing?</h2>
       <span class="tracker-count" id="trackerCount"></span>
     </div>
+    <div id="serverFilter" class="server-filter"></div>
     <div id="playerGrid" class="player-grid"></div>
     <div id="emptyNote" class="tracker-empty" style="display:none;">No online Frost players are currently on a multiplayer server.</div>
     <p class="tracker-refresh-note">Refreshes automatically every 30 seconds.</p>
@@ -598,11 +610,44 @@
     renderBarChart('ratingChart', 'ratingChartEmpty', data.ratingBreakdown || []);
   }
 
+  let lastSessions = [];
+  let serverFilter = null;
+
+  function renderServerFilter(sessions) {
+    const el = document.getElementById('serverFilter');
+    el.innerHTML = '';
+    if (!sessions.length) return;
+    const counts = {};
+    sessions.forEach(s => { counts[s.server] = (counts[s.server] || 0) + 1; });
+    if (serverFilter && !counts[serverFilter]) serverFilter = null;
+    const servers = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+    const allChip = document.createElement('button');
+    allChip.type = 'button';
+    allChip.className = 'server-chip' + (serverFilter === null ? ' active' : '');
+    allChip.innerHTML = 'All <span class="count">' + sessions.length + '</span>';
+    allChip.addEventListener('click', () => { serverFilter = null; renderSessions(lastSessions); });
+    el.appendChild(allChip);
+
+    servers.forEach(([server, count]) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'server-chip' + (serverFilter === server ? ' active' : '');
+      chip.title = server;
+      chip.innerHTML = escapeHtml(server) + ' <span class="count">' + count + '</span>';
+      chip.addEventListener('click', () => { serverFilter = server; renderSessions(lastSessions); });
+      el.appendChild(chip);
+    });
+  }
+
   function renderSessions(sessions) {
+    lastSessions = sessions;
     const grid = document.getElementById('playerGrid');
     const emptyNote = document.getElementById('emptyNote');
     const countEl = document.getElementById('trackerCount');
     grid.innerHTML = '';
+
+    renderServerFilter(sessions);
 
     if (!sessions.length) {
       emptyNote.style.display = '';
@@ -610,9 +655,11 @@
       return;
     }
     emptyNote.style.display = 'none';
-    countEl.textContent = sessions.length + ' online on a server';
 
-    const sorted = sessions.slice().sort((a, b) => a.username.localeCompare(b.username));
+    const filtered = serverFilter ? sessions.filter(s => s.server === serverFilter) : sessions;
+    countEl.textContent = filtered.length + ' online on ' + (serverFilter || 'a server');
+
+    const sorted = filtered.slice().sort((a, b) => a.username.localeCompare(b.username));
     const now = Date.now();
     sorted.forEach(s => {
       const card = document.createElement('div');
