@@ -269,6 +269,8 @@
       <div class="tracker-head">
         <h2>Players over time</h2>
         <div class="range-switch" id="rangeSwitch">
+          <button type="button" class="range-btn" data-range="1h">1h</button>
+          <button type="button" class="range-btn" data-range="12h">12h</button>
           <button type="button" class="range-btn active" data-range="24h">24h</button>
           <button type="button" class="range-btn" data-range="week">Week</button>
           <button type="button" class="range-btn" data-range="month">Month</button>
@@ -313,6 +315,7 @@
           <button type="button" class="range-btn active" data-sort="name">Name</button>
           <button type="button" class="range-btn" data-sort="players">Most common</button>
           <button type="button" class="range-btn" data-sort="playtime">Playtime</button>
+          <button type="button" class="range-btn" data-sort="serverPop">Server size</button>
         </div>
         <button type="button" class="sort-dir-btn" id="sortDirBtn" title="Toggle sort direction">↑</button>
         <span class="tracker-count" id="trackerCount"></span>
@@ -453,9 +456,12 @@
   let currentRange = '24h';
 
   function seriesForRange(range) {
-    if (range === '24h') {
+    if (range === '1h' || range === '12h' || range === '24h') {
+      const hours = { '1h': 1, '12h': 12 }[range];
+      const cutoff = hours ? Date.now() - hours * 60 * 60 * 1000 : -Infinity;
       return (lastData.history24h || [])
         .slice().sort((a, b) => a.t - b.t)
+        .filter(s => s.t >= cutoff)
         .map(s => ({ t: s.t, value: s.count, tooltip: formatClock(s.t) }));
     }
     const daily = (lastData.historyDaily || []).slice().sort((a, b) => a.date.localeCompare(b.date));
@@ -662,7 +668,7 @@
   let lastSessions = [];
   let serverFilter = null;
   let sessionSort = 'name';
-  const SORT_DEFAULT_DIR = { name: 'asc', players: 'desc', playtime: 'desc' };
+  const SORT_DEFAULT_DIR = { name: 'asc', players: 'desc', playtime: 'desc', serverPop: 'desc' };
   let sessionSortDir = SORT_DEFAULT_DIR.name;
   const SOLO_FILTER = '__solo__';
 
@@ -670,6 +676,9 @@
     const counts = {};
     sessions.forEach(s => { counts[s.server] = (counts[s.server] || 0) + 1; });
     return counts;
+  }
+  function serverPopValue(s) {
+    return typeof s.serverOnline === 'number' ? s.serverOnline : -1;
   }
 
   function renderServerFilter(sessions, counts) {
@@ -750,6 +759,8 @@
       sorted.sort((a, b) => dirSign * (counts[a.server] - counts[b.server]) || a.username.localeCompare(b.username));
     } else if (sessionSort === 'playtime') {
       sorted.sort((a, b) => dirSign * ((now - (a.serverSince || now)) - (now - (b.serverSince || now))));
+    } else if (sessionSort === 'serverPop') {
+      sorted.sort((a, b) => dirSign * (serverPopValue(a) - serverPopValue(b)) || a.username.localeCompare(b.username));
     } else {
       sorted.sort((a, b) => dirSign * a.username.localeCompare(b.username));
     }
