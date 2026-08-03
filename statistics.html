@@ -107,8 +107,48 @@
   .player-name { font-weight: 700; font-size: 15.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .player-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 10px; }
   .player-row strong { color: var(--text); font-family: 'Space Mono', monospace; font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 65%; }
+  .player-row-value { display: inline-flex; align-items: center; gap: 6px; min-width: 0; max-width: 65%; }
+  .player-row-value strong { max-width: 100%; }
+  .copy-btn {
+    flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; border-radius: 6px;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+    color: var(--muted); font-size: 11px; cursor: pointer; padding: 0;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--frost-blue); background: rgba(79,200,248,0.1); }
+  .copy-btn.copied { color: var(--frost-blue); border-color: var(--frost-blue); }
 
   .tracker-refresh-note { text-align: center; margin-top: 28px; font-size: 12.5px; color: var(--muted); }
+
+  .chart-section { margin-bottom: 44px; }
+  .range-switch { display: flex; gap: 4px; background: rgba(8,12,16,0.6); border: 1px solid var(--border); border-radius: 10px; padding: 4px; }
+  .range-btn {
+    background: none; border: none; cursor: pointer; border-radius: 7px;
+    padding: 6px 12px; font-family: 'Space Grotesk', sans-serif; font-size: 12.5px; font-weight: 600;
+    color: var(--muted); transition: color 0.2s, background 0.2s;
+  }
+  .range-btn:hover { color: var(--text); }
+  .range-btn.active { background: var(--frost-blue); color: #06121c; }
+  .chart-card {
+    position: relative;
+    background: linear-gradient(180deg, rgba(17,29,43,0.92), rgba(12,20,30,0.92));
+    border: 1px solid var(--border); border-radius: 16px; padding: 20px;
+  }
+  .chart-subline { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .chart-subline strong { color: var(--text); font-family: 'Space Mono', monospace; }
+  .chart-svg { display: block; width: 100%; height: 220px; overflow: visible; }
+  .chart-svg-version { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart-axis-label { fill: var(--muted); font-size: 11px; font-family: 'Space Mono', monospace; }
+  .chart-version-label { fill: var(--text); font-size: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
+  .chart-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13.5px; }
+  .chart-tooltip {
+    position: absolute; display: none; pointer-events: none; transform: translate(-50%, calc(-100% - 12px));
+    background: linear-gradient(180deg, #171a1f, #101113); border: 1px solid var(--border); border-radius: 10px;
+    padding: 8px 12px; font-size: 12.5px; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 5;
+  }
+  .chart-tooltip-value { color: var(--frost-blue); font-family: 'Space Mono', monospace; font-weight: 700; font-size: 13.5px; }
+  .chart-tooltip-label { color: var(--muted); margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -136,9 +176,8 @@
 
   <div id="stateLogin" class="state">
     <div class="gate">
-      <div class="gate-eyebrow">Owner Only</div>
       <h1>Statistics</h1>
-      <p>Sign in with Discord to continue. Only one specific account can ever access this page — everyone else will see Access Denied.</p>
+      <p>Sign in with Discord to continue.</p>
       <button type="button" class="btn-discord" id="loginBtn">
         <img src="icons/discord.webp" alt=""/> Sign in with Discord
       </button>
@@ -151,7 +190,6 @@
 
   <div id="stateDenied" class="state">
     <div class="gate denied">
-      <div class="gate-eyebrow">Owner Only</div>
       <h1>Access Denied</h1>
       <p>This Discord account doesn't have access to this page.</p>
       <button type="button" class="btn-discord" id="switchAccountBtn" style="background:rgba(255,255,255,0.06);">
@@ -162,7 +200,6 @@
 
   <div id="stateError" class="state">
     <div class="gate">
-      <div class="gate-eyebrow">Owner Only</div>
       <h1>Something went wrong</h1>
       <p id="errorText">Please try again.</p>
       <button type="button" class="btn-discord" id="retryBtn" style="background:rgba(255,255,255,0.06);">Retry</button>
@@ -177,6 +214,47 @@
       <div class="stat-tile"><div class="num" id="statPeak">—</div><div class="label">All-time peak</div></div>
       <div class="stat-tile"><div class="num" id="statPlaytime">—</div><div class="label">Total playtime</div></div>
       <div class="stat-tile"><div class="num" id="statVersion">—</div><div class="label">Most played version</div></div>
+      <div class="stat-tile"><div class="num" id="statReviewCount">—</div><div class="label">Total reviews</div></div>
+      <div class="stat-tile"><div class="num" id="statAvgRating">—</div><div class="label">Avg. rating</div></div>
+    </div>
+
+    <div class="chart-section">
+      <div class="tracker-head">
+        <h2>Players over time</h2>
+        <div class="range-switch" id="rangeSwitch">
+          <button type="button" class="range-btn active" data-range="24h">24h</button>
+          <button type="button" class="range-btn" data-range="week">Week</button>
+          <button type="button" class="range-btn" data-range="month">Month</button>
+          <button type="button" class="range-btn" data-range="year">Year</button>
+          <button type="button" class="range-btn" data-range="all">All-time</button>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-subline" id="timeChartSubline"></div>
+        <svg id="timeChart" class="chart-svg" viewBox="0 0 1000 300"></svg>
+        <div class="chart-tooltip" id="timeChartTooltip"></div>
+        <div class="chart-empty" id="timeChartEmpty" style="display:none;">Not enough history yet for this range.</div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="tracker-head">
+        <h2>Active players by version</h2>
+      </div>
+      <div class="chart-card">
+        <svg id="versionChart" class="chart-svg-version" viewBox="0 0 1000 220"></svg>
+        <div class="chart-empty" id="versionChartEmpty" style="display:none;">No players online right now.</div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="tracker-head">
+        <h2>Reviews by rating</h2>
+      </div>
+      <div class="chart-card">
+        <svg id="ratingChart" class="chart-svg-version" viewBox="0 0 1000 190"></svg>
+        <div class="chart-empty" id="ratingChartEmpty" style="display:none;">No reviews yet.</div>
+      </div>
     </div>
 
     <div class="tracker-head">
@@ -230,6 +308,18 @@
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
   const TOKEN_KEY = 'frostStatisticsToken';
   const OAUTH_STATE_KEY = 'frostStatisticsOauthState';
+  const CACHE_KEY = 'frostStatisticsCache';
+  const OWNER_TOKEN_KEY = 'frostStatisticsOwnerToken';
+  const BRIDGE_URL = 'https://bot.frostclient.eu/statistics-data';
+  function saveCache(data) {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+  function loadCache() {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
 
   const states = ['stateLoading', 'stateLogin', 'stateWorking', 'stateDenied', 'stateError', 'stateData'];
   function show(id) {
@@ -238,7 +328,10 @@
 
   function saveToken(t) { try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {} }
   function loadToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
-  function clearToken() { try { localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+  function clearToken() { try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(CACHE_KEY); } catch (e) {} }
+
+  function saveOwnerToken(t) { try { localStorage.setItem(OWNER_TOKEN_KEY, t); } catch (e) {} }
+  function loadOwnerToken() { try { return localStorage.getItem(OWNER_TOKEN_KEY) || ''; } catch (e) { return ''; } }
 
   function showError(msg) {
     document.getElementById('errorText').textContent = msg || 'Please try again.';
@@ -266,8 +359,219 @@
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
+  const CHART_ACCENT = '#4fc8f8';
+  const CHART_MUTED = '#6b8fa8';
+  const CHART_BORDER = 'rgba(79,200,248,0.15)';
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  function svgEl(tag, attrs) {
+    const e = document.createElementNS(SVG_NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function niceCeil(value) {
+    if (value <= 0) return 1;
+    const exp = Math.floor(Math.log10(value));
+    const base = Math.pow(10, exp);
+    const steps = [1, 2, 5, 10];
+    for (const s of steps) {
+      if (value <= s * base) return s * base;
+    }
+    return 10 * base;
+  }
+
+  function formatClock(t) {
+    const d = new Date(t);
+    return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function formatDateShort(t) {
+    const d = new Date(t);
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  let lastData = null;
+  let currentRange = '24h';
+
+  function seriesForRange(range) {
+    if (range === '24h') {
+      return (lastData.history24h || [])
+        .slice().sort((a, b) => a.t - b.t)
+        .map(s => ({ t: s.t, value: s.count, tooltip: formatClock(s.t) }));
+    }
+    const daily = (lastData.historyDaily || []).slice().sort((a, b) => a.date.localeCompare(b.date));
+    const counts = { week: 7, month: 30, year: 365 }[range];
+    const sliced = counts ? daily.slice(-counts) : daily;
+    return sliced.map(d => ({
+      t: new Date(d.date + 'T00:00:00Z').getTime(),
+      value: d.avgOnline,
+      tooltip: formatDateShort(new Date(d.date + 'T00:00:00Z').getTime())
+    }));
+  }
+
+  function renderTimeChart() {
+    const svg = document.getElementById('timeChart');
+    const emptyEl = document.getElementById('timeChartEmpty');
+    const tooltip = document.getElementById('timeChartTooltip');
+    const sublineEl = document.getElementById('timeChartSubline');
+    svg.innerHTML = '';
+    tooltip.style.display = 'none';
+
+    const points = lastData ? seriesForRange(currentRange) : [];
+    if (points.length < 2) {
+      emptyEl.style.display = '';
+      sublineEl.textContent = '';
+      return;
+    }
+    emptyEl.style.display = 'none';
+
+    const W = 1000, H = 300, PAD_L = 46, PAD_R = 12, PAD_T = 16, PAD_B = 30;
+    const plotW = W - PAD_L - PAD_R, plotH = H - PAD_T - PAD_B;
+    const xs = points.map(p => p.t);
+    const xMin = Math.min.apply(null, xs), xMax = Math.max.apply(null, xs);
+    const yMax = niceCeil(Math.max.apply(null, points.map(p => p.value)) || 1);
+
+    function xPix(t) { return PAD_L + (xMax === xMin ? plotW / 2 : (t - xMin) / (xMax - xMin) * plotW); }
+    function yPix(v) { return PAD_T + plotH - (v / yMax) * plotH; }
+
+    const GRID_STEPS = 4;
+    for (let i = 0; i <= GRID_STEPS; i++) {
+      const v = yMax * i / GRID_STEPS;
+      const y = yPix(v);
+      svg.appendChild(svgEl('line', { x1: PAD_L, x2: W - PAD_R, y1: y, y2: y, stroke: CHART_BORDER, 'stroke-width': 1 }));
+      const label = svgEl('text', { x: PAD_L - 8, y: y + 4, 'text-anchor': 'end', class: 'chart-axis-label' });
+      label.textContent = formatNumber(Math.round(v));
+      svg.appendChild(label);
+    }
+
+    const linePath = points.map((p, i) => (i === 0 ? 'M' : 'L') + xPix(p.t).toFixed(1) + ',' + yPix(p.value).toFixed(1)).join(' ');
+    const baseline = yPix(0);
+    const areaPath = linePath +
+      ' L' + xPix(points[points.length - 1].t).toFixed(1) + ',' + baseline +
+      ' L' + xPix(points[0].t).toFixed(1) + ',' + baseline + ' Z';
+    svg.appendChild(svgEl('path', { d: areaPath, fill: CHART_ACCENT, opacity: '0.1', stroke: 'none' }));
+    svg.appendChild(svgEl('path', { d: linePath, fill: 'none', stroke: CHART_ACCENT, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
+
+    const first = points[0], last = points[points.length - 1];
+    const firstLabel = svgEl('text', { x: xPix(first.t), y: H - 8, 'text-anchor': 'start', class: 'chart-axis-label' });
+    firstLabel.textContent = first.tooltip;
+    svg.appendChild(firstLabel);
+    const lastLabel = svgEl('text', { x: xPix(last.t), y: H - 8, 'text-anchor': 'end', class: 'chart-axis-label' });
+    lastLabel.textContent = last.tooltip;
+    svg.appendChild(lastLabel);
+
+    svg.appendChild(svgEl('circle', { cx: xPix(last.t), cy: yPix(last.value), r: 4, fill: CHART_ACCENT, stroke: '#0d141c', 'stroke-width': 2 }));
+
+    const crosshair = svgEl('line', { x1: 0, x2: 0, y1: PAD_T, y2: H - PAD_B, stroke: CHART_MUTED, 'stroke-width': 1, opacity: 0 });
+    svg.appendChild(crosshair);
+    const hoverDot = svgEl('circle', { r: 5, fill: CHART_ACCENT, stroke: '#0d141c', 'stroke-width': 2, opacity: 0 });
+    svg.appendChild(hoverDot);
+    const hitRect = svgEl('rect', { x: PAD_L, y: 0, width: plotW, height: H, fill: 'transparent' });
+    svg.appendChild(hitRect);
+
+    const peak = Math.max.apply(null, points.map(p => p.value));
+    sublineEl.innerHTML = 'Current: <strong>' + formatNumber(last.value) + '</strong> &nbsp;·&nbsp; Peak in range: <strong>' + formatNumber(peak) + '</strong>';
+
+    function handleMove(evt) {
+      const rect = svg.getBoundingClientRect();
+      const mouseX = (evt.clientX - rect.left) * (W / rect.width);
+      let nearest = points[0], nearestDist = Infinity;
+      for (const p of points) {
+        const dist = Math.abs(xPix(p.t) - mouseX);
+        if (dist < nearestDist) { nearest = p; nearestDist = dist; }
+      }
+      const px = xPix(nearest.t), py = yPix(nearest.value);
+      crosshair.setAttribute('x1', px); crosshair.setAttribute('x2', px); crosshair.setAttribute('opacity', 1);
+      hoverDot.setAttribute('cx', px); hoverDot.setAttribute('cy', py); hoverDot.setAttribute('opacity', 1);
+
+      const containerRect = svg.parentElement.getBoundingClientRect();
+      const left = (px / W) * rect.width + (rect.left - containerRect.left);
+      const top = (py / H) * rect.height + (rect.top - containerRect.top);
+      tooltip.style.display = 'block';
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+      tooltip.textContent = '';
+      const valueEl = document.createElement('div');
+      valueEl.className = 'chart-tooltip-value';
+      valueEl.textContent = formatNumber(nearest.value) + ' online';
+      const labelEl = document.createElement('div');
+      labelEl.className = 'chart-tooltip-label';
+      labelEl.textContent = nearest.tooltip;
+      tooltip.appendChild(valueEl);
+      tooltip.appendChild(labelEl);
+    }
+    function handleLeave() {
+      crosshair.setAttribute('opacity', 0);
+      hoverDot.setAttribute('opacity', 0);
+      tooltip.style.display = 'none';
+    }
+    hitRect.addEventListener('mousemove', handleMove);
+    hitRect.addEventListener('mouseleave', handleLeave);
+  }
+
+  document.getElementById('rangeSwitch').addEventListener('click', function (e) {
+    const btn = e.target.closest('.range-btn');
+    if (!btn || btn.classList.contains('active')) return;
+    document.querySelectorAll('.range-btn').forEach(b => b.classList.toggle('active', b === btn));
+    currentRange = btn.dataset.range;
+    renderTimeChart();
+  });
+  function renderBarChart(svgId, emptyId, items) {
+    const svg = document.getElementById(svgId);
+    const emptyEl = document.getElementById(emptyId);
+    svg.innerHTML = '';
+
+    if (!items || !items.length) {
+      emptyEl.style.display = '';
+      svg.setAttribute('viewBox', '0 0 1000 40');
+      return;
+    }
+    emptyEl.style.display = 'none';
+
+    const W = 1000, LABEL_W = 140, VALUE_W = 110, BAR_H = 26, GAP = 14, PAD_TOP = 8;
+    const H = items.length * (BAR_H + GAP) + PAD_TOP;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    const total = items.reduce((sum, v) => sum + v.count, 0) || 1;
+    const maxCount = Math.max.apply(null, items.map(v => v.count)) || 1;
+    const barMaxW = W - LABEL_W - VALUE_W;
+
+    items.forEach((v, i) => {
+      const y = PAD_TOP + i * (BAR_H + GAP);
+      const barW = Math.max(3, (v.count / maxCount) * barMaxW);
+      const pct = Math.round((v.count / total) * 100);
+
+      const label = svgEl('text', { x: LABEL_W - 10, y: y + BAR_H / 2 + 4, 'text-anchor': 'end', class: 'chart-version-label' });
+      label.textContent = v.label;
+      svg.appendChild(label);
+
+      svg.appendChild(svgEl('rect', { x: LABEL_W, y, width: barW, height: BAR_H, rx: 4, fill: CHART_ACCENT }));
+
+      const valueLabel = svgEl('text', { x: LABEL_W + barW + 10, y: y + BAR_H / 2 + 4, class: 'chart-axis-label' });
+      valueLabel.textContent = formatNumber(v.count) + ' (' + pct + '%)';
+      svg.appendChild(valueLabel);
+    });
+  }
 
   let refreshTimer = null;
+  function fetchStatistics() {
+    const ownerToken = loadOwnerToken();
+    const viaCodeGs = function () {
+      const token = loadToken();
+      if (!token) return Promise.resolve({ ok: false, error: 'token_expired' });
+      return fetch(LITE_API_URL + '?action=statisticsCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
+        .then(r => r.json());
+    };
+    if (!ownerToken) return viaCodeGs();
+    return fetch(BRIDGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ownerToken: ownerToken })
+    })
+      .then(r => r.json())
+      .then(d => (d && d.ok) ? d : viaCodeGs())
+      .catch(viaCodeGs);
+  }
 
   function renderStats(data) {
     document.getElementById('statOnline').textContent = formatNumber(data.onlineNow || 0);
@@ -275,6 +579,12 @@
     document.getElementById('statPeak').textContent = formatNumber(data.peakOnline || 0);
     document.getElementById('statPlaytime').textContent = formatDuration(data.totalPlaytimeMs || 0);
     document.getElementById('statVersion').textContent = data.topVersion || 'n/a';
+    document.getElementById('statReviewCount').textContent = formatNumber(data.totalReviews || 0);
+    document.getElementById('statAvgRating').textContent = data.totalReviews ? (data.avgRating || 0).toFixed(1) + ' ★' : 'n/a';
+    lastData = data;
+    renderTimeChart();
+    renderBarChart('versionChart', 'versionChartEmpty', data.versionBreakdown || []);
+    renderBarChart('ratingChart', 'ratingChartEmpty', data.ratingBreakdown || []);
   }
 
   function renderSessions(sessions) {
@@ -302,12 +612,28 @@
           '<img class="player-avatar" src="' + avatarUrl + '" alt="" width="48" height="48"/>' +
           '<div class="player-name">' + escapeHtml(s.username) + '</div>' +
         '</div>' +
-        '<div class="player-row"><span>Server</span><strong title="' + escapeHtml(s.server) + '">' + escapeHtml(s.server) + '</strong></div>' +
+        '<div class="player-row"><span>Server</span><span class="player-row-value"><strong title="' + escapeHtml(s.server) + '">' + escapeHtml(s.server) + '</strong>' +
+          '<button type="button" class="copy-btn" data-copy="' + escapeHtml(s.server) + '" title="Copy server address">⧉</button></span></div>' +
         '<div class="player-row"><span>Version</span><strong>' + escapeHtml(s.version || 'unknown') + '</strong></div>' +
         '<div class="player-row"><span>On this server</span><strong>' + formatDuration(now - (s.serverSince || now)) + '</strong></div>';
       grid.appendChild(card);
     });
   }
+
+  document.getElementById('playerGrid').addEventListener('click', function (e) {
+    const btn = e.target.closest('.copy-btn');
+    if (!btn) return;
+    const text = btn.dataset.copy || '';
+    const done = function () {
+      const original = btn.textContent;
+      btn.textContent = '✓';
+      btn.classList.add('copied');
+      setTimeout(function () { btn.textContent = original; btn.classList.remove('copied'); }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(function () {});
+    }
+  });
 
   function applyData(data) {
     if (!data || data.ok !== true) {
@@ -324,17 +650,14 @@
       showError('Could not load statistics. Please try again.');
       return;
     }
+    if (data.ownerToken) saveOwnerToken(data.ownerToken);
     renderStats(data);
     renderSessions(data.sessions || []);
     show('stateData');
+    saveCache(data);
     if (refreshTimer) clearInterval(refreshTimer);
     refreshTimer = setInterval(function () {
-      const token = loadToken();
-      if (!token) return;
-      fetch(LITE_API_URL + '?action=statisticsCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
-        .then(r => r.json())
-        .then(d => { if (d && d.ok) { renderStats(d); renderSessions(d.sessions || []); } })
-        .catch(() => {});
+      fetchStatistics().then(d => { if (d && d.ok) { renderStats(d); renderSessions(d.sessions || []); saveCache(d); } });
     }, 30000);
   }
 
@@ -413,13 +736,19 @@
       return;
     }
 
-    const token = loadToken();
-    if (!token) { show('stateLogin'); return; }
-    show('stateLoading');
-    fetch(LITE_API_URL + '?action=statisticsCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
-      .then(r => r.json())
+    if (!loadToken() && !loadOwnerToken()) { show('stateLogin'); return; }
+
+    const cached = loadCache();
+    if (cached) {
+      renderStats(cached);
+      renderSessions(cached.sessions || []);
+      show('stateData');
+    } else {
+      show('stateLoading');
+    }
+    fetchStatistics()
       .then(applyData)
-      .catch(() => showError('Network error while contacting the server. Please try again.'));
+      .catch(() => { if (!cached) showError('Network error while contacting the server. Please try again.'); });
   })();
 })();
 </script>
