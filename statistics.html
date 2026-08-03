@@ -55,8 +55,6 @@
   }
 
   .page { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 140px 24px 100px; }
-  /* Only true 4K+ screens get extra width - 1440p, 1600p, and ultrawide (up to ~3440px) keep the
-     same margins as everything else, matching how this page always looked below 4K. */
   @media (min-width: 3800px) {
     .page { max-width: 1800px; }
   }
@@ -194,13 +192,13 @@
   }
   .chart-subline { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
   .chart-subline strong { color: var(--text); font-family: 'Space Mono', monospace; }
-  .chart-svg {
-    display: block; width: 100%; height: 220px; overflow: visible;
+  .chart-svg { display: block; width: 100%; height: 220px; overflow: visible; }
+  .chart-curve {
     transform-origin: right center;
     transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
   }
   @media (prefers-reduced-motion: reduce) {
-    .chart-svg { transition: none; }
+    .chart-curve { transition: none; }
   }
   .chart-svg-version { display: block; width: 100%; height: auto; overflow: visible; }
   .chart-axis-label { fill: var(--muted); font-size: 11px; font-family: 'Space Mono', monospace; }
@@ -537,8 +535,9 @@
     const areaPath = linePath +
       ' L' + xPix(points[points.length - 1].t).toFixed(1) + ',' + baseline +
       ' L' + xPix(points[0].t).toFixed(1) + ',' + baseline + ' Z';
-    svg.appendChild(svgEl('path', { d: areaPath, fill: CHART_ACCENT, opacity: '0.1', stroke: 'none' }));
-    svg.appendChild(svgEl('path', { d: linePath, fill: 'none', stroke: CHART_ACCENT, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
+    const curveGroup = svgEl('g', { class: 'chart-curve' });
+    curveGroup.appendChild(svgEl('path', { d: areaPath, fill: CHART_ACCENT, opacity: '0.1', stroke: 'none' }));
+    curveGroup.appendChild(svgEl('path', { d: linePath, fill: 'none', stroke: CHART_ACCENT, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
 
     const first = points[0], last = points[points.length - 1];
     const firstLabel = svgEl('text', { x: xPix(first.t), y: H - 8, 'text-anchor': 'start', class: 'chart-axis-label' });
@@ -548,7 +547,8 @@
     lastLabel.textContent = last.tooltip;
     svg.appendChild(lastLabel);
 
-    svg.appendChild(svgEl('circle', { cx: xPix(last.t), cy: yPix(last.value), r: 4, fill: CHART_ACCENT, stroke: '#0d141c', 'stroke-width': 2 }));
+    curveGroup.appendChild(svgEl('circle', { cx: xPix(last.t), cy: yPix(last.value), r: 4, fill: CHART_ACCENT, stroke: '#0d141c', 'stroke-width': 2 }));
+    svg.appendChild(curveGroup);
 
     const crosshair = svgEl('line', { x1: 0, x2: 0, y1: PAD_T, y2: H - PAD_B, stroke: CHART_MUTED, 'stroke-width': 1, opacity: 0 });
     svg.appendChild(crosshair);
@@ -607,15 +607,17 @@
     currentRange = btn.dataset.range;
     renderTimeChart();
 
-    const svg = document.getElementById('timeChart');
-    svg.style.transition = 'none';
-    svg.style.transform = 'scaleX(' + (zoomingIn ? 0.85 : 1.15) + ')';
-    requestAnimationFrame(() => {
+    const curve = document.querySelector('#timeChart .chart-curve');
+    if (curve) {
+      curve.style.transition = 'none';
+      curve.style.transform = 'scaleX(' + (zoomingIn ? 0.85 : 1.15) + ')';
       requestAnimationFrame(() => {
-        svg.style.transition = '';
-        svg.style.transform = '';
+        requestAnimationFrame(() => {
+          curve.style.transition = '';
+          curve.style.transform = '';
+        });
       });
-    });
+    }
   });
   function renderBarChart(svgId, emptyId, items) {
     const svg = document.getElementById(svgId);
@@ -684,15 +686,39 @@
       .then(d => (d && d.ok) ? d : viaCodeGs())
       .catch(viaCodeGs);
   }
+  const statAnimState = {};
+  const COUNT_UP_MS = 700;
+
+  function animateStatNumber(id, toValue, formatFn) {
+    const el = document.getElementById(id);
+    const fromValue = typeof statAnimState[id] === 'number' ? statAnimState[id] : 0;
+    statAnimState[id] = toValue;
+    if (fromValue === toValue) { el.textContent = formatFn(toValue); return; }
+
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min(1, (now - start) / COUNT_UP_MS);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+      el.textContent = formatFn(fromValue + (toValue - fromValue) * eased);
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = formatFn(toValue);
+    }
+    requestAnimationFrame(tick);
+  }
 
   function renderStats(data) {
-    document.getElementById('statOnline').textContent = formatNumber(data.onlineNow || 0);
-    document.getElementById('statAvg').textContent = formatNumber(data.avgOnline || 0);
-    document.getElementById('statPeak').textContent = formatNumber(data.peakOnline || 0);
-    document.getElementById('statPlaytime').textContent = formatDuration(data.totalPlaytimeMs || 0);
+    animateStatNumber('statOnline', data.onlineNow || 0, v => formatNumber(Math.round(v)));
+    animateStatNumber('statAvg', data.avgOnline || 0, v => formatNumber(Math.round(v)));
+    animateStatNumber('statPeak', data.peakOnline || 0, v => formatNumber(Math.round(v)));
+    animateStatNumber('statPlaytime', data.totalPlaytimeMs || 0, v => formatDuration(Math.round(v)));
+    animateStatNumber('statReviewCount', data.totalReviews || 0, v => formatNumber(Math.round(v)));
     document.getElementById('statVersion').textContent = data.topVersion || 'n/a';
-    document.getElementById('statReviewCount').textContent = formatNumber(data.totalReviews || 0);
-    document.getElementById('statAvgRating').textContent = data.totalReviews ? (data.avgRating || 0).toFixed(1) + ' ★' : 'n/a';
+    if (data.totalReviews) {
+      animateStatNumber('statAvgRating', data.avgRating || 0, v => v.toFixed(1) + ' ★');
+    } else {
+      statAnimState.statAvgRating = null;
+      document.getElementById('statAvgRating').textContent = 'n/a';
+    }
     lastData = data;
     renderTimeChart();
     renderBarChart('versionChart', 'versionChartEmpty', data.versionBreakdown || []);
