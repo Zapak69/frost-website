@@ -636,7 +636,20 @@
       oldCurve.style.transform = 'scaleX(' + ratio + ')';
       oldCurve.addEventListener('transitionend', function onDone() {
         oldCurve.removeEventListener('transitionend', onDone);
+        const oldSnapshot = oldCurve.cloneNode(true);
+        oldSnapshot.style.pointerEvents = 'none';
         renderTimeChart();
+        const newCurve = document.querySelector('#timeChart .chart-curve');
+        if (newCurve && newCurve.parentElement) {
+          newCurve.parentElement.appendChild(oldSnapshot);
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              oldSnapshot.style.transition = 'opacity 0.3s ease';
+              oldSnapshot.style.opacity = '0';
+            });
+          });
+          setTimeout(() => oldSnapshot.remove(), 400);
+        }
       });
     } else {
       renderTimeChart();
