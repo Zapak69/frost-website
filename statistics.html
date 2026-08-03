@@ -461,12 +461,6 @@
       return;
     }
     emptyEl.style.display = 'none';
-
-    // The viewBox is set to the SVG's own measured pixel size (not a fixed abstract unit
-    // space) so 1 viewBox unit == 1 real CSS pixel everywhere. That's what keeps text (whose
-    // font-size is set in real px via CSS) crisp and constant-sized instead of getting
-    // stretched huge on an ultra-wide 4K card or shrunk to nothing on a narrow mobile one -
-    // both are the SVG uniformly scaling its whole coordinate space to fit the box otherwise.
     const rect0 = svg.getBoundingClientRect();
     const W = Math.max(1, Math.round(rect0.width)), H = Math.max(1, Math.round(rect0.height));
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
@@ -565,10 +559,6 @@
     const svg = document.getElementById(svgId);
     const emptyEl = document.getElementById(emptyId);
     svg.innerHTML = '';
-
-    // Same "viewBox == real measured pixels" fix as renderTimeChart - measured BEFORE the
-    // viewBox changes, since the card's rendered width comes from its CSS width (100%), not
-    // from the SVG's own (auto) height/aspect ratio.
     const W = Math.max(1, Math.round(svg.getBoundingClientRect().width));
 
     if (!items || !items.length) {
@@ -602,11 +592,6 @@
       svg.appendChild(valueLabel);
     });
   }
-
-  // Re-measure and re-render on resize (debounced) - the charts size their viewBox to the
-  // actual rendered pixel box (see renderTimeChart/renderBarChart), so a width change (window
-  // resize, orientation change, or the page's own responsive max-width kicking in) needs a
-  // fresh render or the old viewBox would stay stretched/shrunk relative to the new box.
   let chartResizeTimer = null;
   window.addEventListener('resize', () => {
     clearTimeout(chartResizeTimer);
