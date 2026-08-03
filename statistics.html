@@ -114,6 +114,14 @@
   .tracker-head h2 { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
   .tracker-count { font-size: 13.5px; color: var(--muted); }
   .tracker-head-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .sort-dir-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+    color: var(--muted); font-size: 15px; cursor: pointer; padding: 0;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .sort-dir-btn:hover { color: var(--text); border-color: var(--frost-blue); background: rgba(79,200,248,0.1); }
   .tracker-empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14.5px; }
 
   .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
@@ -306,6 +314,7 @@
           <button type="button" class="range-btn" data-sort="players">Most common</button>
           <button type="button" class="range-btn" data-sort="playtime">Playtime</button>
         </div>
+        <button type="button" class="sort-dir-btn" id="sortDirBtn" title="Toggle sort direction">↑</button>
         <span class="tracker-count" id="trackerCount"></span>
       </div>
     </div>
@@ -653,6 +662,8 @@
   let lastSessions = [];
   let serverFilter = null;
   let sessionSort = 'name';
+  const SORT_DEFAULT_DIR = { name: 'asc', players: 'desc', playtime: 'desc' };
+  let sessionSortDir = SORT_DEFAULT_DIR.name;
   const SOLO_FILTER = '__solo__';
 
   function serverCounts(sessions) {
@@ -732,21 +743,24 @@
     }
     countEl.textContent = filtered.length + ' online on ' + countLabel;
 
+    const now = Date.now();
+    const dirSign = sessionSortDir === 'asc' ? 1 : -1;
     let sorted = filtered.slice();
     if (sessionSort === 'players') {
-      sorted.sort((a, b) => (counts[b.server] - counts[a.server]) || a.username.localeCompare(b.username));
+      sorted.sort((a, b) => dirSign * (counts[a.server] - counts[b.server]) || a.username.localeCompare(b.username));
     } else if (sessionSort === 'playtime') {
-      sorted.sort((a, b) => (a.serverSince || 0) - (b.serverSince || 0));
+      sorted.sort((a, b) => dirSign * ((now - (a.serverSince || now)) - (now - (b.serverSince || now))));
     } else {
-      sorted.sort((a, b) => a.username.localeCompare(b.username));
+      sorted.sort((a, b) => dirSign * a.username.localeCompare(b.username));
     }
 
-    const now = Date.now();
     sorted.forEach(s => {
       const card = document.createElement('div');
       card.className = 'player-card';
       const avatarUrl = 'https://mc-heads.net/avatar/' + encodeURIComponent(s.username) + '/80';
-      const serverCount = counts[s.server] || 1;
+      const serverPop = (typeof s.serverOnline === 'number')
+        ? s.serverOnline + (typeof s.serverMax === 'number' && s.serverMax > 0 ? ' / ' + s.serverMax : '')
+        : '—';
       card.innerHTML =
         '<div class="player-card-top">' +
           '<img class="player-avatar" src="' + avatarUrl + '" alt="" width="48" height="48"/>' +
@@ -754,18 +768,33 @@
         '</div>' +
         '<div class="player-row"><span>Server</span><span class="player-row-value"><strong title="' + escapeHtml(s.server) + '">' + escapeHtml(s.server) + '</strong>' +
           '<button type="button" class="copy-btn" data-copy="' + escapeHtml(s.server) + '" title="Copy server address">⧉</button></span></div>' +
-        '<div class="player-row"><span>Players here</span><strong>' + serverCount + '</strong></div>' +
+        '<div class="player-row"><span>Players on server</span><strong>' + serverPop + '</strong></div>' +
         '<div class="player-row"><span>Version</span><strong>' + escapeHtml(s.version || 'unknown') + '</strong></div>' +
         '<div class="player-row"><span>On this server</span><strong>' + formatDuration(now - (s.serverSince || now)) + '</strong></div>';
       grid.appendChild(card);
     });
   }
 
+  function updateSortDirBtn() {
+    const btn = document.getElementById('sortDirBtn');
+    btn.textContent = sessionSortDir === 'asc' ? '↑' : '↓';
+    btn.title = sessionSortDir === 'asc' ? 'Ascending - click to reverse' : 'Descending - click to reverse';
+  }
+  updateSortDirBtn();
+
   document.getElementById('sessionSort').addEventListener('click', function (e) {
     const btn = e.target.closest('.range-btn');
     if (!btn || btn.classList.contains('active')) return;
     this.querySelectorAll('.range-btn').forEach(b => b.classList.toggle('active', b === btn));
     sessionSort = btn.dataset.sort;
+    sessionSortDir = SORT_DEFAULT_DIR[sessionSort];
+    updateSortDirBtn();
+    renderSessions(lastSessions);
+  });
+
+  document.getElementById('sortDirBtn').addEventListener('click', function () {
+    sessionSortDir = sessionSortDir === 'asc' ? 'desc' : 'asc';
+    updateSortDirBtn();
     renderSessions(lastSessions);
   });
 
