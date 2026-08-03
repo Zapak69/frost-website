@@ -668,7 +668,7 @@
       </div>
       <div class="plan-trial-line"><span class="plan-trial-days js-trial-days">1</span><span class="plan-trial-label js-trial-label">day free</span></div>
       <div class="plan-price-block">
-        <div class="plan-title">then €<span class="plan-amount">2.90</span><span class="plan-period">&nbsp;/ month</span></div>
+        <div class="plan-title"><span class="plan-then">then </span>€<span class="plan-amount">2.90</span><span class="plan-period">&nbsp;/ month</span></div>
         <div class="plan-per-day"></div>
       </div>
       <a class="btn-lite-download plan-blue js-whop-subscribe" id="whopSubscribeBtnHero" href="#"><span class="js-sub-cta-text">Start 1 day free</span></a>
@@ -890,7 +890,7 @@
   });
   const BILLING_PLANS = {
     monthly: { amount: 2.90, period: ' / month', perDay: '', trialDays: 1, trialUnit: 'day', periodWidth: '8ch', cta: 'Start 1 day free' },
-    annual: { amount: 29.00, period: ' / year', perDay: '€2.42 / month, billed yearly', trialDays: 2, trialUnit: 'month', periodWidth: '7ch', cta: 'Subscribe' },
+    annual: { amount: 29.90, period: ' / year', perDay: '€2.49 / month, billed yearly', trialDays: 2, trialUnit: 'month', periodWidth: '7ch', cta: 'Subscribe' },
   };
   function easeInOut(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -942,6 +942,7 @@
     if (!card) return;
     const link = card.querySelector('.js-whop-subscribe');
     const amountEl = card.querySelector('.plan-amount');
+    const thenEl = card.querySelector('.plan-then');
     const periodEl = card.querySelector('.plan-period');
     const perDayEl = card.querySelector('.plan-per-day');
     const ctaEl = link ? link.querySelector('.js-sub-cta-text') : null;
@@ -982,6 +983,7 @@
             if (trialLabelEl) trialLabelEl.textContent = (days === 1 ? unit : unit + 's') + ' free';
           });
         }
+        fadeSwap(thenEl, billing === 'annual' ? '' : 'then ');
         fadeSwap(periodEl, plan.period);
         if (periodEl) setTimeout(function () { periodEl.style.width = plan.periodWidth; }, 180);
         fadeSwap(perDayEl, plan.perDay);
