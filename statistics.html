@@ -535,7 +535,14 @@
     const areaPath = linePath +
       ' L' + xPix(points[points.length - 1].t).toFixed(1) + ',' + baseline +
       ' L' + xPix(points[0].t).toFixed(1) + ',' + baseline + ' Z';
-    const curveGroup = svgEl('g', { class: 'chart-curve' });
+    const clipRect = svgEl('rect', { x: PAD_L, y: 0, width: plotW, height: H });
+    const clipPath = svgEl('clipPath', { id: 'chart-curve-clip' });
+    clipPath.appendChild(clipRect);
+    const defs = svgEl('defs', {});
+    defs.appendChild(clipPath);
+    svg.appendChild(defs);
+
+    const curveGroup = svgEl('g', { class: 'chart-curve', 'clip-path': 'url(#chart-curve-clip)' });
     curveGroup.appendChild(svgEl('path', { d: areaPath, fill: CHART_ACCENT, opacity: '0.1', stroke: 'none' }));
     curveGroup.appendChild(svgEl('path', { d: linePath, fill: 'none', stroke: CHART_ACCENT, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
 
@@ -698,7 +705,7 @@
     const start = performance.now();
     function tick(now) {
       const t = Math.min(1, (now - start) / COUNT_UP_MS);
-      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+      const eased = 1 - Math.pow(1 - t, 3);
       el.textContent = formatFn(fromValue + (toValue - fromValue) * eased);
       if (t < 1) requestAnimationFrame(tick);
       else el.textContent = formatFn(toValue);
