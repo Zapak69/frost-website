@@ -92,7 +92,18 @@
   .btn-discord img { width: 18px; height: 18px; }
 
   .state { display: none; }
-  .state.active { display: block; }
+  .state.active { display: block; animation: fadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .stat-tile, .chart-card, .player-card {
+    animation: fadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .state.active, .stat-tile, .chart-card, .player-card { animation: none; }
+  }
 
   .section-title {
     font-family: 'Space Mono', monospace; font-size: 12px; text-transform: uppercase;
@@ -181,7 +192,15 @@
   }
   .chart-subline { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
   .chart-subline strong { color: var(--text); font-family: 'Space Mono', monospace; }
-  .chart-svg { display: block; width: 100%; height: 220px; overflow: visible; }
+  .chart-svg {
+    display: block; width: 100%; height: 220px; overflow: visible;
+    transform-origin: center center;
+    transition: opacity 0.18s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .chart-svg.chart-range-zoom { opacity: 0; transform: scale(0.92); }
+  @media (prefers-reduced-motion: reduce) {
+    .chart-svg { transition: none; }
+  }
   .chart-svg-version { display: block; width: 100%; height: auto; overflow: visible; }
   .chart-axis-label { fill: var(--muted); font-size: 11px; font-family: 'Space Mono', monospace; }
   .chart-version-label { fill: var(--text); font-size: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
@@ -581,7 +600,12 @@
     if (!btn || btn.classList.contains('active')) return;
     document.querySelectorAll('.range-btn').forEach(b => b.classList.toggle('active', b === btn));
     currentRange = btn.dataset.range;
-    renderTimeChart();
+    const svg = document.getElementById('timeChart');
+    svg.classList.add('chart-range-zoom');
+    setTimeout(() => {
+      renderTimeChart();
+      requestAnimationFrame(() => requestAnimationFrame(() => svg.classList.remove('chart-range-zoom')));
+    }, 180);
   });
   function renderBarChart(svgId, emptyId, items) {
     const svg = document.getElementById(svgId);
@@ -765,9 +789,10 @@
       sorted.sort((a, b) => dirSign * a.username.localeCompare(b.username));
     }
 
-    sorted.forEach(s => {
+    sorted.forEach((s, i) => {
       const card = document.createElement('div');
       card.className = 'player-card';
+      card.style.animationDelay = Math.min(i * 30, 300) + 'ms';
       const avatarUrl = 'https://mc-heads.net/avatar/' + encodeURIComponent(s.username) + '/80';
       const serverPop = (typeof s.serverOnline === 'number')
         ? s.serverOnline + (typeof s.serverMax === 'number' && s.serverMax > 0 ? ' / ' + s.serverMax : '')
