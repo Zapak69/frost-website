@@ -206,7 +206,11 @@
   .modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text); transform: rotate(90deg); }
 
   .apply-state { display: none; }
-  .apply-state.active { display: block; }
+  @keyframes applyStateIn {
+    from { opacity: 0; transform: translateX(18px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .apply-state.active { display: block; animation: applyStateIn 0.4s cubic-bezier(0.16,1,0.3,1) both; }
   .apply-title { font-family: 'Space Mono', monospace; font-size: 19px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
   .apply-text { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
 
@@ -373,11 +377,17 @@
   </div>
 
   <div class="partner-apply-box">
-    <h3>Ready to apply?</h3>
-    <p>Sign in with Discord and fill out a quick form — takes under a minute. We'll take a look and work out the reward together from there.</p>
-    <div class="partner-member-note"><span>⚠</span><span><strong>You must be a member of our Discord server to apply</strong> — if you're not, we have no way to reach you if your application is accepted.</span></div>
-    <button type="button" class="partner-cta js-apply-btn"><img src="icons/discord.webp" alt=""/>Apply Now</button>
-    <p class="apply-other-note">Creating content on a different platform (Twitch, Kick, etc.)? <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Open a ticket on Discord</a> instead — TikTok and YouTube go through the form above.</p>
+    <div id="applyBoxNormal">
+      <h3>Ready to apply?</h3>
+      <p>Sign in with Discord and fill out a quick form — takes under a minute. We'll take a look and work out the reward together from there.</p>
+      <div class="partner-member-note"><span>⚠</span><span><strong>You must be a member of our Discord server to apply</strong> — if you're not, we have no way to reach you if your application is accepted.</span></div>
+      <button type="button" class="partner-cta js-apply-btn"><img src="icons/discord.webp" alt=""/>Apply Now</button>
+      <p class="apply-other-note">Creating content on a different platform (Twitch, Kick, etc.)? <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Open a ticket on Discord</a> instead — TikTok and YouTube go through the form above.</p>
+    </div>
+    <div id="applyBoxSubmitted" style="display:none;">
+      <h3>Application submitted ✓</h3>
+      <p style="margin-bottom:0;">Thanks for applying! Please be patient while we review it — we'll reach out to you on Discord with our decision, so keep an eye on your DMs.</p>
+    </div>
   </div>
 </div>
 
@@ -529,6 +539,7 @@
   const PARTNER_APPLY_URL = 'https://bot.frostclient.eu/partner-apply';
   const TOKEN_KEY = 'frostPartnerToken';
   const OAUTH_STATE_KEY = 'frostPartnerOauthState';
+  const APPLIED_KEY = 'frostPartnerApplied';
 
   const modal = document.getElementById('applyModal');
   const closeBtn = document.getElementById('applyModalClose');
@@ -554,13 +565,22 @@
   function clearToken() {
     try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
   }
+  function markApplied() {
+    try { localStorage.setItem(APPLIED_KEY, '1'); } catch (e) {}
+    document.querySelectorAll('.js-apply-btn').forEach(function (btn) { btn.style.display = 'none'; });
+    const normal = document.getElementById('applyBoxNormal');
+    const submitted = document.getElementById('applyBoxSubmitted');
+    if (normal) normal.style.display = 'none';
+    if (submitted) submitted.style.display = 'block';
+  }
+  function hasApplied() {
+    try { return localStorage.getItem(APPLIED_KEY) === '1'; } catch (e) { return false; }
+  }
 
   function showErrorState(msg) {
     document.getElementById('applyErrorText').textContent = msg;
     show('applyStateError');
   }
-
-  // ---- step 1/2 form state ----
   let tier = null, platform = null;
   const tierRow = document.getElementById('applyTierRow');
   const platformRow = document.getElementById('applyPlatformRow');
@@ -626,6 +646,7 @@
         if (data && data.ok) {
           resetForm();
           show('applyStateDone');
+          markApplied();
           return;
         }
         if (data && data.error === 'not_member') {
@@ -649,6 +670,7 @@
   });
 
   const applyBtns = document.querySelectorAll('.js-apply-btn');
+  if (hasApplied()) markApplied();
 
   function startLogin() {
     applyBtns.forEach(function (b) { b.classList.add('loading'); });
