@@ -391,7 +391,7 @@
   loginBtn.addEventListener('click', () => {
     const paymentId = sessionStorage.getItem(PAYMENT_ID_KEY) || '';
     if (!paymentId) { show('stateNoPayment'); return; }
-
+    try { fetch(LITE_API_URL + '?action=whopClaimConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
     let csrfState = '';
     try {
       const buf = new Uint8Array(16);

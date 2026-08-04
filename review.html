@@ -591,6 +591,7 @@
   document.getElementById('retryBtn').addEventListener('click', () => show('stateLogin'));
 
   function startLogin() {
+    try { fetch(LITE_API_URL + '?action=identifyConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
     let csrfState = '';
     try {
       const buf = new Uint8Array(16);

@@ -19,6 +19,7 @@
   }
 
   function startLogin(btn) {
+    try { fetch(LITE_API_URL + '?action=liteConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
     var csrfState = '';
     try {
       var buf = new Uint8Array(16);

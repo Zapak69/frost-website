@@ -604,6 +604,7 @@
   }
   document.querySelectorAll('.js-lite-login').forEach(loginBtn => {
     loginBtn.addEventListener('click', () => {
+      try { fetch(LITE_API_URL + '?action=gameLiteConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
       let csrfState = '';
       try {
         const buf = new Uint8Array(16);

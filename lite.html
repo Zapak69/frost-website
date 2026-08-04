@@ -1198,6 +1198,7 @@
         if (window.FrostAccount) window.FrostAccount.open();
         return;
       }
+      try { fetch(LITE_API_URL + '?action=liteConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
       let csrfState = '';
       try {
         const buf = new Uint8Array(16);
