@@ -343,6 +343,8 @@
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
   const PAYMENT_ID_KEY = 'frostWhopPaymentId';
   const OAUTH_STATE_KEY = 'frostWhopOauthState';
+  const DISCORD_CLIENT_ID = '1512834635640475898';
+  const DISCORD_REDIRECT_URI_THANKYOU = 'https://frostclient.eu/lite/thank-you';
 
   const states = ['stateLogin', 'stateClaiming', 'stateNoPayment', 'stateError'];
   const TOKEN_KEY = 'frostLiteToken';
@@ -390,35 +392,21 @@
     const paymentId = sessionStorage.getItem(PAYMENT_ID_KEY) || '';
     if (!paymentId) { show('stateNoPayment'); return; }
 
-    loginBtn.classList.add('loading');
-    fetch(LITE_API_URL + '?action=whopClaimConfig', { cache: 'no-store' })
-      .then(r => r.json())
-      .then(cfg => {
-        if (!cfg.ok || !cfg.clientId) {
-          loginBtn.classList.remove('loading');
-          showError('Discord sign-in is not configured yet. Please check back soon.');
-          return;
-        }
-        let csrfState = '';
-        try {
-          const buf = new Uint8Array(16);
-          crypto.getRandomValues(buf);
-          csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
-          sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
-        } catch (e) {}
-        const state = csrfState + '.p.' + paymentId;
-        const url = 'https://discord.com/oauth2/authorize'
-          + '?client_id=' + encodeURIComponent(cfg.clientId)
-          + '&response_type=code'
-          + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
-          + '&scope=' + encodeURIComponent('identify guilds.members.read guilds.join')
-          + '&state=' + state;
-        window.location.href = url;
-      })
-      .catch(() => {
-        loginBtn.classList.remove('loading');
-        showError('Network error while contacting the server. Please try again.');
-      });
+    let csrfState = '';
+    try {
+      const buf = new Uint8Array(16);
+      crypto.getRandomValues(buf);
+      csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+      sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+    } catch (e) {}
+    const state = csrfState + '.p.' + paymentId;
+    const url = 'https://discord.com/oauth2/authorize'
+      + '?client_id=' + encodeURIComponent(DISCORD_CLIENT_ID)
+      + '&response_type=code'
+      + '&redirect_uri=' + encodeURIComponent(DISCORD_REDIRECT_URI_THANKYOU)
+      + '&scope=' + encodeURIComponent('identify guilds.members.read guilds.join')
+      + '&state=' + state;
+    window.location.href = url;
   });
 
   document.getElementById('retryBtn').addEventListener('click', () => show('stateLogin'));

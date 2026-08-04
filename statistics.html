@@ -410,6 +410,8 @@
   const TOKEN_KEY = 'frostStatisticsToken';
   const OAUTH_STATE_KEY = 'frostStatisticsOauthState';
   const CACHE_KEY = 'frostStatisticsCache';
+  const DISCORD_CLIENT_ID = '1512834635640475898';
+  const DISCORD_REDIRECT_URI_STATISTICS = 'https://frostclient.eu/statistics';
   const OWNER_TOKEN_KEY = 'frostStatisticsOwnerToken';
   const BRIDGE_URL = 'https://bot.frostclient.eu/statistics-data';
   function saveCache(data) {
@@ -1051,35 +1053,20 @@
   }
 
   function startLogin() {
-    const loginBtn = document.getElementById('loginBtn');
-    loginBtn.classList.add('loading');
-    fetch(LITE_API_URL + '?action=statisticsConfig', { cache: 'no-store' })
-      .then(r => r.json())
-      .then(cfg => {
-        if (!cfg.ok || !cfg.clientId) {
-          loginBtn.classList.remove('loading');
-          showError('Discord sign-in is not configured yet.');
-          return;
-        }
-        let csrfState = '';
-        try {
-          const buf = new Uint8Array(16);
-          crypto.getRandomValues(buf);
-          csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
-          sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
-        } catch (e) {}
-        const url = 'https://discord.com/oauth2/authorize'
-          + '?client_id=' + encodeURIComponent(cfg.clientId)
-          + '&response_type=code'
-          + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
-          + '&scope=' + encodeURIComponent('identify')
-          + '&state=' + csrfState;
-        window.location.href = url;
-      })
-      .catch(() => {
-        loginBtn.classList.remove('loading');
-        showError('Network error while contacting the server. Please try again.');
-      });
+    let csrfState = '';
+    try {
+      const buf = new Uint8Array(16);
+      crypto.getRandomValues(buf);
+      csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+      sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+    } catch (e) {}
+    const url = 'https://discord.com/oauth2/authorize'
+      + '?client_id=' + encodeURIComponent(DISCORD_CLIENT_ID)
+      + '&response_type=code'
+      + '&redirect_uri=' + encodeURIComponent(DISCORD_REDIRECT_URI_STATISTICS)
+      + '&scope=' + encodeURIComponent('identify')
+      + '&state=' + csrfState;
+    window.location.href = url;
   }
   document.getElementById('loginBtn').addEventListener('click', startLogin);
   document.getElementById('switchAccountBtn').addEventListener('click', () => { clearToken(); show('stateLogin'); });

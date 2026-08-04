@@ -416,6 +416,8 @@
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
   const TOKEN_KEY = 'frostLiteToken';
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
+  const DISCORD_CLIENT_ID = '1512834635640475898';
+  const DISCORD_REDIRECT_URI = 'https://frostclient.eu/lite';
 
   const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNoAccess', 'stateEligible', 'stateError', 'stateUpdating'];
   function show(id) {
@@ -515,34 +517,20 @@
 
   document.querySelectorAll('.js-lite-login').forEach(loginBtn => {
     loginBtn.addEventListener('click', () => {
-      loginBtn.classList.add('loading');
-      fetch(LITE_API_URL + '?action=liteConfig', { cache: 'no-store' })
-        .then(r => r.json())
-        .then(cfg => {
-          if (!cfg.ok || !cfg.clientId || cfg.clientId.indexOf('PASTE_') === 0) {
-            loginBtn.classList.remove('loading');
-            showError('Discord sign-in is not configured yet. Please check back soon.');
-            return;
-          }
-          let csrfState = '';
-          try {
-            const buf = new Uint8Array(16);
-            crypto.getRandomValues(buf);
-            csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
-            sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
-          } catch (e) {}
-          const url = 'https://discord.com/oauth2/authorize'
-            + '?client_id=' + encodeURIComponent(cfg.clientId)
-            + '&response_type=code'
-            + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
-            + '&scope=' + encodeURIComponent('identify guilds.members.read')
-            + (csrfState ? '&state=' + csrfState : '');
-          window.location.href = url;
-        })
-        .catch(() => {
-          loginBtn.classList.remove('loading');
-          showError('Network error while contacting the server. Please try again.');
-        });
+      let csrfState = '';
+      try {
+        const buf = new Uint8Array(16);
+        crypto.getRandomValues(buf);
+        csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+        sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+      } catch (e) {}
+      const url = 'https://discord.com/oauth2/authorize'
+        + '?client_id=' + encodeURIComponent(DISCORD_CLIENT_ID)
+        + '&response_type=code'
+        + '&redirect_uri=' + encodeURIComponent(DISCORD_REDIRECT_URI)
+        + '&scope=' + encodeURIComponent('identify guilds.members.read')
+        + (csrfState ? '&state=' + csrfState : '');
+      window.location.href = url;
     });
   });
 

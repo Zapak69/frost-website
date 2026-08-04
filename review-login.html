@@ -356,6 +356,8 @@
   const GAME_SESSION_KEY = 'frostReviewGameSession';
   const GAME_PORT_KEY = 'frostReviewGamePort';
   const OAUTH_STATE_KEY = 'frostReviewOauthState';
+  const DISCORD_CLIENT_ID = '1512834635640475898';
+  const DISCORD_REDIRECT_URI_REVIEW = 'https://frostclient.eu/review';
 
   function gameSession() {
     try { return sessionStorage.getItem(GAME_SESSION_KEY) || ''; } catch (e) { return ''; }
@@ -409,36 +411,22 @@
 
   const loginBtn = document.getElementById('loginBtn');
   loginBtn.addEventListener('click', () => {
-    loginBtn.classList.add('loading');
-    fetch(LITE_API_URL + '?action=identifyConfig', { cache: 'no-store' })
-      .then(r => r.json())
-      .then(cfg => {
-        if (!cfg.ok || !cfg.clientId) {
-          loginBtn.classList.remove('loading');
-          showError('Discord sign-in is not configured yet. Please check back soon.');
-          return;
-        }
-        let csrfState = '';
-        try {
-          const buf = new Uint8Array(16);
-          crypto.getRandomValues(buf);
-          csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
-          sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
-        } catch (e) {}
-        const gs = gameSession(), gp = gamePort();
-        const state = csrfState + (gs && gp ? '.g.' + gs + '.' + gp : '');
-        const url = 'https://discord.com/oauth2/authorize'
-          + '?client_id=' + encodeURIComponent(cfg.clientId)
-          + '&response_type=code'
-          + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
-          + '&scope=identify'
-          + '&state=' + state;
-        window.location.href = url;
-      })
-      .catch(() => {
-        loginBtn.classList.remove('loading');
-        showError('Network error while contacting the server. Please try again.');
-      });
+    let csrfState = '';
+    try {
+      const buf = new Uint8Array(16);
+      crypto.getRandomValues(buf);
+      csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+      sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+    } catch (e) {}
+    const gs = gameSession(), gp = gamePort();
+    const state = csrfState + (gs && gp ? '.g.' + gs + '.' + gp : '');
+    const url = 'https://discord.com/oauth2/authorize'
+      + '?client_id=' + encodeURIComponent(DISCORD_CLIENT_ID)
+      + '&response_type=code'
+      + '&redirect_uri=' + encodeURIComponent(DISCORD_REDIRECT_URI_REVIEW)
+      + '&scope=identify'
+      + '&state=' + state;
+    window.location.href = url;
   });
 
   document.getElementById('retryBtn').addEventListener('click', () => show('stateLogin'));

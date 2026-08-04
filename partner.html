@@ -540,6 +540,8 @@
   const TOKEN_KEY = 'frostPartnerToken';
   const OAUTH_STATE_KEY = 'frostPartnerOauthState';
   const APPLIED_KEY = 'frostPartnerApplied';
+  const DISCORD_CLIENT_ID = '1512834635640475898';
+  const DISCORD_REDIRECT_URI_PARTNER = 'https://frostclient.eu/partner';
 
   const modal = document.getElementById('applyModal');
   const closeBtn = document.getElementById('applyModalClose');
@@ -673,36 +675,20 @@
   if (hasApplied()) markApplied();
 
   function startLogin() {
-    applyBtns.forEach(function (b) { b.classList.add('loading'); });
-    fetch(LITE_API_URL + '?action=partnerConfig', { cache: 'no-store' })
-      .then(function (r) { return r.json(); })
-      .then(function (cfg) {
-        applyBtns.forEach(function (b) { b.classList.remove('loading'); });
-        if (!cfg.ok || !cfg.clientId) {
-          openModal();
-          showErrorState('Sign-in is not configured yet. Please check back soon.');
-          return;
-        }
-        let csrfState = '';
-        try {
-          const buf = new Uint8Array(16);
-          crypto.getRandomValues(buf);
-          csrfState = Array.from(buf).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
-          sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
-        } catch (e) {}
-        const url = 'https://discord.com/oauth2/authorize'
-          + '?client_id=' + encodeURIComponent(cfg.clientId)
-          + '&response_type=code'
-          + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
-          + '&scope=' + encodeURIComponent('identify guilds.members.read')
-          + '&state=' + csrfState;
-        window.location.href = url;
-      })
-      .catch(function () {
-        applyBtns.forEach(function (b) { b.classList.remove('loading'); });
-        openModal();
-        showErrorState('Network error while contacting the server. Please try again.');
-      });
+    let csrfState = '';
+    try {
+      const buf = new Uint8Array(16);
+      crypto.getRandomValues(buf);
+      csrfState = Array.from(buf).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+      sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+    } catch (e) {}
+    const url = 'https://discord.com/oauth2/authorize'
+      + '?client_id=' + encodeURIComponent(DISCORD_CLIENT_ID)
+      + '&response_type=code'
+      + '&redirect_uri=' + encodeURIComponent(DISCORD_REDIRECT_URI_PARTNER)
+      + '&scope=' + encodeURIComponent('identify guilds.members.read')
+      + '&state=' + csrfState;
+    window.location.href = url;
   }
 
   applyBtns.forEach(function (btn) {
