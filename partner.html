@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Partner Program | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b; --surface2: #162233;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --green: #3dff72; --amber: #e8b84f;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.05; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-desktop { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 100%; }
+  .nav-logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue);
+    text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none;
+  }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-signin-btn {
+    display: inline-flex; align-items: center;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 600;
+    color: var(--muted); background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; cursor: pointer;
+    padding: 9px 18px; text-decoration: none;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .nav-signin-btn img { display: none; }
+  .nav-signin-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.08); }
+  .nav-signin-btn.loading { opacity: 0.6; pointer-events: none; }
+  .nav-signin-btn.is-logged-in { color: var(--frost-blue); }
+  .nav-apply-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 700;
+    color: #06121c; background: linear-gradient(135deg, var(--frost-blue), var(--frost-deep));
+    border: none; border-radius: 8px; cursor: pointer;
+    padding: 9px 18px; text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.25s, opacity 0.2s;
+  }
+  .nav-apply-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,200,248,0.35); }
+  .nav-apply-btn.loading { opacity: 0.7; pointer-events: none; }
+  .nav-hamburger {
+    display: none; flex-direction: column; justify-content: center; gap: 5px;
+    width: 28px; height: 22px; background: none; border: none; cursor: pointer; padding: 0;
+    position: absolute; left: 20px; top: 50%; transform: translateY(-50%); z-index: 101;
+  }
+  .nav-hamburger span {
+    display: block; width: 100%; height: 2px; background: var(--text);
+    border-radius: 2px; transition: transform 0.25s ease, opacity 0.2s ease;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .nav-logo-mobile {
+    display: none; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue); text-decoration: none;
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  }
+  .nav-logo-mobile img { width: 20px; height: 20px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo-mobile span { color: var(--text); }
+  .nav-mobile-menu {
+    display: none; position: fixed; top: 68px; left: 0; right: 0; z-index: 100;
+    background: rgba(8,12,16,0.98); border-bottom: 1px solid var(--border);
+    flex-direction: column; padding: 8px 24px 16px;
+    max-height: calc(100vh - 68px); overflow-y: auto;
+  }
+  .nav-mobile-menu.open { display: flex; }
+  .nav-mobile-menu a, .nav-mobile-menu button {
+    color: var(--text); text-decoration: none; font-size: 15px; font-weight: 500;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+    background: none; border-left: none; border-right: none; border-top: none;
+    border-radius: 0; box-shadow: none; text-align: left; width: 100%;
+    cursor: pointer; font-family: inherit;
+  }
+  .nav-mobile-menu a:last-child, .nav-mobile-menu button:last-child { border-bottom: none; }
+  @media(max-width:700px){
+    .nav-desktop { display: none; }
+    .nav-hamburger, .nav-logo-mobile { display: flex; }
+  }
+
+  .legal-page { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 120px 24px 100px; }
+  .legal-eyebrow { font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--frost-blue); margin-bottom: 16px; }
+  .legal-page h1 { font-family: 'Space Mono', monospace; font-size: clamp(32px, 5vw, 52px); font-weight: 700; letter-spacing: -2px; margin-bottom: 12px; }
+  .legal-page h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin: 56px 0 8px; }
+  .legal-page h2:first-of-type { margin-top: 40px; }
+  .legal-page > .section-intro { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 24px; }
+  .legal-page p { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 16px; }
+  .legal-page a { color: var(--frost-blue); text-decoration: none; }
+  .legal-page a:hover { text-decoration: underline; }
+
+  .partner-tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0 8px; }
+  @media(max-width:700px){ .partner-tiers { grid-template-columns: 1fr; } }
+  .partner-card { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 26px 24px; }
+  .partner-card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .partner-card-head img { width: 26px; height: 26px; object-fit: contain; }
+  .partner-card-head h3 { font-size: 17px; font-weight: 700; color: var(--text); }
+  .partner-reqs { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .partner-reqs li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--muted); line-height: 1.55; }
+  .partner-reqs li .mark {
+    flex-shrink: 0; width: 19px; height: 19px; border-radius: 5px; margin-top: 1px;
+    background: rgba(79,200,248,0.12); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--frost-blue); font-size: 11px; font-weight: 700;
+  }
+  .partner-reqs li.warn .mark { background: rgba(255,90,90,0.14); border-color: rgba(255,90,90,0.4); color: #ff6b6b; }
+  .partner-reqs li.warn strong { color: #ff9b9b; }
+
+  .partner-plus-card {
+    border: 1px solid rgba(232,184,79,0.5); border-radius: 16px;
+    background: linear-gradient(160deg, rgba(255,202,40,0.08), var(--surface) 55%);
+    padding: 30px 28px; margin: 32px 0 8px;
+  }
+  .partner-plus-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+    color: #1a0f00; background: linear-gradient(135deg, #ffca28, #ffa726);
+    padding: 5px 13px; border-radius: 20px; font-weight: 700; margin-bottom: 16px;
+  }
+  .partner-plus-card h3 { font-size: 19px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+  .partner-plus-card .partner-reqs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+  @media(max-width:600px){ .partner-plus-card .partner-reqs { grid-template-columns: 1fr; } }
+  .partner-plus-card .mark { background: rgba(255,202,40,0.16); border-color: rgba(255,202,40,0.4); color: #ffca28; }
+
+  .partner-apply-box {
+    border: 1px solid var(--border); border-radius: 14px; background: var(--surface);
+    padding: 30px 28px; margin-top: 40px; text-align: center;
+  }
+  .partner-apply-box h3 { font-size: 19px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .partner-apply-box p { max-width: 480px; margin: 0 auto 18px; }
+  .partner-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--frost-blue), var(--frost-deep));
+    color: #06121c; font-weight: 700; font-size: 15px;
+    padding: 14px 30px; border-radius: 10px; text-decoration: none;
+    border: none; cursor: pointer; font-family: inherit;
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .partner-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(79,200,248,0.35); text-decoration: none; }
+  .partner-cta img { width: 20px; height: 20px; }
+  .partner-cta.loading { opacity: 0.7; pointer-events: none; }
+  .partner-member-note {
+    display: flex; align-items: flex-start; gap: 10px; text-align: left;
+    border: 1px solid rgba(255,90,90,0.3); background: rgba(255,90,90,0.08);
+    border-radius: 10px; padding: 12px 16px; margin: 0 auto 22px; max-width: 480px;
+    font-size: 13px; color: var(--muted); line-height: 1.55;
+  }
+  .partner-member-note strong { color: #ff9b9b; }
+  .apply-other-note { font-size: 13px; color: var(--muted); margin-top: 20px; margin-bottom: 0; }
+
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    background: rgba(4,6,9,0.65);
+    backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
+                visibility 0s linear 0.35s;
+  }
+  .modal-overlay.active {
+    opacity: 1; visibility: visible; pointer-events: auto;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
+                visibility 0s linear 0s;
+  }
+  .modal-box {
+    position: relative; width: 100%; max-width: 440px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+    padding: 38px 34px;
+    box-shadow: 0 30px 100px rgba(0,0,0,0.65), 0 0 60px rgba(0,200,255,0.08);
+    transform: scale(0.92) translateY(20px); opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
+  }
+  .modal-overlay.active .modal-box {
+    transform: scale(1) translateY(0); opacity: 1;
+    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1) 0.05s, opacity 0.35s ease 0.05s;
+  }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 32px; height: 32px; border-radius: 8px;
+    background: transparent; border: none; color: var(--muted); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s, transform 0.25s ease;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text); transform: rotate(90deg); }
+
+  .apply-state { display: none; }
+  .apply-state.active { display: block; }
+  .apply-title { font-family: 'Space Mono', monospace; font-size: 19px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .apply-text { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
+
+  .apply-spinner {
+    width: 32px; height: 32px; margin: 6px auto 20px;
+    border: 3px solid rgba(79,200,248,0.2); border-top-color: var(--frost-blue);
+    border-radius: 50%; animation: applySpin 0.8s linear infinite;
+  }
+  @keyframes applySpin { to { transform: rotate(360deg); } }
+
+  .apply-field { margin-bottom: 18px; }
+  .apply-field label { display: block; font-size: 12.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .apply-pill-row { display: flex; gap: 10px; }
+  .apply-pill {
+    flex: 1; text-align: center; padding: 12px 8px; border-radius: 10px;
+    border: 1.5px solid var(--border); background: rgba(255,255,255,0.03);
+    cursor: pointer; font-size: 13.5px; font-weight: 700; color: var(--muted);
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+  }
+  .apply-pill.selected { border-color: var(--frost-blue); background: rgba(79,200,248,0.12); color: var(--text); }
+  .apply-input {
+    width: 100%; background: rgba(8,12,16,0.6); border: 1px solid var(--border); border-radius: 10px;
+    padding: 11px 14px; font-family: 'Space Grotesk', sans-serif; font-size: 14px; color: var(--text);
+    outline: none; transition: border-color 0.2s, background 0.2s;
+  }
+  .apply-input::placeholder { color: var(--muted); }
+  .apply-input:focus { border-color: var(--frost-blue); background: rgba(8,12,16,0.85); }
+
+  .apply-checkbox-row {
+    display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
+    font-size: 13.5px; color: var(--muted); line-height: 1.5; margin-bottom: 22px;
+  }
+  .apply-checkbox-row input { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--frost-blue); cursor: pointer; flex-shrink: 0; }
+
+  .apply-btn {
+    width: 100%; padding: 13px; border: none; border-radius: 10px; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; font-weight: 700;
+    background: linear-gradient(135deg, var(--frost-blue), var(--frost-deep)); color: #06121c;
+    transition: transform 0.2s, box-shadow 0.25s, opacity 0.2s;
+  }
+  .apply-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(79,200,248,0.3); }
+  .apply-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .apply-btn-secondary {
+    width: 100%; padding: 12px; border-radius: 10px; margin-top: 10px; text-align: center;
+    border: 1px solid var(--border); background: transparent; color: var(--frost-blue);
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 600; cursor: pointer;
+    text-decoration: none; display: block;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .apply-btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); }
+
+  .scroll-down-btn {
+    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
+    z-index: 50; display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(17,29,43,0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border); border-radius: 30px; padding: 10px 18px;
+    color: var(--text); font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; text-decoration: none;
+    opacity: 1; transition: opacity 0.3s ease, border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .scroll-down-btn:hover { border-color: var(--frost-blue); background: rgba(17,29,43,0.95); }
+  .scroll-down-btn.hidden { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(10px); }
+  .scroll-down-btn .arrow { display: inline-block; animation: scrollDownBounce 1.6s ease-in-out infinite; color: var(--frost-blue); font-size: 15px; line-height: 1; }
+  @keyframes scrollDownBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+  @media(max-width:600px){ .scroll-down-btn { bottom: 18px; font-size: 12.5px; padding: 9px 15px; } }
+
+  footer { border-top: 1px solid var(--border); padding: 60px 48px 40px; position: relative; z-index: 1; }
+  .footer-inner { max-width: 1160px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px 56px; }
+  .footer-brand { flex: 1 1 200px; }
+  .footer-col { flex: 1 1 130px; }
+  .footer-logo { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; color: var(--frost-blue); margin-bottom: 12px; }
+  .footer-tagline { font-size: 14px; color: var(--muted); }
+  .footer-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; }
+  .footer-col a, .footer-link-btn { display: block; color: var(--text); font-size: 14px; text-decoration: none; margin-bottom: 10px; opacity: 0.7; transition: opacity 0.2s; }
+  .footer-col a:hover, .footer-link-btn:hover { opacity: 1; }
+  .footer-link-btn { background: none; border: none; padding: 0; font-family: inherit; cursor: pointer; text-align: left; }
+  .footer-social-icons { display: flex; align-items: center; gap: 16px; }
+  .footer-social-icons a { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: var(--surface2, #162233); border: 1px solid var(--border); margin-bottom: 0; opacity: 1; transition: border-color 0.2s, transform 0.15s, background 0.2s; }
+  .footer-social-icons a:hover { border-color: var(--frost-blue); background: var(--bg2, #0d1520); transform: translateY(-2px); }
+  .footer-social-icons img { width: 20px; height: 20px; object-fit: contain; opacity: 0.85; transition: opacity 0.2s; }
+  .footer-social-icons a:hover img { opacity: 1; }
+  .footer-bottom { max-width: 1160px; margin: 32px auto 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 24px; font-size: 13px; color: var(--muted); }
+  @media(max-width:900px){ .footer-inner { flex-direction: column; gap: 40px; } }
+  @media(max-width:600px){ nav { padding: 0 20px; } footer { flex-direction: column; gap: 16px; text-align: center; } }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
+    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+  </svg>
+</div>
+<button type="button" class="scroll-down-btn" id="scrollDownBtn"><span class="arrow">↓</span>Apply Below</button>
+<nav>
+<div class="nav-desktop">
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <div class="nav-right">
+    <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+    <button type="button" class="nav-apply-btn js-apply-btn">Apply Now</button>
+    <button type="button" class="nav-signin-btn js-site-auth-btn"><img src="icons/discord.webp" alt=""/><span class="js-site-auth-text">Sign in</span></button>
+  </div>
+</div>
+<button class="nav-hamburger" id="navHamburger" type="button" aria-label="Menu" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<a class="nav-logo-mobile" href="https://frostclient.eu">
+  <img src="favicon.ico" alt="" class="nav-logo-icon"/><span>Frost</span>
+</a>
+</nav>
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <a href="https://frostclient.eu">← Back to Home</a>
+</div>
+
+<div class="legal-page">
+  <div class="legal-eyebrow">Creators</div>
+  <h1>Become a Frost Partner</h1>
+  <p class="section-intro">We're looking for streamers and video creators who make Minecraft content and want to team up with Frost. If you post TikToks, YouTube videos, or streams featuring Frost Client, you can get paid for it — not just a shoutout or free merch.</p>
+
+  <h2>How it works</h2>
+  <p>There are two tiers, <strong>Partner</strong> and <strong>Partner+</strong>, with different requirements and different payouts. There's no fixed public rate — every deal is worked out individually based on your platform, audience size, and content style. Apply on our Discord and we'll figure out the right reward together.</p>
+
+  <h2>Partner — entry requirements</h2>
+  <div class="partner-tiers">
+    <div class="partner-card">
+      <div class="partner-card-head">
+        <img src="icons/tiktok.webp" alt=""/>
+        <h3>TikTok</h3>
+      </div>
+      <ul class="partner-reqs">
+        <li><span class="mark">✓</span>Minimum 1,000 followers</li>
+        <li><span class="mark">✓</span>Active account (posts regularly)</li>
+        <li class="warn"><span class="mark">!</span><strong>Must not promote cheats</strong> — this one's non-negotiable.</li>
+      </ul>
+    </div>
+    <div class="partner-card">
+      <div class="partner-card-head">
+        <img src="icons/youtube.webp" alt=""/>
+        <h3>YouTube</h3>
+      </div>
+      <ul class="partner-reqs">
+        <li><span class="mark">✓</span>Minimum 1,000 subscribers</li>
+        <li><span class="mark">✓</span>Active channel (uploads regularly)</li>
+        <li class="warn"><span class="mark">!</span><strong>Must not promote cheats</strong> — this one's non-negotiable.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="partner-plus-card">
+    <span class="partner-plus-badge">Partner+</span>
+    <h3>For creators with real reach, better rewards.</h3>
+    <ul class="partner-reqs">
+      <li><span class="mark">✓</span>5,000+ followers / subscribers</li>
+      <li><span class="mark">✓</span>10,000+ views per video on average</li>
+      <li><span class="mark">✓</span>Active, engaged audience — not just numbers</li>
+      <li><span class="mark">✓</span>Consistent, regular uploads</li>
+      <li><span class="mark">✓</span>Content focused purely on Minecraft — not a mixed channel covering multiple games together</li>
+    </ul>
+  </div>
+
+  <div class="partner-apply-box">
+    <h3>Ready to apply?</h3>
+    <p>Sign in with Discord and fill out a quick form — takes under a minute. We'll take a look and work out the reward together from there.</p>
+    <div class="partner-member-note"><span>⚠</span><span><strong>You must be a member of our Discord server to apply</strong> — if you're not, we have no way to reach you if your application is accepted.</span></div>
+    <button type="button" class="partner-cta js-apply-btn"><img src="icons/discord.webp" alt=""/>Apply Now</button>
+    <p class="apply-other-note">Creating content on a different platform (Twitch, Kick, etc.)? <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Open a ticket on Discord</a> instead — TikTok and YouTube go through the form above.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="applyModal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="applyModalClose" aria-label="Close">✕</button>
+
+    <div class="apply-state" id="applyStateWorking">
+      <div class="apply-spinner"></div>
+      <p class="apply-text" style="text-align:center;margin-bottom:0;">Signing you in…</p>
+    </div>
+
+    <div class="apply-state" id="applyStateNotMember">
+      <div class="apply-title">Join our Discord first</div>
+      <p class="apply-text">You need to be a member of the Frost Discord server before you can apply — we need to be able to reach you if your application is accepted.</p>
+      <a class="apply-btn" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;" href="https://discord.gg/Kn8ydsABU8" target="_blank">Join Discord</a>
+      <button type="button" class="apply-btn-secondary" id="applyRetryAfterJoin">I've joined — try again</button>
+    </div>
+
+    <div class="apply-state" id="applyStep1">
+      <div class="apply-title">Apply for Partner</div>
+      <div class="apply-field">
+        <label>Which tier are you applying for?</label>
+        <div class="apply-pill-row" id="applyTierRow">
+          <div class="apply-pill" data-value="PARTNER">Partner</div>
+          <div class="apply-pill" data-value="PARTNER_PLUS">Partner+</div>
+        </div>
+      </div>
+      <div class="apply-field">
+        <label>Platform</label>
+        <div class="apply-pill-row" id="applyPlatformRow">
+          <div class="apply-pill" data-value="TIKTOK">TikTok</div>
+          <div class="apply-pill" data-value="YOUTUBE">YouTube</div>
+        </div>
+      </div>
+      <div class="apply-field">
+        <label>Link to your channel/profile</label>
+        <input type="url" class="apply-input" id="applyLink" placeholder="https://..." autocomplete="off"/>
+      </div>
+      <button type="button" class="apply-btn" id="applyNextBtn" disabled>Next →</button>
+    </div>
+
+    <div class="apply-state" id="applyStep2">
+      <div class="apply-title">Confirm your application</div>
+      <label class="apply-checkbox-row">
+        <input type="checkbox" id="applyConfirmCheck"/>
+        <span>I've read the requirements above and meet them for the tier I'm applying for.</span>
+      </label>
+      <button type="button" class="apply-btn" id="applySubmitBtn" disabled>Submit Application</button>
+    </div>
+
+    <div class="apply-state" id="applyStateDone">
+      <div class="apply-title">Application sent 🎉</div>
+      <p class="apply-text" style="margin-bottom:0;">Thanks! We'll take a look and reach out on Discord if you're a fit.</p>
+    </div>
+
+    <div class="apply-state" id="applyStateError">
+      <div class="apply-title">Something went wrong</div>
+      <p class="apply-text" id="applyErrorText">Please try again.</p>
+      <button type="button" class="apply-btn" id="applyRetryBtn">Try again</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">❄ FROST</div>
+      <p class="footer-tagline">A fast, free Minecraft client<br/>built for players who care.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="https://frostclient.eu/?openDownload">Download</a>
+      <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
+      <a href="https://frostclient.eu/settings">Transferring Settings</a>
+      <a href="https://frostclient.eu/reviews">Reviews</a>
+      <a href="https://frostclient.eu/partner">Partner Program</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <button type="button" class="footer-link-btn js-site-auth-btn"><span class="js-site-auth-text">Sign in</span></button>
+      <button type="button" class="footer-link-btn js-apply-btn">Apply for Partner</button>
+      <a href="https://frostclient.eu/lite">Frost Lite</a>
+      <a href="https://frostclient.eu/lite/download" class="js-lite-access-link">Download Lite</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="https://frostclient.eu/faq">FAQ</a>
+      <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+      <a href="https://frostclient.eu/terms">Terms of Service</a>
+      <a href="https://frostclient.eu/imprint">Imprint</a>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <div class="footer-social-icons">
+        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
+        <a href="https://www.youtube.com/@frost-client" target="_blank" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
+        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© Frost 2026. All rights reserved.</span>
+    <span>Not affiliated with Minecraft or Mojang.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  const hamburger = document.getElementById('navHamburger');
+  const mobileMenu = document.getElementById('navMobileMenu');
+  if (!hamburger || !mobileMenu) return;
+  function closeMenu() {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+  }
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+  });
+  mobileMenu.querySelectorAll('a, button').forEach(el => el.addEventListener('click', closeMenu));
+})();
+</script>
+<script>
+(function () {
+  const scrollBtn = document.getElementById('scrollDownBtn');
+  const applyBox = document.querySelector('.partner-apply-box');
+  if (!scrollBtn || !applyBox) return;
+
+  scrollBtn.addEventListener('click', function () {
+    applyBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        scrollBtn.classList.toggle('hidden', entry.isIntersecting);
+      });
+    }, { threshold: 0.2 });
+    observer.observe(applyBox);
+  }
+})();
+</script>
+<script>
+(function () {
+  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const PARTNER_APPLY_URL = 'https://bot.frostclient.eu/partner-apply';
+  const TOKEN_KEY = 'frostPartnerToken';
+  const OAUTH_STATE_KEY = 'frostPartnerOauthState';
+
+  const modal = document.getElementById('applyModal');
+  const closeBtn = document.getElementById('applyModalClose');
+  if (!modal) return;
+
+  const states = ['applyStateWorking', 'applyStateNotMember', 'applyStep1', 'applyStep2', 'applyStateDone', 'applyStateError'];
+  function show(id) {
+    states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
+  }
+  function openModal() { modal.classList.add('active'); }
+  function closeModal() { modal.classList.remove('active'); }
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
+
+  function loadToken() {
+    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+  }
+  function saveToken(t) {
+    try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+  }
+  function clearToken() {
+    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+  }
+
+  function showErrorState(msg) {
+    document.getElementById('applyErrorText').textContent = msg;
+    show('applyStateError');
+  }
+
+  // ---- step 1/2 form state ----
+  let tier = null, platform = null;
+  const tierRow = document.getElementById('applyTierRow');
+  const platformRow = document.getElementById('applyPlatformRow');
+  const linkInput = document.getElementById('applyLink');
+  const nextBtn = document.getElementById('applyNextBtn');
+  const confirmCheck = document.getElementById('applyConfirmCheck');
+  const submitBtn = document.getElementById('applySubmitBtn');
+
+  function updateNextEnabled() {
+    nextBtn.disabled = !(tier && platform && linkInput.value.trim());
+  }
+  tierRow.querySelectorAll('.apply-pill').forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      tierRow.querySelectorAll('.apply-pill').forEach(function (p) { p.classList.remove('selected'); });
+      pill.classList.add('selected');
+      tier = pill.dataset.value;
+      updateNextEnabled();
+    });
+  });
+  platformRow.querySelectorAll('.apply-pill').forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      platformRow.querySelectorAll('.apply-pill').forEach(function (p) { p.classList.remove('selected'); });
+      pill.classList.add('selected');
+      platform = pill.dataset.value;
+      updateNextEnabled();
+    });
+  });
+  linkInput.addEventListener('input', updateNextEnabled);
+
+  nextBtn.addEventListener('click', function () {
+    if (nextBtn.disabled) return;
+    show('applyStep2');
+  });
+  confirmCheck.addEventListener('change', function () {
+    submitBtn.disabled = !confirmCheck.checked;
+  });
+
+  function resetForm() {
+    tier = null; platform = null;
+    tierRow.querySelectorAll('.apply-pill').forEach(function (p) { p.classList.remove('selected'); });
+    platformRow.querySelectorAll('.apply-pill').forEach(function (p) { p.classList.remove('selected'); });
+    linkInput.value = '';
+    confirmCheck.checked = false;
+    submitBtn.disabled = true;
+    nextBtn.disabled = true;
+  }
+
+  submitBtn.addEventListener('click', function () {
+    if (submitBtn.disabled) return;
+    const token = loadToken();
+    if (!token) { showErrorState('Your session expired. Please click Apply again to sign in.'); return; }
+    submitBtn.disabled = true;
+    fetch(PARTNER_APPLY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        partnerToken: token, tier: tier, platform: platform,
+        link: linkInput.value.trim(), confirmed: true
+      })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data && data.ok) {
+          resetForm();
+          show('applyStateDone');
+          return;
+        }
+        if (data && data.error === 'not_member') {
+          show('applyStateNotMember');
+          return;
+        }
+        if (data && data.error === 'token_expired') {
+          clearToken();
+          showErrorState('Your session expired. Please click Apply again to sign in.');
+          return;
+        }
+        submitBtn.disabled = false;
+        showErrorState("Couldn't submit your application. Please try again.");
+      })
+      .catch(function () { submitBtn.disabled = false; showErrorState('Network error. Please try again.'); });
+  });
+
+  document.getElementById('applyRetryBtn').addEventListener('click', function () { show('applyStep1'); });
+  document.getElementById('applyRetryAfterJoin').addEventListener('click', function () {
+    startLogin();
+  });
+
+  const applyBtns = document.querySelectorAll('.js-apply-btn');
+
+  function startLogin() {
+    applyBtns.forEach(function (b) { b.classList.add('loading'); });
+    fetch(LITE_API_URL + '?action=partnerConfig', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (cfg) {
+        applyBtns.forEach(function (b) { b.classList.remove('loading'); });
+        if (!cfg.ok || !cfg.clientId) {
+          openModal();
+          showErrorState('Sign-in is not configured yet. Please check back soon.');
+          return;
+        }
+        let csrfState = '';
+        try {
+          const buf = new Uint8Array(16);
+          crypto.getRandomValues(buf);
+          csrfState = Array.from(buf).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+          sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+        } catch (e) {}
+        const url = 'https://discord.com/oauth2/authorize'
+          + '?client_id=' + encodeURIComponent(cfg.clientId)
+          + '&response_type=code'
+          + '&redirect_uri=' + encodeURIComponent(cfg.redirectUri)
+          + '&scope=' + encodeURIComponent('identify guilds.members.read')
+          + '&state=' + csrfState;
+        window.location.href = url;
+      })
+      .catch(function () {
+        applyBtns.forEach(function (b) { b.classList.remove('loading'); });
+        openModal();
+        showErrorState('Network error while contacting the server. Please try again.');
+      });
+  }
+
+  applyBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const token = loadToken();
+      if (token) {
+        resetForm();
+        show('applyStep1');
+        openModal();
+        return;
+      }
+      startLogin();
+    });
+  });
+  (function init() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('code') && !params.has('error')) return;
+
+    if (params.has('error')) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('error');
+      cleanUrl.searchParams.delete('error_description');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+      return;
+    }
+
+    const code = params.get('code');
+    const returnedState = params.get('state') || '';
+    let storedState = '';
+    try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
+    try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete('code');
+    cleanUrl.searchParams.delete('state');
+    window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+
+    openModal();
+    show('applyStateWorking');
+
+    if (storedState && returnedState !== storedState) {
+      showErrorState('Sign-in session mismatch. Please try again.');
+      return;
+    }
+
+    fetch(LITE_API_URL + '?action=partnerAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data.ok) {
+          showErrorState('Discord sign-in failed. Please try again.');
+          return;
+        }
+        if (data.status === 'not_member') {
+          show('applyStateNotMember');
+          return;
+        }
+        if (data.status === 'eligible' && data.partnerToken) {
+          saveToken(data.partnerToken);
+          resetForm();
+          show('applyStep1');
+          return;
+        }
+        showErrorState('Something unexpected happened. Please try again.');
+      })
+      .catch(function () { showErrorState('Network error while contacting the server. Please try again.'); });
+  })();
+})();
+</script>
+<script src="site-auth.js"></script>
+</body>
+</html>

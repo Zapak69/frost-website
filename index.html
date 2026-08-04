@@ -727,6 +727,33 @@
     0% { left: -60%; } 55% { left: 120%; } 100% { left: 120%; }
   }
   .lite-promo-note { margin-top: 20px; font-size: 13px; color: var(--muted); }
+  .partner-promo-section { padding: 20px clamp(24px, 6vw, 80px) 160px; }
+  .partner-promo-card {
+    max-width: 900px; margin: 0 auto;
+    border: 1px solid rgba(255,202,40,0.4); border-radius: 24px;
+    background: linear-gradient(160deg, rgba(255,202,40,0.1), rgba(17,29,43,0.92) 60%);
+    padding: 56px clamp(28px,6vw,64px);
+    text-align: center;
+    box-shadow: 0 0 60px rgba(255,202,40,0.08);
+  }
+  .partner-promo-card .section-eyebrow { color: #ffca28; }
+  .partner-promo-card h2 { font-size: clamp(28px, 4.5vw, 42px); margin-bottom: 16px; }
+  .partner-promo-accent {
+    background: linear-gradient(90deg, #ffca28, #ffa726);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .partner-promo-desc { color: var(--muted); font-size: 16px; line-height: 1.65; max-width: 560px; margin: 0 auto 34px; }
+  .btn-partner-promo {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, #ffca28, #ffa726);
+    color: #1a0f00; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 15.5px; font-weight: 700;
+    padding: 15px 36px; border-radius: 12px;
+    box-shadow: 0 0 24px rgba(255,202,40,0.25);
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .btn-partner-promo:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(255,202,40,0.45); }
+  .btn-partner-promo:active { transform: translateY(0) scale(0.98); }
   @media(max-width:600px){
     .lite-compare-cell { padding: 13px 10px; font-size: 12.5px; }
     .lite-compare-head .lite-compare-cell { font-size: 11px; padding: 14px 10px; }
@@ -1212,6 +1239,7 @@
     <li><a href="#reviews">Reviews</a></li>
     <li><a href="#download">Download</a></li>
     <li><a href="https://frostclient.eu/faq">FAQ</a></li>
+    <li><a href="https://frostclient.eu/partner">Partner</a></li>
   </ul>
   <div class="nav-actions">
     <a href="lite" class="nav-cta nav-cta--lite js-lite-access-link">LITE</a>
@@ -1234,6 +1262,7 @@
   <a href="#reviews">Reviews</a>
   <a href="#download">Download</a>
   <a href="https://frostclient.eu/faq">FAQ</a>
+  <a href="https://frostclient.eu/partner">Partner</a>
   <a href="lite" class="js-lite-access-link">LITE</a>
   <button type="button" class="js-download-trigger">Download Free</button>
   <button type="button" class="js-site-auth-btn">Sign in</button>
@@ -1481,6 +1510,16 @@
 </section>
 </div>
 
+<div>
+<section class="partner-promo-section">
+  <div class="partner-promo-card reveal-scale">
+    <div class="section-eyebrow">Creators</div>
+    <h2>Play. Post. <span class="partner-promo-accent">Get paid.</span></h2>
+    <p class="partner-promo-desc">We're looking for TikTok and YouTube creators to team up with Frost — real payouts, not just a shoutout.</p>
+    <a href="https://frostclient.eu/partner" class="btn-partner-promo">Read More →</a>
+  </div>
+</section>
+</div>
 <div class="modal-overlay" id="litePromptModal">
   <div class="modal-box modal-box--lite">
     <button type="button" class="modal-close" id="litePromptCloseBtn" aria-label="Close">✕</button>
@@ -1696,6 +1735,7 @@
       <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
       <a href="https://frostclient.eu/settings">Transferring Settings</a>
       <a href="https://frostclient.eu/reviews">Reviews</a>
+      <a href="https://frostclient.eu/partner">Partner Program</a>
     </div>
     <div class="footer-col">
       <h4>Account</h4>
