@@ -125,6 +125,9 @@
   }
   .partner-reqs li.warn .mark { background: rgba(255,90,90,0.14); border-color: rgba(255,90,90,0.4); color: #ff6b6b; }
   .partner-reqs li.warn strong { color: #ff9b9b; }
+  .partner-reqs li.highlight { color: var(--text); }
+  .partner-reqs li.highlight strong { color: #ffca28; }
+  .partner-reqs li.highlight .mark { background: rgba(255,202,40,0.16); border-color: rgba(255,202,40,0.4); color: #ffca28; }
 
   .partner-plus-card {
     border: 1px solid rgba(232,184,79,0.5); border-radius: 16px;
@@ -337,6 +340,31 @@
 
   <h2>How it works</h2>
   <p>There are two tiers, <strong>Partner</strong> and <strong>Partner+</strong>, with different requirements and different payouts. There's no fixed public rate — every deal is worked out individually based on your platform, audience size, and content style. Apply on our Discord and we'll figure out the right reward together.</p>
+
+  <h2>What you get</h2>
+  <div class="partner-tiers">
+    <div class="partner-card">
+      <div class="partner-card-head">
+        <h3>Partner</h3>
+      </div>
+      <ul class="partner-reqs">
+        <li><span class="mark">✓</span>Your own discount code</li>
+        <li><span class="mark">✓</span>20% commission on every order through your code</li>
+        <li><span class="mark">✓</span>Free assets for your stream</li>
+      </ul>
+    </div>
+    <div class="partner-card">
+      <div class="partner-card-head">
+        <h3>Partner+</h3>
+      </div>
+      <ul class="partner-reqs">
+        <li><span class="mark">✓</span>Your own discount code</li>
+        <li><span class="mark">✓</span>30% commission on every order through your code</li>
+        <li><span class="mark">✓</span>Free assets for your stream</li>
+        <li class="highlight"><span class="mark">★</span><strong>Free Frost Client Lite for the duration of your partnership</strong></li>
+      </ul>
+    </div>
+  </div>
 
   <h2>Partner — entry requirements</h2>
   <div class="partner-tiers">
@@ -744,6 +772,10 @@
         }
         if (data.status === 'not_member') {
           show('applyStateNotMember');
+          return;
+        }
+        if (data.status === 'already_partner') {
+          window.location.href = 'https://partner.frostclient.eu';
           return;
         }
         if (data.status === 'eligible' && data.partnerToken) {
