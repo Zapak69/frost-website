@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Page Not Found | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b; --surface2: #162233;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; min-height: 100vh; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.06; }
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue);
+    text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .nav-logo:hover { opacity: 0.85; }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+  @media (max-width: 480px) {
+    nav { padding: 0 16px; }
+    .nav-back { font-size: 12px; }
+  }
+
+  .page {
+    position: relative; z-index: 1; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 140px 24px 80px; text-align: center;
+  }
+  .content { max-width: 520px; animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .content { animation: none; } }
+
+  .error-code {
+    font-family: 'Space Mono', monospace; font-size: clamp(80px, 18vw, 150px);
+    font-weight: 700; letter-spacing: -4px; line-height: 1;
+    background: linear-gradient(90deg, #1a7fc4 0%, #4fc8f8 18%, #a8e6f8 30%, #e8f8ff 40%, #a8e6f8 50%, #4fc8f8 62%, #00c8ff 76%, #1a7fc4 100%);
+    background-size: 280% 100%;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 40px rgba(79,200,248,0.3));
+    animation: frostShimmer 6s ease-in-out infinite;
+  }
+  @keyframes frostShimmer { 0% { background-position: 100% 50%; } 50% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+  @media (prefers-reduced-motion: reduce) { .error-code { animation: none; } }
+
+  h1 { font-family: 'Space Mono', monospace; font-size: clamp(20px, 3.5vw, 26px); font-weight: 700; letter-spacing: -0.5px; margin: 18px 0 12px; }
+  .content p { font-size: 14.5px; color: var(--muted); line-height: 1.7; margin-bottom: 32px; }
+
+  .links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: linear-gradient(135deg, var(--frost-blue), var(--frost-deep)); color: #06121c;
+    text-decoration: none; font-weight: 700; font-size: 14.5px;
+    padding: 13px 26px; border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(79,200,248,0.35); }
+  .btn-outline {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent; color: var(--frost-blue);
+    border: 1px solid var(--border); text-decoration: none; font-weight: 600; font-size: 14.5px;
+    padding: 12px 25px; border-radius: 12px;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); transform: translateY(-2px); }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,270 C80,250 200,310 380,270 S600,190 760,265 S1000,340 1180,285 S1380,225 1500,265"/>
+    <path class="tline" d="M-100,340 C60,320 180,380 360,340 S580,255 740,330 S980,400 1160,345 S1360,290 1500,335"/>
+    <path class="tline" d="M-100,420 C40,400 160,460 340,420 S560,330 720,410 S960,470 1140,415 S1340,365 1500,415"/>
+    <path class="tline" d="M-100,500 C20,480 140,540 320,500 S540,405 700,490 S940,545 1120,490 S1320,440 1500,490"/>
+    <path class="tline" d="M-100,580 C0,558 120,618 300,580 S520,480 680,565 S920,625 1100,570 S1300,518 1500,568"/>
+    <path class="tline" d="M-100,660 C-20,640 100,700 280,660 S500,560 660,645 S900,705 1080,650 S1280,598 1500,648"/>
+    <path class="tline" d="M-100,740 C-40,720 80,780 260,740 S480,640 640,725 S880,785 1060,730 S1260,678 1500,728"/>
+    <path class="tline" d="M200,100 C300,80 380,150 450,100 S600,40 700,110 S820,180 940,120 S1100,60 1200,100"/>
+    <path class="tline" d="M150,160 C260,140 340,210 420,160 S570,95 670,165 S800,235 920,175 S1060,115 1160,160"/>
+    <path class="tline" d="M250,820 C350,800 430,870 500,820 S650,755 750,825 S870,895 990,835 S1150,775 1250,820"/>
+  </svg>
+</div>
+<canvas id="particles"></canvas>
+
+<nav>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+</nav>
+
+<div class="page">
+  <div class="content">
+    <div class="error-code">404</div>
+    <h1>This page doesn't exist</h1>
+    <p>The page you're looking for was moved, renamed, or never existed in the first place. Let's get you back on track.</p>
+    <div class="links">
+      <a class="btn-primary" href="https://frostclient.eu">Back to Home</a>
+      <a class="btn-outline" href="https://frostclient.eu/faq">FAQ</a>
+      <a class="btn-outline" href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const particleCanvas = document.getElementById('particles');
+const particleCtx = particleCanvas.getContext('2d');
+let particleW, particleH, particles = [];
+function resizeParticleCanvas() {
+  particleW = particleCanvas.width = window.innerWidth;
+  particleH = particleCanvas.height = window.innerHeight;
+}
+resizeParticleCanvas();
+window.addEventListener('resize', resizeParticleCanvas);
+for (let i = 0; i < 100; i++) particles.push({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  r: Math.random() * 1.5 + 0.5,
+  speed: Math.random() * 0.4 + 0.1,
+  drift: (Math.random() - 0.5) * 0.3,
+  opacity: Math.random() * 0.4 + 0.1
+});
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+(function animateParticles() {
+  particleCtx.clearRect(0, 0, particleW, particleH);
+  for (const p of particles) {
+    particleCtx.beginPath();
+    particleCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    particleCtx.fillStyle = `rgba(168,230,248,${p.opacity})`;
+    particleCtx.fill();
+    if (!reduceMotion) {
+      p.y += p.speed; p.x += p.drift;
+      if (p.y > particleH + 10) { p.y = -10; p.x = Math.random() * particleW; }
+      if (p.x > particleW + 10) p.x = -10;
+      if (p.x < -10) p.x = particleW + 10;
+    }
+  }
+  requestAnimationFrame(animateParticles);
+})();
+</script>
+</body>
+</html>
