@@ -109,6 +109,18 @@
   .legal-page a { color: var(--frost-blue); text-decoration: none; }
   .legal-page a:hover { text-decoration: underline; }
 
+  .modrinth-stat {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 30px;
+    padding: 10px 18px; margin-bottom: 24px; text-decoration: none !important;
+    transition: transform 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .modrinth-stat:hover { transform: translateY(-2px); border-color: rgba(79,200,248,0.4); background: var(--surface2); }
+  .modrinth-stat-icon { font-size: 16px; }
+  .modrinth-stat-text { font-size: 13.5px; color: var(--muted); }
+  .modrinth-stat-text strong { color: var(--text); font-family: 'Space Mono', monospace; font-weight: 700; }
+  .modrinth-stat-arrow { color: var(--frost-blue); font-size: 13px; font-weight: 700; }
+
   .partner-reqs { list-style: none; display: flex; flex-direction: column; gap: 12px; }
   .partner-reqs li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--muted); line-height: 1.55; }
   .partner-reqs li .mark {
@@ -377,6 +389,12 @@
   <div class="legal-eyebrow">Creators</div>
   <h1>Become a Frost Partner</h1>
   <p class="section-intro">We're looking for streamers and video creators who make Minecraft content and want to team up with Frost. If you post TikToks, YouTube videos, or streams featuring Frost Client, you can get paid for it — not just a shoutout or free merch.</p>
+
+  <a class="modrinth-stat" href="https://modrinth.com/modpack/frost-client" target="_blank" rel="noopener">
+    <span class="modrinth-stat-icon">📦</span>
+    <span class="modrinth-stat-text"><strong id="modrinthDownloads">—</strong> downloads on Modrinth</span>
+    <span class="modrinth-stat-arrow">→</span>
+  </a>
 
   <h2>How it works</h2>
   <p>There are two tiers, <strong>Partner</strong> and <strong>Partner+</strong>, with different requirements and different payouts. There's no fixed public rate — every deal is worked out individually based on your platform, audience size, and content style. Apply on our Discord and we'll figure out the right reward together.</p>
@@ -892,6 +910,19 @@
       })
       .catch(function () { showErrorState('Network error while contacting the server. Please try again.'); });
   })();
+})();
+</script>
+<script>
+(function () {
+  const el = document.getElementById('modrinthDownloads');
+  if (!el) return;
+  fetch('https://api.modrinth.com/v2/project/frost-client', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (typeof data.downloads !== 'number') return;
+      el.textContent = data.downloads.toLocaleString('en-US');
+    })
+    .catch(function () {  });
 })();
 </script>
 <script src="site-auth.js"></script>
