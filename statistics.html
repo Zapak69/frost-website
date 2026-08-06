@@ -120,6 +120,7 @@
     margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .stat-tile .label { font-size: 12px; color: var(--muted); }
+  .stat-tile .subtext { font-size: 10.5px; color: var(--muted); opacity: 0.7; margin-top: 4px; }
 
   .tracker-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
   .tracker-head h2 { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
@@ -158,7 +159,7 @@
   .copy-btn:hover { color: var(--text); border-color: var(--frost-blue); background: rgba(79,200,248,0.1); }
   .copy-btn.copied { color: var(--frost-blue); border-color: var(--frost-blue); }
 
-  .player-search-row { margin-bottom: 14px; }
+  .player-search-row { margin-bottom: 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .player-search-input {
     width: 100%; max-width: 320px;
     background: rgba(8,12,16,0.6); border: 1px solid var(--border); border-radius: 10px;
@@ -167,6 +168,7 @@
   }
   .player-search-input::placeholder { color: var(--muted); }
   .player-search-input:focus { border-color: var(--frost-blue); background: rgba(8,12,16,0.85); }
+  .search-results-count { font-size: 12.5px; color: var(--muted); }
   .server-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
   .server-chip {
     background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 20px;
@@ -284,7 +286,8 @@
     <div class="stats-row">
       <div class="stat-tile"><div class="num" id="statOnline">—</div><div class="label">Online now</div></div>
       <div class="stat-tile"><div class="num" id="statAvg">—</div><div class="label">Avg. online (24h)</div></div>
-      <div class="stat-tile"><div class="num" id="statPeak">—</div><div class="label">All-time peak</div></div>
+      <div class="stat-tile"><div class="num" id="statPeak">—</div><div class="label">All-time peak</div><div class="subtext" id="statPeakAt"></div></div>
+      <div class="stat-tile"><div class="num" id="statTotalPlayers">—</div><div class="label">Total players</div></div>
       <div class="stat-tile"><div class="num" id="statPlaytime">—</div><div class="label">Total playtime</div></div>
       <div class="stat-tile"><div class="num" id="statVersion">—</div><div class="label">Most played version</div></div>
       <div class="stat-tile"><div class="num" id="statReviewCount">—</div><div class="label">Total reviews</div></div>
@@ -360,6 +363,7 @@
     </div>
     <div class="player-search-row">
       <input type="text" id="playerSearch" class="player-search-input" placeholder="Search by username or server…" autocomplete="off" spellcheck="false"/>
+      <span class="search-results-count" id="searchResultsCount"></span>
     </div>
     <div id="serverFilter" class="server-filter"></div>
     <div id="playerGrid" class="player-grid"></div>
@@ -492,6 +496,11 @@
   function formatDateShort(t) {
     const d = new Date(t);
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  function formatDateTime(t) {
+    const d = new Date(t);
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + formatClock(t);
   }
 
   let lastData = null;
@@ -792,6 +801,8 @@
     animateStatNumber('statOnline', data.onlineNow || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statAvg', data.avgOnline || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statPeak', data.peakOnline || 0, v => formatNumber(Math.round(v)));
+    document.getElementById('statPeakAt').textContent = data.peakOnlineAt ? 'hit ' + formatDateTime(data.peakOnlineAt) : '';
+    animateStatNumber('statTotalPlayers', data.totalPlayersSeen || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statPlaytime', data.totalPlaytimeMs || 0, v => formatDuration(Math.round(v)));
     animateStatNumber('statReviewCount', data.totalReviews || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statPollVotes', data.totalPollVotes || 0, v => formatNumber(Math.round(v)));
@@ -874,6 +885,7 @@
     const grid = document.getElementById('playerGrid');
     const emptyNote = document.getElementById('emptyNote');
     const countEl = document.getElementById('trackerCount');
+    const searchCountEl = document.getElementById('searchResultsCount');
     const oldRects = new Map();
     grid.querySelectorAll('.player-card').forEach(card => {
       oldRects.set(card.dataset.username, card.getBoundingClientRect());
@@ -887,6 +899,7 @@
       emptyNote.style.display = '';
       emptyNote.textContent = 'No online Frost players are currently on a multiplayer server.';
       countEl.textContent = '';
+      searchCountEl.textContent = '';
       return;
     }
     emptyNote.style.display = 'none';
@@ -906,6 +919,7 @@
         (s.server || '').toLowerCase().includes(sessionSearch)
       );
     }
+    searchCountEl.textContent = sessionSearch ? (filtered.length + ' result' + (filtered.length === 1 ? '' : 's')) : '';
 
     if (!filtered.length) {
       emptyNote.style.display = '';
