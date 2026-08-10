@@ -185,6 +185,10 @@
     color: var(--frost-blue);
     text-shadow: 0 0 14px rgba(79,200,248,0.65);
   }
+  .nav-links a.nav-link-partner, .nav-mobile-menu a.nav-link-partner {
+    color: #ffca28;
+    text-shadow: 0 0 14px rgba(255,202,40,0.5);
+  }
   .nav-actions { display: flex; align-items: center; gap: 12px; }
   .nav-hamburger {
     display: none; flex-direction: column; justify-content: center; gap: 5px;
@@ -1239,7 +1243,7 @@
     <li><a href="#reviews">Reviews</a></li>
     <li><a href="#download">Download</a></li>
     <li><a href="https://frostclient.eu/faq">FAQ</a></li>
-    <li><a href="https://frostclient.eu/partner">Partner</a></li>
+    <li><a href="https://frostclient.eu/partner" class="nav-link-partner">Partner</a></li>
   </ul>
   <div class="nav-actions">
     <a href="lite" class="nav-cta nav-cta--lite js-lite-access-link">LITE</a>
@@ -1262,7 +1266,7 @@
   <a href="#reviews">Reviews</a>
   <a href="#download">Download</a>
   <a href="https://frostclient.eu/faq">FAQ</a>
-  <a href="https://frostclient.eu/partner">Partner</a>
+  <a href="https://frostclient.eu/partner" class="nav-link-partner">Partner</a>
   <a href="lite" class="js-lite-access-link">LITE</a>
   <button type="button" class="js-download-trigger">Download Free</button>
   <button type="button" class="js-site-auth-btn">Sign in</button>
@@ -1735,6 +1739,7 @@
       <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
       <a href="https://frostclient.eu/settings">Transferring Settings</a>
       <a href="https://frostclient.eu/reviews">Reviews</a>
+      <a href="https://frostclient.eu/leaderboard">Leaderboard</a>
       <a href="https://frostclient.eu/partner">Partner Program</a>
     </div>
     <div class="footer-col">
