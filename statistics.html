@@ -205,7 +205,7 @@
   @media (min-width: 900px) {
     .chart-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
   }
-  .range-switch { display: flex; gap: 4px; background: rgba(8,12,16,0.6); border: 1px solid var(--border); border-radius: 10px; padding: 4px; }
+  .range-switch { display: flex; gap: 4px; background: rgba(8,12,16,0.6); border: 1px solid var(--border); border-radius: 10px; padding: 4px; flex-wrap: wrap; }
   .range-btn {
     background: none; border: none; cursor: pointer; border-radius: 7px;
     padding: 6px 12px; font-family: 'Space Grotesk', sans-serif; font-size: 12.5px; font-weight: 600;
@@ -319,10 +319,10 @@
           <button type="button" class="range-btn" data-range="1h">1h</button>
           <button type="button" class="range-btn" data-range="12h">12h</button>
           <button type="button" class="range-btn active" data-range="24h">24h</button>
-          <button type="button" class="range-btn" data-range="week">Week</button>
-          <button type="button" class="range-btn" data-range="month">Month</button>
-          <button type="button" class="range-btn" data-range="year">Year</button>
-          <button type="button" class="range-btn" data-range="all">All-time</button>
+          <button type="button" class="range-btn" data-range="week">1W</button>
+          <button type="button" class="range-btn" data-range="month">1M</button>
+          <button type="button" class="range-btn" data-range="year">1Y</button>
+          <button type="button" class="range-btn" data-range="all">AllTime</button>
         </div>
       </div>
       <div class="chart-card">
@@ -547,14 +547,38 @@
         .filter(s => s.t >= cutoff)
         .map(s => ({ t: s.t, value: s.count, tooltip: formatClock(s.t) }));
     }
-    const daily = (lastData.historyDaily || []).slice().sort((a, b) => a.date.localeCompare(b.date));
-    const counts = { week: 7, month: 30, year: 365 }[range];
-    const sliced = counts ? daily.slice(-counts) : daily;
-    return sliced.map(d => ({
-      t: new Date(d.date + 'T00:00:00Z').getTime(),
-      value: d.avgOnline,
-      tooltip: formatDateShort(new Date(d.date + 'T00:00:00Z').getTime())
-    }));
+    const daily = lastData.historyDaily || [];
+    const byDate = {};
+    daily.forEach(d => { byDate[d.date] = d.avgOnline; });
+    const DAY = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const nd = new Date(now);
+    const todayStart = Date.UTC(nd.getUTCFullYear(), nd.getUTCMonth(), nd.getUTCDate());
+    const dayEnd = todayStart + DAY;
+    let bucketMs, startTime;
+    if (range === 'week') { bucketMs = DAY; startTime = todayStart - 6 * DAY; }
+    else if (range === 'month') { bucketMs = DAY; startTime = todayStart - 29 * DAY; }
+    else if (range === 'year') { bucketMs = 30 * DAY; startTime = todayStart - 364 * DAY; }
+    else {
+      const sortedDates = daily.map(d => d.date).sort();
+      const earliest = sortedDates.length ? new Date(sortedDates[0] + 'T00:00:00Z').getTime() : todayStart;
+      bucketMs = Math.max(DAY, (dayEnd - earliest) / 24);
+      startTime = earliest;
+    }
+    const bucketCount = Math.max(1, Math.ceil((dayEnd - startTime) / bucketMs));
+    const points = [];
+    for (let i = 0; i < bucketCount; i++) {
+      const bucketStart = startTime + i * bucketMs;
+      const bucketEnd = bucketStart + bucketMs;
+      let sum = 0, count = 0;
+      for (let t = bucketStart; t < bucketEnd; t += DAY) {
+        const dateKey = new Date(t).toISOString().slice(0, 10);
+        if (byDate[dateKey] != null) { sum += byDate[dateKey]; count++; }
+      }
+      const t = bucketStart + bucketMs / 2;
+      points.push({ t, value: count ? sum / count : 0, tooltip: formatDateShort(t) });
+    }
+    return points;
   }
 
   function renderTimeChart() {
