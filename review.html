@@ -227,6 +227,13 @@
   .checkbox-row input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--frost-blue); flex-shrink: 0; }
   .checkbox-row label { font-size: 13.5px; color: var(--muted); line-height: 1.6; cursor: pointer; }
 
+  .fps-sliders { display: none; flex-direction: column; gap: 18px; margin-top: 16px; }
+  .fps-sliders.show { display: flex; }
+  .fps-slider-row { display: flex; flex-direction: column; gap: 8px; }
+  .fps-slider-label { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); }
+  .fps-slider-value { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--frost-blue); font-size: 14px; }
+  .fps-slider { width: 100%; accent-color: var(--frost-blue); cursor: pointer; }
+
   .form-error {
     display: none; font-size: 13px; color: #ff6b6b; margin-bottom: 18px;
     background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25);
@@ -340,6 +347,23 @@
           <button type="button" class="star-btn" data-star="3">★</button>
           <button type="button" class="star-btn" data-star="4">★</button>
           <button type="button" class="star-btn" data-star="5">★</button>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <div class="checkbox-row">
+          <input type="checkbox" id="fpsKnownCheck"/>
+          <label for="fpsKnownCheck">I know my FPS numbers — share them (helps others see the real difference)</label>
+        </div>
+        <div class="fps-sliders" id="fpsSliders">
+          <div class="fps-slider-row">
+            <div class="fps-slider-label"><span>FPS before FrostClient</span><span class="fps-slider-value" id="fpsBeforeValue">60</span></div>
+            <input type="range" class="fps-slider" id="fpsBeforeSlider" min="0" max="300" step="1" value="60"/>
+          </div>
+          <div class="fps-slider-row">
+            <div class="fps-slider-label"><span>FPS after FrostClient</span><span class="fps-slider-value" id="fpsAfterValue">120</span></div>
+            <input type="range" class="fps-slider" id="fpsAfterSlider" min="0" max="300" step="1" value="120"/>
+          </div>
         </div>
       </div>
 
@@ -512,6 +536,18 @@
     charCount.textContent = String(commentBox.value.length);
   });
 
+  const fpsKnownCheck = document.getElementById('fpsKnownCheck');
+  const fpsSliders = document.getElementById('fpsSliders');
+  const fpsBeforeSlider = document.getElementById('fpsBeforeSlider');
+  const fpsAfterSlider = document.getElementById('fpsAfterSlider');
+  const fpsBeforeValue = document.getElementById('fpsBeforeValue');
+  const fpsAfterValue = document.getElementById('fpsAfterValue');
+  fpsKnownCheck.addEventListener('change', () => {
+    fpsSliders.classList.toggle('show', fpsKnownCheck.checked);
+  });
+  fpsBeforeSlider.addEventListener('input', () => { fpsBeforeValue.textContent = fpsBeforeSlider.value; });
+  fpsAfterSlider.addEventListener('input', () => { fpsAfterValue.textContent = fpsAfterSlider.value; });
+
   function showForm(user, review) {
     currentUser = user;
     document.getElementById('reviewerAvatar').src = user.avatar
@@ -534,6 +570,14 @@
     commentBox.value = review ? (review.comment || '') : '';
     charCount.textContent = String(commentBox.value.length);
     document.getElementById('publicCheck').checked = review ? !!review.isPublic : true;
+
+    const hasFps = !!(review && (review.fpsBefore != null || review.fpsAfter != null));
+    fpsKnownCheck.checked = hasFps;
+    fpsSliders.classList.toggle('show', hasFps);
+    fpsBeforeSlider.value = (review && review.fpsBefore != null) ? review.fpsBefore : 60;
+    fpsAfterSlider.value = (review && review.fpsAfter != null) ? review.fpsAfter : 120;
+    fpsBeforeValue.textContent = fpsBeforeSlider.value;
+    fpsAfterValue.textContent = fpsAfterSlider.value;
 
     document.getElementById('submitBtn').textContent = review ? 'Update review' : 'Submit review';
     show('stateForm');
@@ -561,7 +605,9 @@
         token: token,
         rating: selectedRating,
         comment: commentBox.value.slice(0, MAX_LEN),
-        isPublic: document.getElementById('publicCheck').checked
+        isPublic: document.getElementById('publicCheck').checked,
+        fpsBefore: fpsKnownCheck.checked ? Number(fpsBeforeSlider.value) : null,
+        fpsAfter: fpsKnownCheck.checked ? Number(fpsAfterSlider.value) : null
       })
     })
       .then(r => r.json())
@@ -581,7 +627,11 @@
   });
 
   document.getElementById('editAgainBtn').addEventListener('click', () => {
-    if (currentUser) showForm(currentUser, { rating: selectedRating, comment: commentBox.value, isPublic: document.getElementById('publicCheck').checked });
+    if (currentUser) showForm(currentUser, {
+      rating: selectedRating, comment: commentBox.value, isPublic: document.getElementById('publicCheck').checked,
+      fpsBefore: fpsKnownCheck.checked ? Number(fpsBeforeSlider.value) : null,
+      fpsAfter: fpsKnownCheck.checked ? Number(fpsAfterSlider.value) : null
+    });
   });
 
   document.getElementById('logoutBtn').addEventListener('click', () => {

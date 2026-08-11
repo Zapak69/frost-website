@@ -320,6 +320,7 @@
       <div class="stat-tile"><div class="num" id="statVersion">—</div><div class="label">Most played version</div></div>
       <div class="stat-tile"><div class="num" id="statReviewCount">—</div><div class="label">Total reviews</div></div>
       <div class="stat-tile"><div class="num" id="statAvgRating">—</div><div class="label">Avg. rating</div></div>
+      <div class="stat-tile"><div class="num" id="statAvgFps">—</div><div class="label">Avg. FPS (before → after)</div><div class="subtext" id="statAvgFpsCount"></div></div>
       <div class="stat-tile"><div class="num" id="statPollVotes">—</div><div class="label">Poll votes</div></div>
     </div>
 
@@ -904,6 +905,16 @@
     } else {
       statAnimState.statAvgRating = null;
       document.getElementById('statAvgRating').textContent = 'n/a';
+    }
+    if (data.avgFpsBefore != null || data.avgFpsAfter != null) {
+      document.getElementById('statAvgFps').textContent =
+        (data.avgFpsBefore != null ? formatNumber(data.avgFpsBefore) : '?') + ' → ' +
+        (data.avgFpsAfter != null ? formatNumber(data.avgFpsAfter) : '?');
+      document.getElementById('statAvgFpsCount').textContent =
+        'from ' + formatNumber(data.fpsReviewCount || 0) + ' review' + (data.fpsReviewCount === 1 ? '' : 's');
+    } else {
+      document.getElementById('statAvgFps').textContent = 'n/a';
+      document.getElementById('statAvgFpsCount').textContent = '';
     }
     lastData = data;
     renderTimeChart();
