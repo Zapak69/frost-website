@@ -198,6 +198,25 @@
   .apply-field { margin-bottom: 16px; }
   .apply-field label { display: block; font-size: 12.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
   .apply-field label .optional-tag { text-transform: none; font-weight: 400; letter-spacing: 0; }
+  .apply-field label .required-star { color: #ff5a5a; margin-left: 2px; }
+
+  .success-check { display: block; margin: 4px auto 18px; }
+  .success-check-circle {
+    fill: none; stroke: var(--green); stroke-width: 2.5;
+    stroke-dasharray: 151; stroke-dashoffset: 151;
+    animation: successCircle 0.5s cubic-bezier(0.65,0,0.45,1) forwards;
+  }
+  .success-check-mark {
+    fill: none; stroke: var(--green); stroke-width: 4;
+    stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 34; stroke-dashoffset: 34;
+    animation: successMark 0.35s cubic-bezier(0.65,0,0.45,1) 0.5s forwards;
+  }
+  @keyframes successCircle { to { stroke-dashoffset: 0; } }
+  @keyframes successMark { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .success-check-circle, .success-check-mark { animation: none; stroke-dashoffset: 0; }
+  }
   .apply-input {
     width: 100%; background: rgba(8,12,16,0.6); border: 1px solid var(--border); border-radius: 10px;
     padding: 11px 14px; font-family: 'Space Grotesk', sans-serif; font-size: 14px; color: var(--text);
@@ -327,31 +346,31 @@
     <div class="apply-state" id="applyStep1">
       <div class="apply-title">Staff Application</div>
       <div class="apply-field">
-        <label>How old are you?</label>
+        <label>How old are you? <span class="required-star">*</span></label>
         <input type="text" class="apply-input" id="qAge" placeholder="e.g. 19" autocomplete="off"/>
       </div>
       <div class="apply-field">
-        <label>Timezone & when you're usually online</label>
+        <label>Timezone & when you're usually online <span class="required-star">*</span></label>
         <input type="text" class="apply-input" id="qTimezone" placeholder="e.g. CET, evenings & weekends" autocomplete="off"/>
       </div>
       <div class="apply-field">
-        <label>Hours per week you can dedicate</label>
+        <label>Hours per week you can dedicate <span class="required-star">*</span></label>
         <input type="text" class="apply-input" id="qHours" placeholder="e.g. 10-15 hours" autocomplete="off"/>
       </div>
       <div class="apply-field">
-        <label>Previous moderation/staff experience</label>
+        <label>Previous moderation/staff experience <span class="required-star">*</span></label>
         <textarea class="apply-input" id="qExperience" placeholder="Where, for how long, what you did..."></textarea>
       </div>
       <div class="apply-field">
-        <label>Why do you want to join the FrostClient staff team?</label>
+        <label>Why do you want to join the FrostClient staff team? <span class="required-star">*</span></label>
         <textarea class="apply-input" id="qWhy" placeholder="Tell us in your own words..."></textarea>
       </div>
       <div class="apply-field">
-        <label>What would you do if two members started arguing and spamming in chat?</label>
+        <label>What would you do if two members started arguing and spamming in chat? <span class="required-star">*</span></label>
         <textarea class="apply-input" id="qConflict" placeholder="Walk us through it..."></textarea>
       </div>
       <div class="apply-field">
-        <label>A member says the game keeps crashing after installing FrostClient — how would you help them troubleshoot?</label>
+        <label>A member says the game keeps crashing after installing FrostClient — how would you help them troubleshoot? <span class="required-star">*</span></label>
         <textarea class="apply-input" id="qCrash" placeholder="Walk us through it..."></textarea>
       </div>
       <div class="apply-field">
@@ -362,8 +381,12 @@
     </div>
 
     <div class="apply-state" id="applyStateDone">
-      <div class="apply-title">Application sent 🎉</div>
-      <p class="apply-text" style="margin-bottom:0;">Thanks! We'll take a look and reach out on Discord if you're a fit.</p>
+      <svg class="success-check" viewBox="0 0 52 52" width="64" height="64">
+        <circle class="success-check-circle" cx="26" cy="26" r="24"/>
+        <path class="success-check-mark" d="M14 27l7 7 16-16"/>
+      </svg>
+      <div class="apply-title" style="text-align:center;">Application sent</div>
+      <p class="apply-text" style="margin-bottom:0;text-align:center;">Thanks! We'll take a look and reach out on Discord if you're a fit.</p>
     </div>
 
     <div class="apply-state" id="applyStateError">
