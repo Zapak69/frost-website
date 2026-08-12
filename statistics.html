@@ -551,6 +551,12 @@
   }
 
   function seriesForRange(range) {
+    if (range === '1h') {
+      const fine = lastData.history1h || [];
+      const cutoff = Date.now() - 60 * 60 * 1000;
+      const points = fine.slice().sort((a, b) => a.t - b.t).filter(s => s.t >= cutoff);
+      if (points.length) return points.map(s => ({ t: s.t, value: s.count, tooltip: formatClock(s.t) }));
+    }
     if (range === '1h' || range === '12h' || range === '24h') {
       const hours = { '1h': 1, '12h': 12 }[range];
       const cutoff = hours ? Date.now() - hours * 60 * 60 * 1000 : -Infinity;
