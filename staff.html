@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Staff Applications | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10; --surface: #111d2b; --surface2: #162233;
+    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #00c8ff;
+    --green: #3dff72; --amber: #e8b84f;
+    --text: #e8f4fc; --muted: #6b8fa8; --border: rgba(79,200,248,0.15);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  .topo-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .topo-bg svg { width: 100%; height: 100%; opacity: 0.05; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 0 48px; height: 68px;
+    backdrop-filter: blur(20px); background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-desktop { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 100%; }
+  .nav-logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue);
+    text-shadow: 0 0 20px rgba(79,200,248,0.5); text-decoration: none;
+  }
+  .nav-logo-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo span { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-signin-btn {
+    display: inline-flex; align-items: center;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 600;
+    color: var(--muted); background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; cursor: pointer;
+    padding: 9px 18px; text-decoration: none;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .nav-signin-btn img { display: none; }
+  .nav-signin-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.08); }
+  .nav-signin-btn.loading { opacity: 0.6; pointer-events: none; }
+  .nav-signin-btn.is-logged-in { color: var(--frost-blue); }
+  .nav-apply-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 700;
+    color: #06121c; background: linear-gradient(135deg, var(--frost-blue), var(--frost-deep));
+    border: none; border-radius: 8px; cursor: pointer;
+    padding: 9px 18px; text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.25s, opacity 0.2s;
+  }
+  .nav-apply-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,200,248,0.35); }
+  .nav-apply-btn.loading { opacity: 0.7; pointer-events: none; }
+  .nav-hamburger {
+    display: none; flex-direction: column; justify-content: center; gap: 5px;
+    width: 28px; height: 22px; background: none; border: none; cursor: pointer; padding: 0;
+    position: absolute; left: 20px; top: 50%; transform: translateY(-50%); z-index: 101;
+  }
+  .nav-hamburger span {
+    display: block; width: 100%; height: 2px; background: var(--text);
+    border-radius: 2px; transition: transform 0.25s ease, opacity 0.2s ease;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .nav-logo-mobile {
+    display: none; align-items: center; gap: 8px;
+    font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700;
+    letter-spacing: -0.5px; color: var(--frost-blue); text-decoration: none;
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  }
+  .nav-logo-mobile img { width: 20px; height: 20px; filter: drop-shadow(0 0 6px rgba(79,200,248,0.5)); }
+  .nav-logo-mobile span { color: var(--text); }
+  .nav-mobile-menu {
+    display: none; position: fixed; top: 68px; left: 0; right: 0; z-index: 100;
+    background: rgba(8,12,16,0.98); border-bottom: 1px solid var(--border);
+    flex-direction: column; padding: 8px 24px 16px;
+    max-height: calc(100vh - 68px); overflow-y: auto;
+  }
+  .nav-mobile-menu.open { display: flex; }
+  .nav-mobile-menu a, .nav-mobile-menu button {
+    color: var(--text); text-decoration: none; font-size: 15px; font-weight: 500;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+    background: none; border-left: none; border-right: none; border-top: none;
+    border-radius: 0; box-shadow: none; text-align: left; width: 100%;
+    cursor: pointer; font-family: inherit;
+  }
+  .nav-mobile-menu a:last-child, .nav-mobile-menu button:last-child { border-bottom: none; }
+  @media(max-width:700px){
+    .nav-desktop { display: none; }
+    .nav-hamburger, .nav-logo-mobile { display: flex; }
+  }
+
+  .legal-page { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 120px 24px 100px; }
+  .legal-eyebrow { font-family: 'Space Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--frost-blue); margin-bottom: 16px; }
+  .legal-page h1 { font-family: 'Space Mono', monospace; font-size: clamp(32px, 5vw, 52px); font-weight: 700; letter-spacing: -2px; margin-bottom: 12px; }
+  .legal-page h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin: 40px 0 8px; }
+  .legal-page > .section-intro { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 24px; }
+  .legal-page p { font-size: 15px; color: var(--muted); line-height: 1.75; margin-bottom: 16px; }
+  .legal-page a { color: var(--frost-blue); text-decoration: none; }
+  .legal-page a:hover { text-decoration: underline; }
+
+  .partner-reqs { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+  .partner-reqs li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--muted); line-height: 1.55; }
+  .partner-reqs li .mark {
+    flex-shrink: 0; width: 19px; height: 19px; border-radius: 5px; margin-top: 1px;
+    background: rgba(79,200,248,0.12); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--frost-blue); font-size: 11px; font-weight: 700;
+  }
+
+  .partner-apply-box {
+    border: 1px solid var(--border); border-radius: 14px; background: var(--surface);
+    padding: 30px 28px; margin-top: 40px; text-align: center;
+  }
+  .partner-apply-box h3 { font-size: 19px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .partner-apply-box p { max-width: 480px; margin: 0 auto 18px; }
+  .partner-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--frost-blue), var(--frost-deep));
+    color: #06121c; font-weight: 700; font-size: 15px;
+    padding: 14px 30px; border-radius: 10px; text-decoration: none;
+    border: none; cursor: pointer; font-family: inherit;
+    transition: transform 0.2s, box-shadow 0.25s;
+  }
+  .partner-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(79,200,248,0.35); text-decoration: none; }
+  .partner-cta img { width: 20px; height: 20px; }
+  .partner-cta.loading { opacity: 0.7; pointer-events: none; }
+  .partner-member-note {
+    display: flex; align-items: flex-start; gap: 10px; text-align: left;
+    border: 1px solid rgba(255,90,90,0.3); background: rgba(255,90,90,0.08);
+    border-radius: 10px; padding: 12px 16px; margin: 0 auto 22px; max-width: 480px;
+    font-size: 13px; color: var(--muted); line-height: 1.55;
+  }
+  .partner-member-note strong { color: #ff9b9b; }
+
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    background: rgba(4,6,9,0.65);
+    backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
+                visibility 0s linear 0.35s;
+  }
+  .modal-overlay.active {
+    opacity: 1; visibility: visible; pointer-events: auto;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease,
+                visibility 0s linear 0s;
+  }
+  .modal-box {
+    position: relative; width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+    padding: 38px 34px;
+    box-shadow: 0 30px 100px rgba(0,0,0,0.65), 0 0 60px rgba(0,200,255,0.08);
+    transform: scale(0.92) translateY(20px); opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
+  }
+  .modal-overlay.active .modal-box {
+    transform: scale(1) translateY(0); opacity: 1;
+    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1) 0.05s, opacity 0.35s ease 0.05s;
+  }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 32px; height: 32px; border-radius: 8px;
+    background: transparent; border: none; color: var(--muted); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s, transform 0.25s ease;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text); transform: rotate(90deg); }
+
+  .apply-state { display: none; }
+  @keyframes applyStateIn {
+    from { opacity: 0; transform: translateX(18px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .apply-state.active { display: block; animation: applyStateIn 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+  .apply-title { font-family: 'Space Mono', monospace; font-size: 19px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .apply-text { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
+
+  .apply-spinner {
+    width: 32px; height: 32px; margin: 6px auto 20px;
+    border: 3px solid rgba(79,200,248,0.2); border-top-color: var(--frost-blue);
+    border-radius: 50%; animation: applySpin 0.8s linear infinite;
+  }
+  @keyframes applySpin { to { transform: rotate(360deg); } }
+
+  .apply-field { margin-bottom: 16px; }
+  .apply-field label { display: block; font-size: 12.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .apply-field label .optional-tag { text-transform: none; font-weight: 400; letter-spacing: 0; }
+  .apply-input {
+    width: 100%; background: rgba(8,12,16,0.6); border: 1px solid var(--border); border-radius: 10px;
+    padding: 11px 14px; font-family: 'Space Grotesk', sans-serif; font-size: 14px; color: var(--text);
+    outline: none; transition: border-color 0.2s, background 0.2s;
+  }
+  .apply-input::placeholder { color: var(--muted); }
+  .apply-input:focus { border-color: var(--frost-blue); background: rgba(8,12,16,0.85); }
+  textarea.apply-input { resize: vertical; min-height: 66px; line-height: 1.5; font-family: inherit; }
+
+  .apply-btn {
+    width: 100%; padding: 13px; border: none; border-radius: 10px; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; font-weight: 700;
+    background: linear-gradient(135deg, var(--frost-blue), var(--frost-deep)); color: #06121c;
+    transition: transform 0.2s, box-shadow 0.25s, opacity 0.2s;
+  }
+  .apply-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(79,200,248,0.3); }
+  .apply-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .apply-btn-secondary {
+    width: 100%; padding: 12px; border-radius: 10px; margin-top: 10px; text-align: center;
+    border: 1px solid var(--border); background: transparent; color: var(--frost-blue);
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 600; cursor: pointer;
+    text-decoration: none; display: block;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .apply-btn-secondary:hover { border-color: var(--frost-blue); background: rgba(79,200,248,0.08); }
+
+  footer { border-top: 1px solid var(--border); padding: 60px 48px 40px; position: relative; z-index: 1; }
+  .footer-inner { max-width: 1160px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px 56px; }
+  .footer-brand { flex: 1 1 200px; }
+  .footer-col { flex: 1 1 130px; }
+  .footer-logo { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; color: var(--frost-blue); margin-bottom: 12px; }
+  .footer-tagline { font-size: 14px; color: var(--muted); }
+  .footer-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; }
+  .footer-col a, .footer-link-btn { display: block; color: var(--text); font-size: 14px; text-decoration: none; margin-bottom: 10px; opacity: 0.7; transition: opacity 0.2s; }
+  .footer-col a:hover, .footer-link-btn:hover { opacity: 1; }
+  .footer-link-btn { background: none; border: none; padding: 0; font-family: inherit; cursor: pointer; text-align: left; }
+  .footer-social-icons { display: flex; align-items: center; gap: 16px; }
+  .footer-social-icons a { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: var(--surface2, #162233); border: 1px solid var(--border); margin-bottom: 0; opacity: 1; transition: border-color 0.2s, transform 0.15s, background 0.2s; }
+  .footer-social-icons a:hover { border-color: var(--frost-blue); background: var(--bg2, #0d1520); transform: translateY(-2px); }
+  .footer-social-icons img { width: 20px; height: 20px; object-fit: contain; opacity: 0.85; transition: opacity 0.2s; }
+  .footer-social-icons a:hover img { opacity: 1; }
+  .footer-bottom { max-width: 1160px; margin: 32px auto 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 24px; font-size: 13px; color: var(--muted); }
+  @media(max-width:600px){ nav { padding: 0 20px; } footer { flex-direction: column; gap: 16px; text-align: center; } }
+</style>
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
+    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+  </svg>
+</div>
+<nav>
+<div class="nav-desktop">
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <div class="nav-right">
+    <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+    <button type="button" class="nav-apply-btn js-staff-apply-btn">Apply Now</button>
+    <button type="button" class="nav-signin-btn js-site-auth-btn"><img src="icons/discord.webp" alt=""/><span class="js-site-auth-text">Sign in</span></button>
+  </div>
+</div>
+<button class="nav-hamburger" id="navHamburger" type="button" aria-label="Menu" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<a class="nav-logo-mobile" href="https://frostclient.eu">
+  <img src="favicon.ico" alt="" class="nav-logo-icon"/><span>Frost</span>
+</a>
+</nav>
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <a href="https://frostclient.eu">← Back to Home</a>
+</div>
+
+<div class="legal-page">
+  <div class="legal-eyebrow">FrostClient Team</div>
+  <h1>Join the Staff Team</h1>
+  <p class="section-intro">We're always looking for helpful, level-headed people to support the FrostClient community — answering questions, handling tickets, and keeping the Discord a good place to be. Sign in with Discord and fill out the application below.</p>
+
+  <h2>What we look for</h2>
+  <ul class="partner-reqs">
+    <li><span class="mark">✓</span>Active member of the FrostClient Discord server</li>
+    <li><span class="mark">✓</span>Calm and patient, even when things get frustrating</li>
+    <li><span class="mark">✓</span>Genuinely enjoys helping people troubleshoot problems</li>
+    <li><span class="mark">✓</span>Can commit at least a few hours a week</li>
+  </ul>
+
+  <div class="partner-apply-box">
+    <div id="applyBoxNormal">
+      <h3>Ready to apply?</h3>
+      <p>Sign in with Discord and answer a few questions — takes a couple of minutes. We'll review it and reach out on Discord with our decision.</p>
+      <div class="partner-member-note"><span>⚠</span><span><strong>You must be a member of our Discord server to apply</strong> — if you're not, we have no way to reach you if your application is accepted.</span></div>
+      <button type="button" class="partner-cta js-staff-apply-btn"><img src="icons/discord.webp" alt=""/>Apply Now</button>
+    </div>
+    <div id="applyBoxClosed" style="display:none;">
+      <h3>Not hiring right now</h3>
+      <p style="margin-bottom:0;">We're not accepting staff applications at the moment. Check back later, or watch our Discord for an announcement when applications reopen.</p>
+    </div>
+    <div id="applyBoxSubmitted" style="display:none;">
+      <h3>Application submitted ✓</h3>
+      <p style="margin-bottom:0;">Thanks for applying! Please be patient while we review it — we'll reach out to you on Discord with our decision, so keep an eye on your DMs.</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="applyModal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="applyModalClose" aria-label="Close">✕</button>
+
+    <div class="apply-state" id="applyStateWorking">
+      <div class="apply-spinner"></div>
+      <p class="apply-text" style="text-align:center;margin-bottom:0;">Signing you in…</p>
+    </div>
+
+    <div class="apply-state" id="applyStateNotMember">
+      <div class="apply-title">Join our Discord first</div>
+      <p class="apply-text">You need to be a member of the Frost Discord server before you can apply — we need to be able to reach you if your application is accepted.</p>
+      <a class="apply-btn" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;" href="https://discord.gg/Kn8ydsABU8" target="_blank">Join Discord</a>
+      <button type="button" class="apply-btn-secondary" id="applyRetryAfterJoin">I've joined — try again</button>
+    </div>
+
+    <div class="apply-state" id="applyStateClosed">
+      <div class="apply-title">Not hiring right now</div>
+      <p class="apply-text" style="margin-bottom:0;">We're not accepting staff applications at the moment. Check back later, or watch our Discord for an announcement when applications reopen.</p>
+    </div>
+
+    <div class="apply-state" id="applyStep1">
+      <div class="apply-title">Staff Application</div>
+      <div class="apply-field">
+        <label>How old are you?</label>
+        <input type="text" class="apply-input" id="qAge" placeholder="e.g. 19" autocomplete="off"/>
+      </div>
+      <div class="apply-field">
+        <label>Timezone & when you're usually online</label>
+        <input type="text" class="apply-input" id="qTimezone" placeholder="e.g. CET, evenings & weekends" autocomplete="off"/>
+      </div>
+      <div class="apply-field">
+        <label>Hours per week you can dedicate</label>
+        <input type="text" class="apply-input" id="qHours" placeholder="e.g. 10-15 hours" autocomplete="off"/>
+      </div>
+      <div class="apply-field">
+        <label>Previous moderation/staff experience</label>
+        <textarea class="apply-input" id="qExperience" placeholder="Where, for how long, what you did..."></textarea>
+      </div>
+      <div class="apply-field">
+        <label>Why do you want to join the FrostClient staff team?</label>
+        <textarea class="apply-input" id="qWhy" placeholder="Tell us in your own words..."></textarea>
+      </div>
+      <div class="apply-field">
+        <label>What would you do if two members started arguing and spamming in chat?</label>
+        <textarea class="apply-input" id="qConflict" placeholder="Walk us through it..."></textarea>
+      </div>
+      <div class="apply-field">
+        <label>A member says the game keeps crashing after installing FrostClient — how would you help them troubleshoot?</label>
+        <textarea class="apply-input" id="qCrash" placeholder="Walk us through it..."></textarea>
+      </div>
+      <div class="apply-field">
+        <label>Anything else we should know about you? <span class="optional-tag">(optional)</span></label>
+        <textarea class="apply-input" id="qExtra" placeholder="Optional"></textarea>
+      </div>
+      <button type="button" class="apply-btn" id="applySubmitBtn" disabled>Submit Application</button>
+    </div>
+
+    <div class="apply-state" id="applyStateDone">
+      <div class="apply-title">Application sent 🎉</div>
+      <p class="apply-text" style="margin-bottom:0;">Thanks! We'll take a look and reach out on Discord if you're a fit.</p>
+    </div>
+
+    <div class="apply-state" id="applyStateError">
+      <div class="apply-title">Something went wrong</div>
+      <p class="apply-text" id="applyErrorText">Please try again.</p>
+      <button type="button" class="apply-btn" id="applyRetryBtn">Try again</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">❄ FROST</div>
+      <p class="footer-tagline">A fast, free Minecraft client<br/>built for players who care.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="https://frostclient.eu/?openDownload">Download</a>
+      <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
+      <a href="https://frostclient.eu/settings">Transferring Settings</a>
+      <a href="https://frostclient.eu/reviews">Reviews</a>
+      <a href="https://frostclient.eu/partner">Partner Program</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <button type="button" class="footer-link-btn js-site-auth-btn"><span class="js-site-auth-text">Sign in</span></button>
+      <a href="https://frostclient.eu/lite">Frost Lite</a>
+      <a href="https://frostclient.eu/lite/download" class="js-lite-access-link">Download Lite</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="https://frostclient.eu/faq">FAQ</a>
+      <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+      <a href="https://frostclient.eu/terms">Terms of Service</a>
+      <a href="https://frostclient.eu/imprint">Imprint</a>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <div class="footer-social-icons">
+        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
+        <a href="https://www.youtube.com/@frost-client" target="_blank" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
+        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© Frost 2026. All rights reserved.<br>
+      Made by: Zipp
+    </span>
+    <span>Not affiliated with Minecraft or Mojang.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  const hamburger = document.getElementById('navHamburger');
+  const mobileMenu = document.getElementById('navMobileMenu');
+  if (!hamburger || !mobileMenu) return;
+  function closeMenu() {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+  }
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+  });
+  mobileMenu.querySelectorAll('a, button').forEach(el => el.addEventListener('click', closeMenu));
+})();
+</script>
+<script>
+(function () {
+  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const STAFF_APPLY_URL = 'https://bot.frostclient.eu/staff-apply';
+  const TOKEN_KEY = 'frostStaffToken';
+  const OAUTH_STATE_KEY = 'frostStaffOauthState';
+  const APPLIED_KEY = 'frostStaffApplied';
+  const DISCORD_CLIENT_ID = '1512834635640475898';
+  const DISCORD_REDIRECT_URI_STAFF = 'https://frostclient.eu/staff';
+
+  const modal = document.getElementById('applyModal');
+  const closeBtn = document.getElementById('applyModalClose');
+  if (!modal) return;
+
+  const states = ['applyStateWorking', 'applyStateNotMember', 'applyStateClosed', 'applyStep1', 'applyStateDone', 'applyStateError'];
+  function show(id) {
+    states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
+  }
+  function openModal() { modal.classList.add('active'); }
+  function closeModal() { modal.classList.remove('active'); }
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
+
+  function loadToken() {
+    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+  }
+  function saveToken(t) {
+    try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+  }
+  function clearToken() {
+    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+  }
+  function markApplied() {
+    try { localStorage.setItem(APPLIED_KEY, '1'); } catch (e) {}
+    document.querySelectorAll('.js-staff-apply-btn').forEach(function (btn) { btn.style.display = 'none'; });
+    const normal = document.getElementById('applyBoxNormal');
+    const submitted = document.getElementById('applyBoxSubmitted');
+    if (normal) normal.style.display = 'none';
+    if (submitted) submitted.style.display = 'block';
+  }
+  function hasApplied() {
+    try { return localStorage.getItem(APPLIED_KEY) === '1'; } catch (e) { return false; }
+  }
+  function markClosed() {
+    document.querySelectorAll('.js-staff-apply-btn').forEach(function (btn) { btn.style.display = 'none'; });
+    const normal = document.getElementById('applyBoxNormal');
+    const closed = document.getElementById('applyBoxClosed');
+    if (normal) normal.style.display = 'none';
+    if (closed) closed.style.display = 'block';
+  }
+
+  function showErrorState(msg) {
+    document.getElementById('applyErrorText').textContent = msg;
+    show('applyStateError');
+  }
+
+  const qFields = [
+    ['qAge', 'age'], ['qTimezone', 'timezone'], ['qHours', 'hoursPerWeek'],
+    ['qExperience', 'experience'], ['qWhy', 'why'],
+    ['qConflict', 'conflictScenario'], ['qCrash', 'crashScenario']
+  ];
+  const qExtra = document.getElementById('qExtra');
+  const submitBtn = document.getElementById('applySubmitBtn');
+
+  function updateSubmitEnabled() {
+    submitBtn.disabled = !qFields.every(function (f) { return document.getElementById(f[0]).value.trim(); });
+  }
+  qFields.forEach(function (f) {
+    document.getElementById(f[0]).addEventListener('input', updateSubmitEnabled);
+  });
+
+  function resetForm() {
+    qFields.forEach(function (f) { document.getElementById(f[0]).value = ''; });
+    qExtra.value = '';
+    submitBtn.disabled = true;
+  }
+
+  submitBtn.addEventListener('click', function () {
+    if (submitBtn.disabled) return;
+    const token = loadToken();
+    if (!token) { showErrorState('Your session expired. Please click Apply again to sign in.'); return; }
+    submitBtn.disabled = true;
+    const answers = {};
+    qFields.forEach(function (f) { answers[f[1]] = document.getElementById(f[0]).value.trim(); });
+    answers.extra = qExtra.value.trim();
+    fetch(STAFF_APPLY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ staffToken: token, answers: answers })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data && data.ok) {
+          resetForm();
+          show('applyStateDone');
+          markApplied();
+          return;
+        }
+        if (data && data.error === 'not_member') {
+          show('applyStateNotMember');
+          return;
+        }
+        if (data && data.error === 'token_expired') {
+          clearToken();
+          showErrorState('Your session expired. Please click Apply again to sign in.');
+          return;
+        }
+        submitBtn.disabled = false;
+        showErrorState("Couldn't submit your application. Please try again.");
+      })
+      .catch(function () { submitBtn.disabled = false; showErrorState('Network error. Please try again.'); });
+  });
+
+  document.getElementById('applyRetryBtn').addEventListener('click', function () { show('applyStep1'); updateSubmitEnabled(); });
+  document.getElementById('applyRetryAfterJoin').addEventListener('click', function () {
+    startLogin();
+  });
+
+  const applyBtns = document.querySelectorAll('.js-staff-apply-btn');
+  if (hasApplied()) markApplied();
+
+  let appsOpen = true;
+  fetch(LITE_API_URL + '?action=staffApplyConfig', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data && data.ok && !data.open) {
+        appsOpen = false;
+        if (!hasApplied()) markClosed();
+      }
+    })
+    .catch(function () {});
+
+  function startLogin() {
+    let csrfState = '';
+    try {
+      const buf = new Uint8Array(16);
+      crypto.getRandomValues(buf);
+      csrfState = Array.from(buf).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+      sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+    } catch (e) {}
+    const url = 'https://discord.com/oauth2/authorize'
+      + '?client_id=' + encodeURIComponent(DISCORD_CLIENT_ID)
+      + '&response_type=code'
+      + '&redirect_uri=' + encodeURIComponent(DISCORD_REDIRECT_URI_STAFF)
+      + '&scope=' + encodeURIComponent('identify guilds.members.read')
+      + '&state=' + csrfState;
+    window.location.href = url;
+  }
+
+  applyBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (!appsOpen) { openModal(); show('applyStateClosed'); return; }
+      const token = loadToken();
+      if (token) {
+        resetForm();
+        show('applyStep1');
+        openModal();
+        return;
+      }
+      startLogin();
+    });
+  });
+  (function init() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('code') && !params.has('error')) return;
+
+    if (params.has('error')) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('error');
+      cleanUrl.searchParams.delete('error_description');
+      cleanUrl.searchParams.delete('state');
+      window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+      return;
+    }
+
+    const code = params.get('code');
+    const returnedState = params.get('state') || '';
+    let storedState = '';
+    try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
+    try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete('code');
+    cleanUrl.searchParams.delete('state');
+    window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+
+    openModal();
+    show('applyStateWorking');
+
+    if (storedState && returnedState !== storedState) {
+      showErrorState('Sign-in session mismatch. Please try again.');
+      return;
+    }
+
+    fetch(LITE_API_URL + '?action=staffApplyAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data.ok) {
+          if (data.error === 'closed') {
+            show('applyStateClosed');
+            return;
+          }
+          showErrorState('Discord sign-in failed. Please try again.');
+          return;
+        }
+        if (data.status === 'not_member') {
+          show('applyStateNotMember');
+          return;
+        }
+        if (data.status === 'eligible' && data.staffToken) {
+          saveToken(data.staffToken);
+          resetForm();
+          show('applyStep1');
+          return;
+        }
+        showErrorState('Something unexpected happened. Please try again.');
+      })
+      .catch(function () { showErrorState('Network error while contacting the server. Please try again.'); });
+  })();
+})();
+</script>
+<script src="site-auth.js"></script>
+</body>
+</html>
