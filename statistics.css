@@ -109,6 +109,7 @@
     margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .stat-tile .num.is-lite { color: #ff73fa; }
+  .stat-tile .num.is-partner { color: #ffca28; }
   .stat-tile .label { font-size: 12px; color: var(--muted); }
   .stat-tile .subtext { font-size: 10.5px; color: var(--muted); opacity: 0.7; margin-top: 4px; }
 

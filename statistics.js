@@ -492,6 +492,7 @@
     animateStatNumber('statPeak', data.peakOnline || 0, v => formatNumber(Math.round(v)));
     document.getElementById('statPeakAt').textContent = data.peakOnlineAt ? 'hit ' + formatDateTime(data.peakOnlineAt) : '';
     animateStatNumber('statTotalPlayers', data.totalPlayersSeen || 0, v => formatNumber(Math.round(v)));
+    animateStatNumber('statPartners', data.partnerCount || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statPlaytime', data.totalPlaytimeMs || 0, v => formatDuration(Math.round(v)));
     animateStatNumber('statReviewCount', data.totalReviews || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statPollVotes', data.totalPollVotes || 0, v => formatNumber(Math.round(v)));
