@@ -53,8 +53,8 @@
     btn.href = WHOP_CHECKOUT_URL;
   });
   const BILLING_PLANS = {
-    monthly: { amount: 2.90, period: ' / month', perDay: '', trialDays: 1, trialUnit: 'day', periodWidth: '8ch', cta: 'Start 1 day free' },
-    annual: { amount: 29.90, period: ' / year', perDay: '€2.49 / month, billed yearly', trialDays: 2, trialUnit: 'month', periodWidth: '7ch', cta: 'Subscribe' },
+    monthly: { amount: 2.90, period: ' / month', perDay: '', trialDays: 1, trialUnit: 'day', periodWidth: '8ch', cta: 'Start 1 day trial' },
+    annual: { amount: 29.90, period: ' / year', perDay: '€2.49 / month, billed yearly', trialDays: 2, trialUnit: 'month', periodWidth: '7ch', cta: 'Start 1 day trial' },
   };
   function easeInOut(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
