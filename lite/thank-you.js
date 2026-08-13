@@ -49,7 +49,7 @@
   const DISCORD_REDIRECT_URI_THANKYOU = 'https://frostclient.eu/lite/thank-you';
 
   const states = ['stateLogin', 'stateClaiming', 'stateNoPayment', 'stateError'];
-  const TOKEN_KEY = 'frostLiteToken';
+  const TOKEN_KEY = 'frostToken';
   const liteHero = document.getElementById('liteHero');
   const litePageEl = document.querySelector('.lite-page');
   function show(id) {
@@ -83,7 +83,7 @@
           showError(messages[data.error] || "Something went wrong verifying your purchase.", data.detail);
           return;
         }
-        try { localStorage.setItem(TOKEN_KEY, data.token); } catch (e) {}
+        try { localStorage.setItem(TOKEN_KEY, data.gameToken); } catch (e) {}
         window.location.href = 'https://frostclient.eu/lite/download';
       })
       .catch(() => showError('Network error while contacting the server. Please try again.'));

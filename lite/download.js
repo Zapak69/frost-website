@@ -43,7 +43,7 @@
 
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
-  const TOKEN_KEY = 'frostLiteToken';
+  const TOKEN_KEY = 'frostToken';
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI = 'https://frostclient.eu/lite';
@@ -129,7 +129,7 @@
 
   function recheck(token) {
     show('stateLoading');
-    fetch(LITE_API_URL + '?action=liteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
+    fetch(LITE_API_URL + '?action=siteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (!data.ok) {

@@ -39,7 +39,7 @@
   const PARTNER_APPLY_URL = 'https://bot.frostclient.eu/partner-apply';
   const PARTNER_APPLY_STATUS_URL = 'https://bot.frostclient.eu/partner-apply-status';
   const PARTNER_STATUS_URL = 'https://bot.frostclient.eu/partner-status';
-  const TOKEN_KEY = 'frostPartnerToken';
+  const TOKEN_KEY = 'frostToken';
   const OAUTH_STATE_KEY = 'frostPartnerOauthState';
   const APPLIED_KEY = 'frostPartnerApplied';
   const DISCORD_CLIENT_ID = '1512834635640475898';

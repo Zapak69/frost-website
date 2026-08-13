@@ -155,7 +155,7 @@
       });
     });
   });
-  const TOKEN_KEY = 'frostLiteToken';
+  const TOKEN_KEY = 'frostToken';
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
   const GAME_SESSION_KEY = 'frostLiteGameSession';
   const GAME_PORT_KEY = 'frostLiteGamePort';
@@ -187,6 +187,7 @@
     const user = data && data.user;
     notifyGame(status, {
       token: data && data.token,
+      gameToken: data && data.gameToken,
       daysLeft: daysLeft,
       uid: user && user.id,
       avatar: user && user.avatar,
@@ -340,7 +341,7 @@
             : "Discord didn't respond correctly. Please try again.", data.detail);
           return;
         }
-        if (data.token) saveToken(data.token);
+        if (data.gameToken) saveToken(data.gameToken);
         render(data);
       })
       .catch(() => { setAuthPhase('loggedOut'); showError('Network error while contacting the server. Please try again.'); });
@@ -348,7 +349,7 @@
   function recheck(token) {
     show('stateLoading');
     setAuthPhase('checking');
-    fetchJsonWithRetry(LITE_API_URL + '?action=liteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' }, 2)
+    fetchJsonWithRetry(LITE_API_URL + '?action=siteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' }, 2)
       .then(data => {
         if (!data.ok) {
           clearToken();

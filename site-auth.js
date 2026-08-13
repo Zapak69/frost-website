@@ -1,7 +1,7 @@
 
 (function () {
   var LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
-  var TOKEN_KEY = 'frostLiteToken';
+  var TOKEN_KEY = 'frostToken';
   var OAUTH_STATE_KEY = 'frostLiteOauthState';
   var ACCOUNT_URL = 'https://frostclient.eu/lite';
   var DISCORD_CLIENT_ID = '1512834635640475898';
