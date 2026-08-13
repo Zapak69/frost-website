@@ -230,6 +230,17 @@
     try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
     setAccessFlag(false);
   }
+  function fetchJsonWithRetry(url, options, retries) {
+    return fetch(url, options)
+      .then(function (r) { return r.json(); })
+      .catch(function (err) {
+        if (retries > 0) {
+          return new Promise(function (resolve) { setTimeout(resolve, 1200); })
+            .then(function () { return fetchJsonWithRetry(url, options, retries - 1); });
+        }
+        throw err;
+      });
+  }
   function setAccessFlag(has) {
     try {
       if (has) localStorage.setItem('frostLiteAccess', '1');
@@ -320,8 +331,7 @@
   function exchange(code) {
     show('stateLoading');
     setAuthPhase('checking');
-    fetch(LITE_API_URL + '?action=liteAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
-      .then(r => r.json())
+    fetchJsonWithRetry(LITE_API_URL + '?action=liteAuth&code=' + encodeURIComponent(code), { cache: 'no-store' }, 2)
       .then(data => {
         if (!data.ok) {
           setAuthPhase('loggedOut');
@@ -338,8 +348,7 @@
   function recheck(token) {
     show('stateLoading');
     setAuthPhase('checking');
-    fetch(LITE_API_URL + '?action=liteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
-      .then(r => r.json())
+    fetchJsonWithRetry(LITE_API_URL + '?action=liteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' }, 2)
       .then(data => {
         if (!data.ok) {
           clearToken();

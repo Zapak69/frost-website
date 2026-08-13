@@ -259,6 +259,24 @@
   .apply-title { font-family: 'Space Mono', monospace; font-size: 19px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
   .apply-text { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
 
+  .success-check { display: block; margin: 4px auto 18px; }
+  .success-check-circle {
+    fill: none; stroke: var(--green); stroke-width: 2.5;
+    stroke-dasharray: 151; stroke-dashoffset: 151;
+    animation: successCircle 0.5s cubic-bezier(0.65,0,0.45,1) forwards;
+  }
+  .success-check-mark {
+    fill: none; stroke: var(--green); stroke-width: 4;
+    stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 34; stroke-dashoffset: 34;
+    animation: successMark 0.35s cubic-bezier(0.65,0,0.45,1) 0.5s forwards;
+  }
+  @keyframes successCircle { to { stroke-dashoffset: 0; } }
+  @keyframes successMark { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .success-check-circle, .success-check-mark { animation: none; stroke-dashoffset: 0; }
+  }
+
   .apply-spinner {
     width: 32px; height: 32px; margin: 6px auto 20px;
     border: 3px solid rgba(79,200,248,0.2); border-top-color: var(--frost-blue);

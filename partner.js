@@ -37,6 +37,8 @@
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
   const PARTNER_APPLY_URL = 'https://bot.frostclient.eu/partner-apply';
+  const PARTNER_APPLY_STATUS_URL = 'https://bot.frostclient.eu/partner-apply-status';
+  const PARTNER_STATUS_URL = 'https://bot.frostclient.eu/partner-status';
   const TOKEN_KEY = 'frostPartnerToken';
   const OAUTH_STATE_KEY = 'frostPartnerOauthState';
   const APPLIED_KEY = 'frostPartnerApplied';
@@ -47,7 +49,7 @@
   const closeBtn = document.getElementById('applyModalClose');
   if (!modal) return;
 
-  const states = ['applyStateWorking', 'applyStateNotMember', 'applyStep1', 'applyStep2', 'applyStateDone', 'applyStateError'];
+  const states = ['applyStateWorking', 'applyStateNotMember', 'applyStep1', 'applyStep2', 'applyStateDenied', 'applyStateDone', 'applyStateError'];
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
   }
@@ -67,16 +69,72 @@
   function clearToken() {
     try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
   }
+  function fetchJsonWithRetry(url, options, retries) {
+    return fetch(url, options)
+      .then(function (r) { return r.json(); })
+      .catch(function (err) {
+        if (retries > 0) {
+          return new Promise(function (resolve) { setTimeout(resolve, 1200); })
+            .then(function () { return fetchJsonWithRetry(url, options, retries - 1); });
+        }
+        throw err;
+      });
+  }
+  const BOX_IDS = ['applyBoxNormal', 'applyBoxSubmitted', 'applyBoxDenied'];
+  function setBoxState(id) {
+    BOX_IDS.forEach(function (b) {
+      const el = document.getElementById(b);
+      if (el) el.style.display = b === id ? 'block' : 'none';
+    });
+    document.querySelectorAll('.js-apply-btn').forEach(function (btn) {
+      btn.style.display = id === 'applyBoxNormal' ? '' : 'none';
+    });
+  }
   function markApplied() {
     try { localStorage.setItem(APPLIED_KEY, '1'); } catch (e) {}
-    document.querySelectorAll('.js-apply-btn').forEach(function (btn) { btn.style.display = 'none'; });
-    const normal = document.getElementById('applyBoxNormal');
-    const submitted = document.getElementById('applyBoxSubmitted');
-    if (normal) normal.style.display = 'none';
-    if (submitted) submitted.style.display = 'block';
+    setBoxState('applyBoxSubmitted');
   }
   function hasApplied() {
     try { return localStorage.getItem(APPLIED_KEY) === '1'; } catch (e) { return false; }
+  }
+  function formatRetryDate(ms) {
+    try {
+      return new Date(ms).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch (e) { return ''; }
+  }
+  function checkStatus() {
+    const token = loadToken();
+    if (!token) return;
+    fetch(PARTNER_APPLY_STATUS_URL + '?token=' + encodeURIComponent(token), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data || !data.ok) return;
+        if (data.status === 'pending' || data.status === 'accepted') {
+          setBoxState('applyBoxSubmitted');
+        } else if (data.status === 'denied') {
+          if (data.retryAt && data.retryAt > Date.now()) {
+            const dateEl = document.getElementById('applyBoxRetryDate');
+            if (dateEl) dateEl.textContent = formatRetryDate(data.retryAt);
+            setBoxState('applyBoxDenied');
+          } else {
+            try { localStorage.removeItem(APPLIED_KEY); } catch (e) {}
+            setBoxState('applyBoxNormal');
+          }
+        }
+      })
+      .catch(function () {});
+  }
+  function checkAlreadyPartner() {
+    const token = loadToken();
+    if (!token) return;
+    fetch(PARTNER_STATUS_URL + '?token=' + encodeURIComponent(token), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data && data.ok && data.isPartner) {
+          window.location.href = 'https://partner.frostclient.eu';
+        }
+      })
+      .catch(function () {});
   }
 
   function showErrorState(msg) {
@@ -87,13 +145,15 @@
   const tierRow = document.getElementById('applyTierRow');
   const platformRow = document.getElementById('applyPlatformRow');
   const linkInput = document.getElementById('applyLink');
+  const codeInput = document.getElementById('applyCode');
   const nextBtn = document.getElementById('applyNextBtn');
   const confirmCheck = document.getElementById('applyConfirmCheck');
   const submitBtn = document.getElementById('applySubmitBtn');
 
   function updateNextEnabled() {
-    nextBtn.disabled = !(tier && platform && linkInput.value.trim());
+    nextBtn.disabled = !(tier && platform && linkInput.value.trim() && codeInput.value.trim());
   }
+  codeInput.addEventListener('input', updateNextEnabled);
   tierRow.querySelectorAll('.apply-pill').forEach(function (pill) {
     pill.addEventListener('click', function () {
       tierRow.querySelectorAll('.apply-pill').forEach(function (p) { p.classList.remove('selected'); });
@@ -125,6 +185,7 @@
     tierRow.querySelectorAll('.apply-pill').forEach(function (p) { p.classList.remove('selected'); });
     platformRow.querySelectorAll('.apply-pill').forEach(function (p) { p.classList.remove('selected'); });
     linkInput.value = '';
+    codeInput.value = '';
     confirmCheck.checked = false;
     submitBtn.disabled = true;
     nextBtn.disabled = true;
@@ -140,7 +201,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         partnerToken: token, tier: tier, platform: platform,
-        link: linkInput.value.trim(), confirmed: true
+        link: linkInput.value.trim(), code: codeInput.value.trim(), confirmed: true
       })
     })
       .then(function (r) { return r.json(); })
@@ -160,6 +221,12 @@
           showErrorState('Your session expired. Please click Apply again to sign in.');
           return;
         }
+        if (data && data.error === 'cooldown') {
+          const dateEl = document.getElementById('applyRetryDate');
+          if (dateEl) dateEl.textContent = formatRetryDate(data.retryAt);
+          show('applyStateDenied');
+          return;
+        }
         submitBtn.disabled = false;
         showErrorState("Couldn't submit your application. Please try again.");
       })
@@ -173,6 +240,8 @@
 
   const applyBtns = document.querySelectorAll('.js-apply-btn');
   if (hasApplied()) markApplied();
+  checkStatus();
+  checkAlreadyPartner();
 
   function startLogin() {
     let csrfState = '';
@@ -235,8 +304,7 @@
       return;
     }
 
-    fetch(LITE_API_URL + '?action=partnerAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
-      .then(function (r) { return r.json(); })
+    fetchJsonWithRetry(LITE_API_URL + '?action=partnerAuth&code=' + encodeURIComponent(code), { cache: 'no-store' }, 2)
       .then(function (data) {
         if (!data.ok) {
           showErrorState('Discord sign-in failed. Please try again.');

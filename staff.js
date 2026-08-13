@@ -49,6 +49,17 @@
   function clearToken() {
     try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
   }
+  function fetchJsonWithRetry(url, options, retries) {
+    return fetch(url, options)
+      .then(function (r) { return r.json(); })
+      .catch(function (err) {
+        if (retries > 0) {
+          return new Promise(function (resolve) { setTimeout(resolve, 1200); })
+            .then(function () { return fetchJsonWithRetry(url, options, retries - 1); });
+        }
+        throw err;
+      });
+  }
   const BOX_IDS = ['applyBoxNormal', 'applyBoxClosed', 'applyBoxSubmitted', 'applyBoxAccepted', 'applyBoxDenied'];
   function setBoxState(id) {
     BOX_IDS.forEach(function (b) {
@@ -243,8 +254,7 @@
       return;
     }
 
-    fetch(LITE_API_URL + '?action=staffApplyAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
-      .then(function (r) { return r.json(); })
+    fetchJsonWithRetry(LITE_API_URL + '?action=staffApplyAuth&code=' + encodeURIComponent(code), { cache: 'no-store' }, 2)
       .then(function (data) {
         if (!data.ok) {
           if (data.error === 'closed') {

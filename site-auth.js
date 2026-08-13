@@ -18,6 +18,18 @@
     } catch (e) {}
   }
 
+  function fetchJsonWithRetry(url, options, retries) {
+    return fetch(url, options)
+      .then(function (r) { return r.json(); })
+      .catch(function (err) {
+        if (retries > 0) {
+          return new Promise(function (resolve) { setTimeout(resolve, 1200); })
+            .then(function () { return fetchJsonWithRetry(url, options, retries - 1); });
+        }
+        throw err;
+      });
+  }
+
   function startLogin(btn) {
     try { fetch(LITE_API_URL + '?action=liteConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
     var csrfState = '';
@@ -264,8 +276,7 @@
   }
 
   function fetchAccountInfo(token) {
-    return fetch(LITE_API_URL + '?action=accountInfo&token=' + encodeURIComponent(token), { cache: 'no-store' })
-      .then(function (r) { return r.json(); });
+    return fetchJsonWithRetry(LITE_API_URL + '?action=accountInfo&token=' + encodeURIComponent(token), { cache: 'no-store' }, 2);
   }
 
   function populateModal(els, data) {
