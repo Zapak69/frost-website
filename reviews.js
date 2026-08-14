@@ -92,6 +92,14 @@
     return badge;
   }
 
+  function hasFpsData(review) {
+    return review.fpsBefore != null && review.fpsAfter != null
+      && !isNaN(Number(review.fpsBefore)) && !isNaN(Number(review.fpsAfter));
+  }
+  function hasWorseFps(review) {
+    return hasFpsData(review) && Number(review.fpsBefore) > Number(review.fpsAfter);
+  }
+
   function buildCard(review, isLatest) {
     const isAnon = !review.username || !review.avatar;
 
@@ -149,6 +157,17 @@
       card.appendChild(liteTag);
     }
 
+    if (hasFpsData(review)) {
+      const fps = document.createElement('div');
+      fps.className = 'review-fps';
+      const before = document.createElement('strong');
+      before.textContent = Math.round(Number(review.fpsBefore)) + ' FPS';
+      const after = document.createElement('strong');
+      after.textContent = Math.round(Number(review.fpsAfter)) + ' FPS';
+      fps.append('🚀 ', before, ' → ', after);
+      card.appendChild(fps);
+    }
+
     const comment = document.createElement('p');
     comment.className = 'review-comment';
     comment.textContent = review.comment || '';
@@ -178,7 +197,7 @@
         show('stateEmpty');
         return;
       }
-      const qualifying = data.filter(r => parseStars(r.lite === true && r.liteStars ? r.liteStars : r.stars) >= 3);
+      const qualifying = data.filter(r => parseStars(r.lite === true && r.liteStars ? r.liteStars : r.stars) >= 3 && !hasWorseFps(r));
       if (qualifying.length === 0) {
         show('stateEmpty');
         return;

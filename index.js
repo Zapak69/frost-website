@@ -505,6 +505,14 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     return badge;
   }
 
+  function hasFpsData(review) {
+    return review.fpsBefore != null && review.fpsAfter != null
+      && !isNaN(Number(review.fpsBefore)) && !isNaN(Number(review.fpsAfter));
+  }
+  function hasWorseFps(review) {
+    return hasFpsData(review) && Number(review.fpsBefore) > Number(review.fpsAfter);
+  }
+
   function buildReviewCard(review, isLatest) {
     const isAnon = !review.username || !review.avatar;
     const card = document.createElement('div');
@@ -560,6 +568,17 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
       card.appendChild(liteTag);
     }
 
+    if (hasFpsData(review)) {
+      const fps = document.createElement('div');
+      fps.className = 'review-fps';
+      const before = document.createElement('strong');
+      before.textContent = Math.round(Number(review.fpsBefore)) + ' FPS';
+      const after = document.createElement('strong');
+      after.textContent = Math.round(Number(review.fpsAfter)) + ' FPS';
+      fps.append('🚀 ', before, ' → ', after);
+      card.appendChild(fps);
+    }
+
     const comment = document.createElement('p');
     comment.className = 'review-comment';
     comment.textContent = review.comment || '';
@@ -584,7 +603,7 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     })
     .then(data => {
       if (!Array.isArray(data)) return;
-      data.filter(r => parseStars(r.lite === true && r.liteStars ? r.liteStars : r.stars) >= 3)
+      data.filter(r => parseStars(r.lite === true && r.liteStars ? r.liteStars : r.stars) >= 3 && !hasWorseFps(r))
         .sort((a, b) => timestampOf(b) - timestampOf(a))
         .slice(0, 6)
         .forEach((r, i) => grid.appendChild(buildReviewCard(r, i === 0)));

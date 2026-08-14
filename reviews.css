@@ -171,6 +171,8 @@
   }
   .review-name { font-weight: 700; font-size: 14px; overflow-wrap: anywhere; }
   .review-stars { color: var(--star); font-size: 14px; letter-spacing: 2px; margin-bottom: 10px; }
+  .review-fps { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .review-fps strong { font-family: 'Space Mono', monospace; color: var(--green); font-weight: 700; }
   .review-comment { font-size: 13px; color: var(--muted); line-height: 1.6; overflow-wrap: anywhere; }
   .review-age { font-size: 11.5px; color: var(--muted); opacity: 0.75; margin-top: 12px; }
   .review-latest-badge {
