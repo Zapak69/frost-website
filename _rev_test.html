@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reviews | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="robots" content="index, follow">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="reviews.css">
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,270 C80,250 200,310 380,270 S600,190 760,265 S1000,340 1180,285 S1380,225 1500,265"/>
+    <path class="tline" d="M-100,340 C60,320 180,380 360,340 S580,255 740,330 S980,400 1160,345 S1360,290 1500,335"/>
+    <path class="tline" d="M-100,420 C40,400 160,460 340,420 S560,330 720,410 S960,470 1140,415 S1340,365 1500,415"/>
+    <path class="tline" d="M-100,500 C20,480 140,540 320,500 S540,405 700,490 S940,545 1120,490 S1320,440 1500,490"/>
+    <path class="tline" d="M-100,580 C0,558 120,618 300,580 S520,480 680,565 S920,625 1100,570 S1300,518 1500,568"/>
+    <path class="tline" d="M-100,660 C-20,640 100,700 280,660 S500,560 660,645 S900,705 1080,650 S1280,598 1500,648"/>
+    <path class="tline" d="M-100,740 C-40,720 80,780 260,740 S480,640 640,725 S880,785 1060,730 S1260,678 1500,728"/>
+    <path class="tline" d="M200,100 C300,80 380,150 450,100 S600,40 700,110 S820,180 940,120 S1100,60 1200,100"/>
+    <path class="tline" d="M150,160 C260,140 340,210 420,160 S570,95 670,165 S800,235 920,175 S1060,115 1160,160"/>
+    <path class="tline" d="M250,820 C350,800 430,870 500,820 S650,755 750,825 S870,895 990,835 S1150,775 1250,820"/>
+  </svg>
+</div>
+<canvas id="particles"></canvas>
+<div id="cursor-glow"></div>
+<nav>
+<div class="nav-desktop">
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <div class="nav-right">
+    <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+    <a class="nav-review-btn" href="https://frostclient.eu/review">★ Leave a Review</a>
+    <button type="button" class="nav-signin-btn js-site-auth-btn"><img src="icons/discord.webp" alt=""/><span class="js-site-auth-text">Sign in</span></button>
+  </div>
+</div>
+<button class="nav-hamburger" id="navHamburger" type="button" aria-label="Menu" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<a class="nav-logo-mobile" href="https://frostclient.eu">
+  <img src="favicon.ico" alt="" class="nav-logo-icon"/><span>Frost</span>
+</a>
+</nav>
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <a href="https://frostclient.eu">← Back to Home</a>
+  <a href="https://frostclient.eu/review">★ Leave a Review</a>
+</div>
+
+<div class="reviews-page">
+  <div class="reviews-header">
+    <div class="reviews-eyebrow">Community</div>
+    <h1>Reviews</h1>
+    <p class="reviews-sub">What FrostClient players are saying, straight from Discord.</p>
+  </div>
+
+  <div class="reviews-state active" id="stateLoading">
+    <div class="spinner"></div>
+    <p>Loading reviews...</p>
+  </div>
+
+  <div class="reviews-state" id="stateEmpty">
+    <p>No reviews yet - be the first to leave one!</p>
+  </div>
+
+  <div class="reviews-state" id="stateError">
+    <p>Couldn't load reviews right now. Please try again later.</p>
+  </div>
+
+  <div class="reviews-grid" id="reviewsGrid"></div>
+
+  <div class="reviews-cta">
+    <a class="btn-primary" href="https://frostclient.eu/review">★ Leave a Review</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">❄ FROST</div>
+      <p class="footer-tagline">A fast, free Minecraft client<br/>built for players who care.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="https://frostclient.eu/?openDownload">Download</a>
+      <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
+      <a href="https://frostclient.eu/settings">Transferring Settings</a>
+      <a href="https://frostclient.eu/reviews">Reviews</a>
+      <a href="https://frostclient.eu/partner">Creator Program</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <button type="button" class="footer-link-btn js-site-auth-btn"><span class="js-site-auth-text">Sign in</span></button>
+      <a href="https://frostclient.eu/lite">Frost Lite</a>
+      <a href="https://frostclient.eu/lite/download" class="js-lite-access-link">Download Lite</a>
+    </div>
+    <div class="footer-col">
+      <h4>Creator</h4>
+      <a href="https://partner.frostclient.eu">Dashboard</a>
+      <a href="https://partner.frostclient.eu/balance">Withdraw</a>
+      <a href="https://partner.frostclient.eu/assets">Assets</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="https://frostclient.eu/faq">FAQ</a>
+      <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+      <a href="https://frostclient.eu/terms">Terms of Service</a>
+      <a href="https://frostclient.eu/imprint">Imprint</a>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <div class="footer-social-icons">
+        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
+        <a href="https://www.youtube.com/@frost-client" target="_blank" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
+        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© Frost 2026. All rights reserved.<br>
+      Made by: Zipp
+    </span>
+    <span>Not affiliated with Minecraft or Mojang.</span>
+  </div>
+</footer>
+
+
+
+<script src="_mock_reviews.js"></script>
+<script src="reviews.js"></script>
+<script src="site-auth.js"></script>
+</body>
+</html>
