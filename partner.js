@@ -157,6 +157,7 @@
     codeAvailable = null;
     setCodeStatus(null);
     submitBtn.disabled = true;
+    submitBtn.classList.remove('is-loading');
     step1Error.style.display = 'none';
   }
 
@@ -165,6 +166,7 @@
     const token = loadToken();
     if (!token) { showErrorState('Your session expired. Please click Get Started again to sign in.'); return; }
     submitBtn.disabled = true;
+    submitBtn.classList.add('is-loading');
     step1Error.style.display = 'none';
     fetch(LITE_API_URL + '?action=mediaSignup', {
       method: 'POST',
@@ -181,6 +183,7 @@
           return;
         }
         submitBtn.disabled = false;
+        submitBtn.classList.remove('is-loading');
         if (data && data.error === 'token_expired') {
           clearToken();
           showErrorState('Your session expired. Please click Get Started again to sign in.');
@@ -207,6 +210,7 @@
       })
       .catch(function () {
         submitBtn.disabled = false;
+        submitBtn.classList.remove('is-loading');
         step1Error.style.display = 'block';
         step1Error.textContent = 'Network error. Please try again.';
       });
