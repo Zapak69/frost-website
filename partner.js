@@ -36,12 +36,9 @@
 
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
-  const PARTNER_APPLY_URL = 'https://bot.frostclient.eu/partner-apply';
-  const PARTNER_APPLY_STATUS_URL = 'https://bot.frostclient.eu/partner-apply-status';
   const PARTNER_STATUS_URL = 'https://bot.frostclient.eu/partner-status';
   const TOKEN_KEY = 'frostToken';
   const OAUTH_STATE_KEY = 'frostPartnerOauthState';
-  const APPLIED_KEY = 'frostPartnerApplied';
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI_PARTNER = 'https://frostclient.eu/partner';
 
@@ -49,7 +46,7 @@
   const closeBtn = document.getElementById('applyModalClose');
   if (!modal) return;
 
-  const states = ['applyStateWorking', 'applyStateNotMember', 'applyStep1', 'applyStep2', 'applyStateDenied', 'applyStateDone', 'applyStateError'];
+  const states = ['applyStateWorking', 'applyStateNotMember', 'applyStep1', 'applyStateDone', 'applyStateError'];
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
   }
@@ -80,50 +77,6 @@
         throw err;
       });
   }
-  const BOX_IDS = ['applyBoxNormal', 'applyBoxSubmitted', 'applyBoxDenied'];
-  function setBoxState(id) {
-    BOX_IDS.forEach(function (b) {
-      const el = document.getElementById(b);
-      if (el) el.style.display = b === id ? 'block' : 'none';
-    });
-    document.querySelectorAll('.js-apply-btn').forEach(function (btn) {
-      btn.style.display = id === 'applyBoxNormal' ? '' : 'none';
-    });
-  }
-  function markApplied() {
-    try { localStorage.setItem(APPLIED_KEY, '1'); } catch (e) {}
-    setBoxState('applyBoxSubmitted');
-  }
-  function hasApplied() {
-    try { return localStorage.getItem(APPLIED_KEY) === '1'; } catch (e) { return false; }
-  }
-  function formatRetryDate(ms) {
-    try {
-      return new Date(ms).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-    } catch (e) { return ''; }
-  }
-  function checkStatus() {
-    const token = loadToken();
-    if (!token) return;
-    fetch(PARTNER_APPLY_STATUS_URL + '?token=' + encodeURIComponent(token), { cache: 'no-store' })
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        if (!data || !data.ok) return;
-        if (data.status === 'pending' || data.status === 'accepted') {
-          setBoxState('applyBoxSubmitted');
-        } else if (data.status === 'denied') {
-          if (data.retryAt && data.retryAt > Date.now()) {
-            const dateEl = document.getElementById('applyBoxRetryDate');
-            if (dateEl) dateEl.textContent = formatRetryDate(data.retryAt);
-            setBoxState('applyBoxDenied');
-          } else {
-            try { localStorage.removeItem(APPLIED_KEY); } catch (e) {}
-            setBoxState('applyBoxNormal');
-          }
-        }
-      })
-      .catch(function () {});
-  }
   function checkAlreadyPartner() {
     const token = loadToken();
     if (!token) return;
@@ -141,67 +94,35 @@
     document.getElementById('applyErrorText').textContent = msg;
     show('applyStateError');
   }
-  let tier = null, platform = null;
-  const tierRow = document.getElementById('applyTierRow');
-  const platformRow = document.getElementById('applyPlatformRow');
   const linkInput = document.getElementById('applyLink');
   const codeInput = document.getElementById('applyCode');
-  const nextBtn = document.getElementById('applyNextBtn');
-  const confirmCheck = document.getElementById('applyConfirmCheck');
   const submitBtn = document.getElementById('applySubmitBtn');
+  const step1Error = document.getElementById('applyStep1Error');
 
-  function updateNextEnabled() {
-    nextBtn.disabled = !(tier && platform && linkInput.value.trim() && codeInput.value.trim());
+  function updateSubmitEnabled() {
+    submitBtn.disabled = !(codeInput.value.trim() && linkInput.value.trim());
   }
-  codeInput.addEventListener('input', updateNextEnabled);
-  tierRow.querySelectorAll('.apply-pill').forEach(function (pill) {
-    pill.addEventListener('click', function () {
-      tierRow.querySelectorAll('.apply-pill').forEach(function (p) { p.classList.remove('selected'); });
-      pill.classList.add('selected');
-      tier = pill.dataset.value;
-      updateNextEnabled();
-    });
-  });
-  platformRow.querySelectorAll('.apply-pill').forEach(function (pill) {
-    pill.addEventListener('click', function () {
-      platformRow.querySelectorAll('.apply-pill').forEach(function (p) { p.classList.remove('selected'); });
-      pill.classList.add('selected');
-      platform = pill.dataset.value;
-      updateNextEnabled();
-    });
-  });
-  linkInput.addEventListener('input', updateNextEnabled);
-
-  nextBtn.addEventListener('click', function () {
-    if (nextBtn.disabled) return;
-    show('applyStep2');
-  });
-  confirmCheck.addEventListener('change', function () {
-    submitBtn.disabled = !confirmCheck.checked;
-  });
+  codeInput.addEventListener('input', updateSubmitEnabled);
+  linkInput.addEventListener('input', updateSubmitEnabled);
 
   function resetForm() {
-    tier = null; platform = null;
-    tierRow.querySelectorAll('.apply-pill').forEach(function (p) { p.classList.remove('selected'); });
-    platformRow.querySelectorAll('.apply-pill').forEach(function (p) { p.classList.remove('selected'); });
     linkInput.value = '';
     codeInput.value = '';
-    confirmCheck.checked = false;
     submitBtn.disabled = true;
-    nextBtn.disabled = true;
+    step1Error.style.display = 'none';
   }
 
   submitBtn.addEventListener('click', function () {
     if (submitBtn.disabled) return;
     const token = loadToken();
-    if (!token) { showErrorState('Your session expired. Please click Apply again to sign in.'); return; }
+    if (!token) { showErrorState('Your session expired. Please click Get Started again to sign in.'); return; }
     submitBtn.disabled = true;
-    fetch(PARTNER_APPLY_URL, {
+    step1Error.style.display = 'none';
+    fetch(LITE_API_URL + '?action=mediaSignup', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({
-        partnerToken: token, tier: tier, platform: platform,
-        link: linkInput.value.trim(), code: codeInput.value.trim(), confirmed: true
+        partnerToken: token, code: codeInput.value.trim(), socialLink: linkInput.value.trim()
       })
     })
       .then(function (r) { return r.json(); })
@@ -209,28 +130,36 @@
         if (data && data.ok) {
           resetForm();
           show('applyStateDone');
-          markApplied();
-          return;
-        }
-        if (data && data.error === 'not_member') {
-          show('applyStateNotMember');
-          return;
-        }
-        if (data && data.error === 'token_expired') {
-          clearToken();
-          showErrorState('Your session expired. Please click Apply again to sign in.');
-          return;
-        }
-        if (data && data.error === 'cooldown') {
-          const dateEl = document.getElementById('applyRetryDate');
-          if (dateEl) dateEl.textContent = formatRetryDate(data.retryAt);
-          show('applyStateDenied');
           return;
         }
         submitBtn.disabled = false;
-        showErrorState("Couldn't submit your application. Please try again.");
+        if (data && data.error === 'token_expired') {
+          clearToken();
+          showErrorState('Your session expired. Please click Get Started again to sign in.');
+          return;
+        }
+        if (data && data.error === 'already_partner') {
+          window.location.href = 'https://partner.frostclient.eu';
+          return;
+        }
+        step1Error.style.display = 'block';
+        if (data && data.error === 'invalid_code') {
+          step1Error.textContent = 'That code has to be 3-20 characters, letters and numbers only.';
+        } else if (data && data.error === 'code_unavailable') {
+          step1Error.textContent = 'That code is already taken. Try a different one.';
+        } else if (data && data.error === 'invalid_link') {
+          step1Error.textContent = 'Please enter a valid link (starting with http:// or https://).';
+        } else if (data && data.error === 'busy') {
+          step1Error.textContent = 'A little busy right now — please try again in a moment.';
+        } else {
+          step1Error.textContent = "Couldn't create your code. Please try again.";
+        }
       })
-      .catch(function () { submitBtn.disabled = false; showErrorState('Network error. Please try again.'); });
+      .catch(function () {
+        submitBtn.disabled = false;
+        step1Error.style.display = 'block';
+        step1Error.textContent = 'Network error. Please try again.';
+      });
   });
 
   document.getElementById('applyRetryBtn').addEventListener('click', function () { show('applyStep1'); });
@@ -239,8 +168,6 @@
   });
 
   const applyBtns = document.querySelectorAll('.js-apply-btn');
-  if (hasApplied()) markApplied();
-  checkStatus();
   checkAlreadyPartner();
 
   function startLogin() {

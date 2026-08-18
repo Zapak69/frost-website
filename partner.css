@@ -1,7 +1,7 @@
   :root {
     --bg: #000000; --surface: #1c1c1e; --surface2: #2c2c2e;
     --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #0a84ff;
-    --green: #32d74b; --amber: #ffd60a; --danger: #ff6961; --gold: #ffd60a;
+    --green: #32d74b; --amber: #ffd60a; --danger: #ff6961; --gold: #ffd60a; --purple: #bf5af2;
     --text: #f5f5f7; --muted: #86868b; --border: rgba(255,255,255,0.1);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -77,7 +77,8 @@
   .nav-mobile-menu a:last-child, .nav-mobile-menu button:last-child { border-bottom: none; }
   @media(max-width:700px){ .nav-desktop { display: none; } .nav-hamburger, .nav-logo-mobile { display: flex; } }
 
-  .legal-page { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 128px 24px 100px; }
+  .legal-page { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 128px 24px 100px; }
+  .legal-page > .section-intro, .legal-page > p { max-width: 720px; }
   .legal-eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--frost-blue); margin-bottom: 16px; }
   .legal-page h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 700; letter-spacing: -1.5px; margin-bottom: 12px; }
   .legal-page h2 { font-size: 21px; font-weight: 700; letter-spacing: -0.3px; margin: 56px 0 8px; }
@@ -123,12 +124,17 @@
 
   .tier-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0 8px; }
   @media(max-width:700px){ .tier-grid-2 { grid-template-columns: 1fr; } }
+  .tier-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 24px 0 8px; }
+  @media(max-width:900px){ .tier-grid-3 { grid-template-columns: 1fr; } }
   .tier-card { border: 1px solid var(--border); border-radius: 20px; background: var(--surface); padding: 28px 26px; transition: transform 0.25s cubic-bezier(0.22,1,0.36,1); }
   .tier-card:hover { transform: translateY(-3px); }
   .tier-card.plus { border-color: rgba(255,214,10,0.4); background: var(--surface); }
+  .tier-card.partner { border-color: rgba(191,90,242,0.35); background: var(--surface); }
   .tier-card-badge { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--frost-blue); margin-bottom: 14px; }
+  .tier-card-badge.partner { color: var(--purple); }
   .tier-card-badge.plus { color: var(--gold); }
   .tier-card-pct { font-size: 36px; font-weight: 700; color: var(--frost-blue); margin-bottom: 10px; letter-spacing: -1px; }
+  .tier-card-pct.partner { color: var(--purple); }
   .tier-card-pct.plus { color: var(--gold); }
   .tier-card-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
   .tier-card .partner-reqs { margin-top: 4px; }
