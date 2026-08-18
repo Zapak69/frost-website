@@ -116,6 +116,8 @@
     font-size: 13px; color: var(--muted); line-height: 1.55;
   }
   .partner-member-note strong { color: var(--danger); }
+  .partner-member-note-icon { flex-shrink: 0; width: 16px; height: 16px; margin-top: 1px; color: var(--danger); }
+  .partner-member-note-icon svg { width: 16px; height: 16px; display: block; }
 
   .modal-overlay {
     position: fixed; inset: 0; z-index: 200;

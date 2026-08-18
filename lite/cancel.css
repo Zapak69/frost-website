@@ -79,6 +79,7 @@
     transition: transform 0.2s, filter 0.2s;
   }
   .save-card .btn-save:hover { transform: translateY(-1px); filter: brightness(1.08); }
+  .btn-save-icon { width: 16px; height: 16px; }
   .save-card .btn-save:disabled { opacity: 0.6; cursor: default; transform: none; }
   .save-card .save-result { margin-top: 18px; font-size: 14px; }
   .save-card .save-result.success { color: var(--frost-blue); }
