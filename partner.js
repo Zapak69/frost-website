@@ -199,6 +199,8 @@
           step1Error.textContent = 'Please enter a valid link (starting with http:// or https://).';
         } else if (data && data.error === 'busy') {
           step1Error.textContent = 'A little busy right now — please try again in a moment.';
+        } else if (data && data.error === 'whop_error') {
+          step1Error.textContent = "Something went wrong creating your code — this isn't about the code you picked. Please try again in a moment, or reach out on Discord if it keeps happening.";
         } else {
           step1Error.textContent = "Couldn't create your code. Please try again.";
         }
