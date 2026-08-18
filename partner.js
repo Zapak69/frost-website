@@ -136,7 +136,10 @@
             setCodeStatus('available', 'Available');
           } else {
             codeAvailable = false;
-            setCodeStatus('taken', data && data.reason === 'invalid' ? 'Letters and numbers only.' : 'Already in use');
+            let msg = 'Already in use';
+            if (data && data.reason === 'invalid') msg = 'Letters and numbers only.';
+            else if (data && data.reason === 'blocked') msg = 'Not allowed — pick a different code.';
+            setCodeStatus('taken', msg);
           }
           updateSubmitEnabled();
         })
@@ -198,6 +201,8 @@
           step1Error.textContent = 'That code has to be 3-20 characters, letters and numbers only.';
         } else if (data && data.error === 'code_unavailable') {
           step1Error.textContent = 'That code is already taken. Try a different one.';
+        } else if (data && data.error === 'code_blocked') {
+          step1Error.textContent = "That code isn't allowed. Please pick a different one.";
         } else if (data && data.error === 'invalid_link') {
           step1Error.textContent = 'Please enter a valid link (starting with http:// or https://).';
         } else if (data && data.error === 'busy') {
