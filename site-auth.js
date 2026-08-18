@@ -115,6 +115,12 @@
 
       '.frost-account-badge-booster{background:rgba(255,255,255,0.06);color:var(--boost,#ff73fa);border:1px solid var(--boost,#ff73fa);}',
       '.frost-account-badge-free{background:rgba(255,255,255,0.06);color:var(--muted,#6b8fa8);border:1px solid var(--border,rgba(79,200,248,0.15));}',
+      '.frost-account-badge-media{background:rgba(79,200,248,0.08);color:#4fc8f8;border:1px solid #4fc8f8;}',
+      '.frost-account-badge-partner{background:rgba(191,90,242,0.1);color:#bf5af2;border:1px solid #bf5af2;}',
+      '.frost-account-badge-partner-plus{background:linear-gradient(90deg,#ffd60a,#ffb800);color:#1a0f00;border:1px solid transparent;}',
+      '.frost-account-row-partner-orders .frost-account-row-value{color:#4fc8f8;}',
+      '.frost-account-btn-partner-dash{width:100%;background:linear-gradient(100deg,#bf5af2,#8944ab);border:none;color:#fff;font-weight:700;}',
+      '.frost-account-btn-partner-dash:hover{filter:brightness(1.12);transform:translateY(-1px);}',
       '.frost-account-rows{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--border,rgba(79,200,248,0.15));margin-bottom:22px;}',
       '.frost-account-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--border,rgba(79,200,248,0.15));}',
       '.frost-account-row-label{font-size:12.5px;color:var(--muted,#6b8fa8);flex-shrink:0;}',
@@ -169,6 +175,9 @@
       '        <div class="frost-account-name">—</div>',
       '        <div class="frost-account-username">—</div>',
       '        <div class="frost-account-badges">',
+      '          <span class="frost-account-badge frost-account-badge-media" style="display:none">MEDIA PARTNER</span>',
+      '          <span class="frost-account-badge frost-account-badge-partner" style="display:none">PARTNER</span>',
+      '          <span class="frost-account-badge frost-account-badge-partner-plus" style="display:none">PARTNER+</span>',
       '          <span class="frost-account-badge frost-account-badge-lite" style="display:none">LITE ACTIVE</span>',
       '          <span class="frost-account-badge frost-account-badge-booster" style="display:none">SERVER BOOSTER</span>',
       '          <span class="frost-account-badge frost-account-badge-free" style="display:none">FREE</span>',
@@ -190,8 +199,10 @@
       '      <div class="frost-account-row frost-account-row-valid" style="display:none"><span class="frost-account-row-label">Active until</span><span class="frost-account-row-value frost-account-valid-until">—</span></div>',
       '      <div class="frost-account-row"><span class="frost-account-row-label">Member since</span><span class="frost-account-row-value frost-account-member-since">—</span></div>',
       '      <div class="frost-account-row"><span class="frost-account-row-label">Subscriber since</span><span class="frost-account-row-value frost-account-sub-since">—</span></div>',
+      '      <div class="frost-account-row frost-account-row-partner-orders" style="display:none"><span class="frost-account-row-label">Total orders</span><span class="frost-account-row-value frost-account-partner-orders">—</span></div>',
       '    </div>',
       '    <div class="frost-account-actions">',
+      '      <a class="frost-account-btn frost-account-btn-partner-dash" href="https://partner.frostclient.eu" style="display:none">Partner Dashboard →</a>',
       '      <a class="frost-account-btn frost-account-btn-download" href="https://frostclient.eu/lite/download">Download Lite</a>',
       '      <a class="frost-account-btn frost-account-btn-subscribe" href="https://frostclient.eu/lite" style="display:none">Subscribe</a>',
       '      <div class="frost-account-actions-row">',
@@ -223,6 +234,12 @@
       badgeLite: overlay.querySelector('.frost-account-badge-lite'),
       badgeBooster: overlay.querySelector('.frost-account-badge-booster'),
       badgeFree: overlay.querySelector('.frost-account-badge-free'),
+      badgeMedia: overlay.querySelector('.frost-account-badge-media'),
+      badgePartner: overlay.querySelector('.frost-account-badge-partner'),
+      badgePartnerPlus: overlay.querySelector('.frost-account-badge-partner-plus'),
+      partnerOrdersRow: overlay.querySelector('.frost-account-row-partner-orders'),
+      partnerOrders: overlay.querySelector('.frost-account-partner-orders'),
+      partnerDashBtn: overlay.querySelector('.frost-account-btn-partner-dash'),
       nameRow: overlay.querySelector('.frost-account-row-name'),
       whopName: overlay.querySelector('.frost-account-whop-name'),
       emailRow: overlay.querySelector('.frost-account-row-email'),
@@ -288,6 +305,14 @@
     els.badgeLite.style.display = data.liteActive ? '' : 'none';
     els.badgeBooster.style.display = isBooster ? '' : 'none';
     els.badgeFree.style.display = (!data.liteActive && !isBooster) ? '' : 'none';
+
+    var partner = data.partner || null;
+    els.badgeMedia.style.display = (partner && partner.tier === 'media') ? '' : 'none';
+    els.badgePartner.style.display = (partner && partner.tier === 'partner') ? '' : 'none';
+    els.badgePartnerPlus.style.display = (partner && partner.tier === 'partner_plus') ? '' : 'none';
+    els.partnerOrdersRow.style.display = partner ? '' : 'none';
+    els.partnerDashBtn.style.display = partner ? '' : 'none';
+    if (partner) els.partnerOrders.textContent = String(partner.totalOrders != null ? partner.totalOrders : 0);
 
     var whop = data.whop || null;
     var gift = data.gift || null;

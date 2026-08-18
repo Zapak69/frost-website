@@ -235,8 +235,12 @@
   .apply-spinner { width: 30px; height: 30px; margin: 6px auto 20px; border: 3px solid rgba(255,255,255,0.12); border-top-color: var(--frost-blue); border-radius: 50%; animation: applySpin 0.8s linear infinite; }
   @keyframes applySpin { to { transform: rotate(360deg); } }
 
-  .apply-field { margin-bottom: 18px; }
+  .apply-field { margin-bottom: 18px; animation: applyFieldIn 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+  .apply-field:nth-of-type(2) { animation-delay: 0.06s; }
+  @keyframes applyFieldIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .apply-field { animation: none; } }
   .apply-field label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px; }
+  .required-mark { color: var(--danger); margin-left: 3px; }
   .apply-pill-row { display: flex; gap: 8px; }
   .apply-pill {
     flex: 1; text-align: center; padding: 12px 8px; border-radius: 980px;
@@ -252,6 +256,32 @@
   }
   .apply-input::placeholder { color: var(--muted); }
   .apply-input:focus { border-color: rgba(255,255,255,0.3); }
+  .apply-input.is-available { border-color: rgba(50,215,75,0.55); background: rgba(50,215,75,0.06); }
+  .apply-input.is-taken { border-color: rgba(255,105,97,0.55); background: rgba(255,105,97,0.06); animation: applyInputShake 0.35s ease; }
+  @keyframes applyInputShake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+  }
+  @media (prefers-reduced-motion: reduce) { .apply-input.is-taken { animation: none; } }
+
+  .code-status {
+    display: none; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 600; margin: 8px 0 0;
+    animation: applyStatusIn 0.25s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .code-status.show { display: flex; }
+  @keyframes applyStatusIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .code-status { animation: none; } }
+  .code-status.checking { color: var(--muted); }
+  .code-status.available { color: var(--green); }
+  .code-status.taken { color: var(--danger); }
+  .code-status-spinner {
+    width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.2); border-top-color: var(--muted);
+    animation: applySpin 0.7s linear infinite;
+  }
 
   .apply-checkbox-row { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 13.5px; color: var(--muted); line-height: 1.5; margin-bottom: 22px; }
   .apply-checkbox-row input { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--frost-blue); cursor: pointer; flex-shrink: 0; }

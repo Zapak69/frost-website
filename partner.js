@@ -96,18 +96,66 @@
   }
   const linkInput = document.getElementById('applyLink');
   const codeInput = document.getElementById('applyCode');
+  const codeStatus = document.getElementById('applyCodeStatus');
   const submitBtn = document.getElementById('applySubmitBtn');
   const step1Error = document.getElementById('applyStep1Error');
 
+  let codeAvailable = null;
+
   function updateSubmitEnabled() {
-    submitBtn.disabled = !(codeInput.value.trim() && linkInput.value.trim());
+    submitBtn.disabled = !(codeAvailable === true && linkInput.value.trim());
   }
-  codeInput.addEventListener('input', updateSubmitEnabled);
+  function setCodeStatus(state, text) {
+    codeInput.classList.remove('is-available', 'is-taken');
+    codeStatus.className = 'code-status';
+    if (!state) { codeStatus.classList.remove('show'); return; }
+    codeStatus.classList.add('show', state);
+    if (state === 'available') { codeInput.classList.add('is-available'); codeStatus.innerHTML = '✓ ' + text; }
+    else if (state === 'taken') { codeInput.classList.add('is-taken'); codeStatus.innerHTML = '✕ ' + text; }
+    else { codeStatus.innerHTML = '<span class="code-status-spinner"></span>' + text; }
+  }
+  let codeCheckTimer = null, codeCheckSeq = 0;
+  function checkCodeAvailability() {
+    const raw = codeInput.value.trim();
+    clearTimeout(codeCheckTimer);
+    const mySeq = ++codeCheckSeq;
+    if (!raw) { codeAvailable = null; setCodeStatus(null); updateSubmitEnabled(); return; }
+    if (raw.length < 3) { codeAvailable = false; setCodeStatus('taken', 'At least 3 characters.'); updateSubmitEnabled(); return; }
+    codeAvailable = null;
+    setCodeStatus('checking', 'Checking…');
+    updateSubmitEnabled();
+    codeCheckTimer = setTimeout(function () {
+      const token = loadToken();
+      if (!token) return;
+      fetch(LITE_API_URL + '?action=mediaCodeCheck&token=' + encodeURIComponent(token) + '&code=' + encodeURIComponent(raw), { cache: 'no-store' })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (mySeq !== codeCheckSeq) return;
+          if (data && data.ok && data.available) {
+            codeAvailable = true;
+            setCodeStatus('available', 'Available');
+          } else {
+            codeAvailable = false;
+            setCodeStatus('taken', data && data.reason === 'invalid' ? 'Letters and numbers only.' : 'Already in use');
+          }
+          updateSubmitEnabled();
+        })
+        .catch(function () {
+          if (mySeq !== codeCheckSeq) return;
+          codeAvailable = null;
+          setCodeStatus(null);
+          updateSubmitEnabled();
+        });
+    }, 450);
+  }
+  codeInput.addEventListener('input', checkCodeAvailability);
   linkInput.addEventListener('input', updateSubmitEnabled);
 
   function resetForm() {
     linkInput.value = '';
     codeInput.value = '';
+    codeAvailable = null;
+    setCodeStatus(null);
     submitBtn.disabled = true;
     step1Error.style.display = 'none';
   }
