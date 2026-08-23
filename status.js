@@ -1,6 +1,7 @@
 (function () {
   const STATUS_META = {
     operational: { label: 'Operational', color: 'green', severity: 0 },
+    updating: { label: 'Updating', color: 'amber', severity: 1 },
     maintenance: { label: 'Under Maintenance', color: 'amber', severity: 1 },
     degraded: { label: 'Degraded Performance', color: 'amber', severity: 2 },
     outage: { label: 'Outage', color: 'red', severity: 3 }
