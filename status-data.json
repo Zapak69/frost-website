@@ -4,6 +4,6 @@
     { "name": "Discord Bot", "status": "operational", "note": "" },
     { "name": "Servers", "status": "operational", "note": "" },
     { "name": "Backend", "status": "operational", "note": "" },
-    { "name": "Launcher", "status": "operational", "note": "" }
+    { "name": "Launcher", "status": "maintenance", "note": "" }
   ]
 }
