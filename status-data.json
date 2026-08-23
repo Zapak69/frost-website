@@ -1,10 +1,12 @@
 {
   "updatedAt": "2026-08-23T23:00:00Z",
   "services": [
+    { "name": "Website", "status": "operational", "note": "" },
+    { "name": "Partner Dashboard", "status": "operational", "note": "" },
     { "name": "FrostClient Lite", "status": "updating", "note": "" },
     { "name": "Discord Bot", "status": "operational", "note": "" },
     { "name": "Servers", "status": "operational", "note": "" },
-    { "name": "Backend", "status": "operational", "note": "" },
+    { "name": "Payments", "status": "operational", "note": "" },
     { "name": "Launcher", "status": "maintenance", "note": "" }
   ]
 }
