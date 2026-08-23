@@ -4,6 +4,7 @@
     { "name": "Website", "status": "operational", "note": "" },
     { "name": "Partner Dashboard", "status": "operational", "note": "" },
     { "name": "FrostClient Lite", "status": "updating", "note": "" },
+    { "name": "FrostClient", "status": "operational", "note": "" },
     { "name": "Discord Bot", "status": "operational", "note": "" },
     { "name": "Servers", "status": "operational", "note": "" },
     { "name": "Payments", "status": "operational", "note": "" },
