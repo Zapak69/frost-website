@@ -72,7 +72,7 @@
     document.getElementById('lastUpdated').textContent = data.updatedAt ? ('Last updated: ' + formatTime(data.updatedAt)) : '';
   }
 
-  fetch('status-data.json', { cache: 'no-store' })
+  fetch('status-data.json?t=' + Date.now(), { cache: 'no-store' })
     .then(r => r.json())
     .then(render)
     .catch(() => {
