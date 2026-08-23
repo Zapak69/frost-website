@@ -321,6 +321,9 @@
     if (data.status === 'eligible') {
       setAccessFlag(true);
       afterResult('eligible', data);
+      let dl = '';
+      try { dl = atob(data.dl || ''); } catch (e) { dl = ''; }
+      if (!dl || dl.indexOf('?update') !== -1) { setAuthPhase('noAccess'); show('stateUpdating'); return; }
       window.location.replace('https://frostclient.eu/lite/download');
       return;
     }

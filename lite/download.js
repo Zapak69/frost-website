@@ -114,7 +114,7 @@
       setAccessFlag(true);
       let dl = '';
       try { dl = atob(data.dl || ''); } catch (e) { dl = ''; }
-      if (!dl) { show('stateUpdating'); return; }
+      if (!dl || dl.indexOf('?update') !== -1) { show('stateUpdating'); return; }
       fillChip('chipEligible', data.user);
       const btn = document.getElementById('liteDownloadBtn');
       btn.href = dl;

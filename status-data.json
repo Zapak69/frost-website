@@ -1,0 +1,9 @@
+{
+  "updatedAt": "2026-08-23T22:45:00Z",
+  "services": [
+    { "name": "Discord Bot", "status": "operational", "note": "" },
+    { "name": "Servers", "status": "operational", "note": "" },
+    { "name": "Backend", "status": "operational", "note": "" },
+    { "name": "Launcher", "status": "operational", "note": "" }
+  ]
+}
