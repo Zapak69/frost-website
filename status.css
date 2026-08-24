@@ -84,6 +84,8 @@
   .status-banner-amber .status-banner-dot { background: var(--amber); box-shadow: 0 0 0 4px rgba(255,214,10,0.18); }
   .status-banner-red { background: rgba(255,105,97,0.08); border-color: rgba(255,105,97,0.32); }
   .status-banner-red .status-banner-dot { background: var(--red); box-shadow: 0 0 0 4px rgba(255,105,97,0.18); }
+  .status-banner-frost-deep { background: rgba(26,127,196,0.08); border-color: rgba(26,127,196,0.32); }
+  .status-banner-frost-deep .status-banner-dot { background: var(--frost-deep); box-shadow: 0 0 0 4px rgba(26,127,196,0.18); }
 
   .status-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
   .status-row {
@@ -96,10 +98,12 @@
   .status-green { background: var(--green); box-shadow: 0 0 0 3px rgba(50,215,75,0.18); }
   .status-amber { background: var(--amber); box-shadow: 0 0 0 3px rgba(255,214,10,0.18); }
   .status-red { background: var(--red); box-shadow: 0 0 0 3px rgba(255,105,97,0.18); }
+  .status-frost-deep { background: var(--frost-deep); box-shadow: 0 0 0 3px rgba(26,127,196,0.18); }
   .status-pill { font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 980px; white-space: nowrap; }
   .status-pill-green { color: var(--green); background: rgba(50,215,75,0.12); }
   .status-pill-amber { color: var(--amber); background: rgba(255,214,10,0.12); }
   .status-pill-red { color: var(--red); background: rgba(255,105,97,0.12); }
+  .status-pill-frost-deep { color: var(--frost-deep); background: rgba(26,127,196,0.12); }
   .status-note { font-size: 13px; color: var(--muted); line-height: 1.6; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
 
   .status-footnote { font-size: 13px; color: var(--muted); line-height: 1.7; margin-top: 32px; }
