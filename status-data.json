@@ -8,6 +8,6 @@
     { "name": "Discord Bot", "status": "operational", "note": "" },
     { "name": "Servers", "status": "operational", "note": "" },
     { "name": "Payments", "status": "operational", "note": "" },
-    { "name": "Launcher", "status": "maintenance", "note": "" }
+    { "name": "Launcher", "status": "updating", "note": "" }
   ]
 }
