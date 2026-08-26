@@ -691,3 +691,29 @@
   .poll-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   @keyframes pollThanksIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .poll-thanks { display: none; text-align: center; font-size: 15px; font-weight: 700; color: var(--gold); padding: 4px 0 2px; animation: pollThanksIn 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+
+  .beta-toast {
+    position: fixed; z-index: 150;
+    left: 24px; bottom: 24px; max-width: 340px;
+    background: var(--surface2);
+    border: 1px solid rgba(255,105,97,0.4); border-radius: 20px;
+    padding: 18px 40px 18px 20px;
+    display: flex; align-items: flex-start; gap: 12px;
+    box-shadow: 0 20px 60px -12px rgba(0,0,0,0.6), 0 0 24px rgba(255,105,97,0.08);
+    transform: translateY(140%); opacity: 0; pointer-events: none;
+    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease, bottom 0.3s ease;
+  }
+  .beta-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .beta-toast-body { display: flex; flex-direction: column; gap: 10px; }
+  .beta-toast-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+  .beta-toast-text strong { color: #ff6961; }
+  .beta-toast-cta {
+    display: inline-flex; align-items: center; align-self: flex-start; gap: 6px;
+    font-size: 13px; font-weight: 700; color: #fff; text-decoration: none;
+    background: #d9453c; padding: 8px 16px; border-radius: 980px;
+    transition: filter 0.2s;
+  }
+  .beta-toast-cta:hover { filter: brightness(1.1); }
+  .beta-toast-close { position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; padding: 4px; }
+  .beta-toast-close:hover { color: var(--text); }
+  @media(max-width:600px){ .beta-toast { left: 16px; right: 16px; max-width: none; } }
