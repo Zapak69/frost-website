@@ -488,6 +488,7 @@
   function renderStats(data) {
     animateStatNumber('statOnline', data.onlineNow || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statOnlineLite', data.onlineNowLite || 0, v => formatNumber(Math.round(v)));
+    animateStatNumber('statLauncher', data.onlineNowLauncher || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statAvg', data.avgOnline || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statPeak', data.peakOnline || 0, v => formatNumber(Math.round(v)));
     document.getElementById('statPeakAt').textContent = data.peakOnlineAt ? 'hit ' + formatDateTime(data.peakOnlineAt) : '';
@@ -658,6 +659,7 @@
           '<div class="player-name-col">' +
             '<div class="player-name' + (isLite ? ' is-lite' : '') + '">' + escapeHtml(s.username) + '</div>' +
             (isLite ? '<span class="player-lite-badge">LITE ACTIVE</span>' : '') +
+            (s.launcher ? '<span class="player-launcher-badge">LAUNCHER</span>' : '') +
           '</div>' +
         '</div>' +
         '<div class="player-row"><span>Server</span><span class="player-row-value"><strong title="' + escapeHtml(s.server) + '">' + escapeHtml(s.server) + '</strong>' +
