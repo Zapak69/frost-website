@@ -25,11 +25,69 @@
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI_STAFF = 'https://frostclient.eu/staff';
 
+  const COMMON_FIELDS = [
+    ['age', 'How old are you?', 'e.g. 19', false],
+    ['timezone', "Timezone & when you're usually online", 'e.g. CET, evenings & weekends', false],
+    ['hoursPerWeek', 'Hours per week you can dedicate', 'e.g. 10-15 hours', false]
+  ];
+  const WHY_FIELD = ['why', 'Why do you want to join the FrostClient team?', 'Tell us in your own words...', true];
+  const ROLES = {
+    video: {
+      label: 'Video Editor & Social Media',
+      fields: COMMON_FIELDS.concat([
+        ['experience', 'Previous video editing / social media experience', 'What you edited, which platforms you ran...', true],
+        ['portfolio', 'Show us your work', 'Links to videos, edits, accounts you managed...', true],
+        WHY_FIELD
+      ])
+    },
+    graphic: {
+      label: 'Graphic Designer',
+      fields: COMMON_FIELDS.concat([
+        ['experience', 'Previous graphic design experience', 'Tools you use, what you designed...', true],
+        ['portfolio', 'Show us your work', 'Portfolio links, examples of your designs...', true],
+        WHY_FIELD
+      ])
+    },
+    visualizer: {
+      label: 'Visualizer',
+      fields: COMMON_FIELDS.concat([
+        ['experience', 'Previous UI / concept design experience', 'Mockups, concepts, tools you use...', true],
+        ['portfolio', 'Show us your work', 'Links to mockups, concepts, visualizations...', true],
+        WHY_FIELD
+      ])
+    },
+    staff: {
+      label: 'Staff Team',
+      fields: COMMON_FIELDS.concat([
+        ['experience', 'Previous moderation/staff experience', 'Where, for how long, what you did...', true],
+        WHY_FIELD,
+        ['conflictScenario', 'What would you do if two members started arguing and spamming in chat?', 'Walk us through it...', true],
+        ['crashScenario', 'A member says the game keeps crashing after installing FrostClient — how would you help them troubleshoot?', 'Walk us through it...', true]
+      ])
+    },
+    cape_designer: {
+      label: 'Cape Designer',
+      fields: COMMON_FIELDS.concat([
+        ['experience', 'Previous texture / pixel-art / cape design experience', 'What you created, tools you use...', true],
+        ['portfolio', 'Show us your work', 'Links to cape designs, textures, art...', true],
+        WHY_FIELD
+      ])
+    },
+    cape_animator: {
+      label: 'Cape Animator',
+      fields: COMMON_FIELDS.concat([
+        ['experience', 'Previous animation experience', 'GIF / sprite / frame animation you made...', true],
+        ['portfolio', 'Show us your work', 'Links to animated capes, animations...', true],
+        WHY_FIELD
+      ])
+    }
+  };
+
   const modal = document.getElementById('applyModal');
   const closeBtn = document.getElementById('applyModalClose');
   if (!modal) return;
 
-  const states = ['applyStateWorking', 'applyStateNotMember', 'applyStateClosed', 'applyStep1', 'applyStateDone', 'applyStateError'];
+  const states = ['applyStateWorking', 'applyStateNotMember', 'applyStateClosed', 'applyStep0', 'applyStep1', 'applyStateDone', 'applyStateError'];
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
   }
@@ -115,44 +173,72 @@
     show('applyStateError');
   }
 
-  const qFields = [
-    ['qAge', 'age'], ['qTimezone', 'timezone'], ['qHours', 'hoursPerWeek'],
-    ['qExperience', 'experience'], ['qWhy', 'why'],
-    ['qConflict', 'conflictScenario'], ['qCrash', 'crashScenario']
-  ];
-  const qExtra = document.getElementById('qExtra');
+  let currentRole = null;
+  const fieldsWrap = document.getElementById('applyFields');
+  const roleTitle = document.getElementById('applyRoleTitle');
   const submitBtn = document.getElementById('applySubmitBtn');
 
-  function updateSubmitEnabled() {
-    submitBtn.disabled = !qFields.every(function (f) { return document.getElementById(f[0]).value.trim(); });
-  }
-  qFields.forEach(function (f) {
-    document.getElementById(f[0]).addEventListener('input', updateSubmitEnabled);
-  });
-
-  function resetForm() {
-    qFields.forEach(function (f) { document.getElementById(f[0]).value = ''; });
-    qExtra.value = '';
+  function buildForm(roleId) {
+    currentRole = roleId;
+    const role = ROLES[roleId];
+    roleTitle.textContent = role.label + ' Application';
+    fieldsWrap.innerHTML = '';
+    role.fields.forEach(function (f) {
+      const wrap = document.createElement('div');
+      wrap.className = 'apply-field';
+      const label = document.createElement('label');
+      label.textContent = f[1] + ' ';
+      const star = document.createElement('span');
+      star.className = 'required-star';
+      star.textContent = '*';
+      label.appendChild(star);
+      wrap.appendChild(label);
+      const input = document.createElement(f[3] ? 'textarea' : 'input');
+      if (!f[3]) input.type = 'text';
+      input.className = 'apply-input';
+      input.dataset.key = f[0];
+      input.placeholder = f[2];
+      input.autocomplete = 'off';
+      input.addEventListener('input', updateSubmitEnabled);
+      wrap.appendChild(input);
+      fieldsWrap.appendChild(wrap);
+    });
+    const extraWrap = document.createElement('div');
+    extraWrap.className = 'apply-field';
+    const extraLabel = document.createElement('label');
+    extraLabel.innerHTML = 'Anything else we should know about you? <span class="optional-tag">(optional)</span>';
+    extraWrap.appendChild(extraLabel);
+    const extraInput = document.createElement('textarea');
+    extraInput.className = 'apply-input';
+    extraInput.dataset.key = 'extra';
+    extraInput.placeholder = 'Optional';
+    extraWrap.appendChild(extraInput);
+    fieldsWrap.appendChild(extraWrap);
     submitBtn.disabled = true;
   }
 
+  function requiredInputs() {
+    return Array.from(fieldsWrap.querySelectorAll('.apply-input')).filter(function (el) { return el.dataset.key !== 'extra'; });
+  }
+  function updateSubmitEnabled() {
+    submitBtn.disabled = !requiredInputs().every(function (el) { return el.value.trim(); });
+  }
+
   submitBtn.addEventListener('click', function () {
-    if (submitBtn.disabled) return;
+    if (submitBtn.disabled || !currentRole) return;
     const token = loadToken();
     if (!token) { showErrorState('Your session expired. Please click Apply again to sign in.'); return; }
     submitBtn.disabled = true;
     const answers = {};
-    qFields.forEach(function (f) { answers[f[1]] = document.getElementById(f[0]).value.trim(); });
-    answers.extra = qExtra.value.trim();
+    fieldsWrap.querySelectorAll('.apply-input').forEach(function (el) { answers[el.dataset.key] = el.value.trim(); });
     fetch(STAFF_APPLY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ staffToken: token, answers: answers })
+      body: JSON.stringify({ staffToken: token, role: currentRole, answers: answers })
     })
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (data && data.ok) {
-          resetForm();
           show('applyStateDone');
           markApplied();
           return;
@@ -172,7 +258,17 @@
       .catch(function () { submitBtn.disabled = false; showErrorState('Network error. Please try again.'); });
   });
 
-  document.getElementById('applyRetryBtn').addEventListener('click', function () { show('applyStep1'); updateSubmitEnabled(); });
+  document.querySelectorAll('#applyRolePicker .role-pick-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      buildForm(btn.dataset.role);
+      show('applyStep1');
+    });
+  });
+  document.getElementById('applyBackToRoles').addEventListener('click', function () {
+    show('applyStep0');
+  });
+
+  document.getElementById('applyRetryBtn').addEventListener('click', function () { show('applyStep0'); });
   document.getElementById('applyRetryAfterJoin').addEventListener('click', function () {
     startLogin();
   });
@@ -214,8 +310,7 @@
       if (!appsOpen) { openModal(); show('applyStateClosed'); return; }
       const token = loadToken();
       if (token) {
-        resetForm();
-        show('applyStep1');
+        show('applyStep0');
         openModal();
         return;
       }
@@ -270,8 +365,7 @@
         }
         if (data.status === 'eligible' && data.staffToken) {
           saveToken(data.staffToken);
-          resetForm();
-          show('applyStep1');
+          show('applyStep0');
           return;
         }
         showErrorState('Something unexpected happened. Please try again.');

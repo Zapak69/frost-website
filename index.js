@@ -192,33 +192,6 @@ for (let i = 0; i < 100; i++) particles.push({
   });
 })();
 (function () {
-  const KEY = 'frostBetaToastDismissed';
-  const toast = document.getElementById('betaToast');
-  const closeBtn = document.getElementById('betaToastClose');
-  if (!toast || !closeBtn) return;
-  let dismissed = false;
-  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
-  if (dismissed) return;
-  function reposition() {
-    let bottom = 24;
-    ['promoToast', 'pollToast'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el && el.classList.contains('show')) bottom += el.getBoundingClientRect().height + 16;
-    });
-    toast.style.bottom = bottom + 'px';
-  }
-  setTimeout(() => { reposition(); toast.classList.add('show'); }, 2000);
-  ['promoToastClose', 'pollToastCta'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('click', () => setTimeout(reposition, 350));
-  });
-  window.addEventListener('resize', reposition);
-  closeBtn.addEventListener('click', () => {
-    toast.classList.remove('show');
-    try { localStorage.setItem(KEY, '1'); } catch (e) {}
-  });
-})();
-(function () {
   const POLL_VOTE_URL = 'https://bot.frostclient.eu/poll-vote';
   const POLL_RESULTS_URL = 'https://bot.frostclient.eu/poll-votes';
   const VOTED_KEY = 'frostPollVotedAnswer';
