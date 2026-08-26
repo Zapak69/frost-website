@@ -170,6 +170,14 @@
     if (token) { recheck(token); } else { show('stateLogin'); }
   });
 
+  document.querySelectorAll('.dl-choice').forEach(tile => {
+    tile.addEventListener('click', () => {
+      if (tile.classList.contains('is-loading')) return;
+      tile.classList.add('is-loading');
+      setTimeout(() => tile.classList.remove('is-loading'), 6000);
+    });
+  });
+
   const PUBLIC_DL_BASE = 'https://bot.frostclient.eu/public_dl/';
   const LAUNCHER_FILES = {
     win: { file: 'Frost-Launcher-Testing-win.exe', label: 'Windows' },
@@ -197,6 +205,10 @@
     const launcherBtn = document.getElementById('dlLauncherBtn');
     launcherBtn.href = launcherUrl(primary.file);
     document.getElementById('dlLauncherSub').textContent = primary.label;
+    const osIconKey = os === 'win' ? 'win' : (os === 'linux' ? 'linux' : 'mac');
+    document.querySelectorAll('.dl-os-icon').forEach(el => {
+      el.classList.toggle('active', el.dataset.os === osIconKey);
+    });
     const altEl = document.getElementById('dlAltLinks');
     altEl.innerHTML = '';
     const altLabel = document.createElement('span');
