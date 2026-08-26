@@ -10,10 +10,10 @@
     '  padding: 18px 20px;',
     '  display: flex; align-items: flex-start; gap: 12px;',
     '  box-shadow: 0 20px 60px -12px rgba(0,0,0,0.6), 0 0 24px rgba(255,105,97,0.08);',
-    '  transform: translateY(140%); opacity: 0; pointer-events: none;',
-    '  transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease, bottom 0.3s ease;',
+    '  transform: translateX(-130%); opacity: 0; pointer-events: none;',
+    '  transition: transform 0.32s cubic-bezier(0.22,1,0.36,1), opacity 0.25s ease, bottom 0.3s ease;',
     '}',
-    '.beta-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }',
+    '.beta-toast.show { transform: translateX(0); opacity: 1; pointer-events: auto; }',
     '.beta-toast-body { display: flex; flex-direction: column; gap: 10px; }',
     '.beta-toast-text { font-size: 13.5px; color: #f5f5f7; line-height: 1.5; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Space Grotesk", sans-serif; }',
     '.beta-toast-text strong { color: #ff6961; }',
@@ -47,7 +47,7 @@
     });
     toast.style.bottom = bottom + 'px';
   }
-  setTimeout(() => { reposition(); toast.classList.add('show'); }, 2000);
+  setTimeout(() => { reposition(); toast.classList.add('show'); }, 1200);
   ['promoToastClose', 'pollToastCta'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('click', () => setTimeout(reposition, 350));

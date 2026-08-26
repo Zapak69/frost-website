@@ -606,20 +606,20 @@
     position: fixed; z-index: 150;
     left: 24px; bottom: 24px; max-width: 360px;
     background: var(--surface2);
-    border: 1px solid rgba(191,90,242,0.35); border-radius: 20px;
+    border: 1px solid rgba(79,200,248,0.35); border-radius: 20px;
     padding: 18px 40px 18px 20px;
     display: flex; align-items: flex-start; gap: 12px;
-    box-shadow: 0 20px 60px -12px rgba(0,0,0,0.6), 0 0 24px rgba(191,90,242,0.08);
-    transform: translateY(140%); opacity: 0; pointer-events: none;
-    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease;
+    box-shadow: 0 20px 60px -12px rgba(0,0,0,0.6), 0 0 24px rgba(79,200,248,0.08);
+    transform: translateX(-130%); opacity: 0; pointer-events: none;
+    transition: transform 0.32s cubic-bezier(0.22,1,0.36,1), opacity 0.25s ease;
   }
-  .promo-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .promo-toast.show { transform: translateX(0); opacity: 1; pointer-events: auto; }
   .promo-toast-body { display: flex; flex-direction: column; gap: 10px; }
   .promo-toast-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
-  .promo-toast-text strong { color: var(--lite); }
+  .promo-toast-text strong { color: var(--frost-blue); }
   .promo-toast-cta {
     align-self: flex-start; display: inline-flex; align-items: center; gap: 6px;
-    background: var(--lite); color: #fff;
+    background: var(--frost-blue); color: #06121c;
     font-size: 13px; font-weight: 700; text-decoration: none;
     padding: 8px 16px; border-radius: 980px;
     transition: filter 0.2s;
@@ -637,10 +637,10 @@
     padding: 18px 20px;
     display: flex; align-items: flex-start; gap: 12px;
     box-shadow: 0 20px 60px -12px rgba(0,0,0,0.6), 0 0 24px rgba(255,214,10,0.06);
-    transform: translateY(140%); opacity: 0; pointer-events: none;
-    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease, bottom 0.3s ease;
+    transform: translateX(-130%); opacity: 0; pointer-events: none;
+    transition: transform 0.32s cubic-bezier(0.22,1,0.36,1), opacity 0.25s ease, bottom 0.3s ease;
   }
-  .poll-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .poll-toast.show { transform: translateX(0); opacity: 1; pointer-events: auto; }
   .poll-toast-body { display: flex; flex-direction: column; gap: 10px; }
   .poll-toast-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
   .poll-toast-text strong { color: var(--gold); }

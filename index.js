@@ -178,7 +178,7 @@ for (let i = 0; i < 100; i++) particles.push({
   mobileMenu.querySelectorAll('a, button').forEach(el => el.addEventListener('click', closeMenu));
 })();
 (function () {
-  const KEY = 'frostPromoToastDismissed';
+  const KEY = 'frostTeamToastDismissed';
   const toast = document.getElementById('promoToast');
   const closeBtn = document.getElementById('promoToastClose');
   if (!toast || !closeBtn) return;
@@ -241,7 +241,7 @@ for (let i = 0; i < 100; i++) particles.push({
       history.replaceState(null, '', url.pathname + url.search + url.hash);
     } catch (e) {}
   } else {
-    setTimeout(() => { repositionToast(); toast.classList.add('show'); }, 1600);
+    setTimeout(() => { repositionToast(); toast.classList.add('show'); }, 1200);
   }
 
   function animatePct(el, toVal) {
