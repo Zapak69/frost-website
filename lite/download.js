@@ -116,12 +116,8 @@
       try { dl = atob(data.dl || ''); } catch (e) { dl = ''; }
       if (!dl || dl.indexOf('?update') !== -1) { show('stateUpdating'); return; }
       fillChip('chipEligible', data.user);
-      const btn = document.getElementById('liteDownloadBtn');
-      btn.href = dl;
+      setupChooser(dl);
       show('stateEligible');
-      btn.classList.remove('just-unlocked');
-      void btn.offsetWidth;
-      btn.classList.add('just-unlocked');
       return;
     }
     showError();
@@ -174,11 +170,48 @@
     if (token) { recheck(token); } else { show('stateLogin'); }
   });
 
-  const dlBtn = document.getElementById('liteDownloadBtn');
-  dlBtn.addEventListener('click', () => {
-    dlBtn.classList.add('clicked');
-    setTimeout(() => dlBtn.classList.remove('clicked'), 450);
-  });
+  const PUBLIC_DL_BASE = 'https://bot.frostclient.eu/public_dl/';
+  const LAUNCHER_FILES = {
+    win: { file: 'Frost-Launcher-Testing-win.exe', label: 'Windows' },
+    macArm: { file: 'Frost-Launcher-Testing-mac-arm64.dmg', label: 'macOS (Apple Silicon)' },
+    macIntel: { file: 'Frost-Launcher-Testing-mac-x64.dmg', label: 'macOS (Intel)' },
+    linux: { file: 'Frost-Launcher-Testing-linux.AppImage', label: 'Linux' }
+  };
+
+  function detectOs() {
+    const ua = (navigator.userAgent || '') + ' ' + (navigator.platform || '');
+    if (/Windows|Win32|Win64/i.test(ua)) return 'win';
+    if (/Macintosh|Mac OS X|MacIntel|MacARM/i.test(ua)) return 'macArm';
+    if (/Linux|X11/i.test(ua)) return 'linux';
+    return 'win';
+  }
+
+  function launcherUrl(file) {
+    return PUBLIC_DL_BASE + file + '?token=' + encodeURIComponent(loadToken());
+  }
+
+  function setupChooser(dl) {
+    document.getElementById('dlModpackBtn').href = dl;
+    const os = detectOs();
+    const primary = LAUNCHER_FILES[os];
+    const launcherBtn = document.getElementById('dlLauncherBtn');
+    launcherBtn.href = launcherUrl(primary.file);
+    document.getElementById('dlLauncherSub').textContent = primary.label;
+    const altEl = document.getElementById('dlAltLinks');
+    altEl.innerHTML = '';
+    const altLabel = document.createElement('span');
+    altLabel.textContent = 'Launcher for other systems:';
+    altEl.appendChild(altLabel);
+    Object.keys(LAUNCHER_FILES).forEach(key => {
+      if (key === os) return;
+      const a = document.createElement('a');
+      a.href = launcherUrl(LAUNCHER_FILES[key].file);
+      a.textContent = LAUNCHER_FILES[key].label;
+      a.rel = 'noopener';
+      altEl.appendChild(a);
+    });
+  }
+
 
   (function init() {
     const token = loadToken();
