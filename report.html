@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Report a Bug | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Frost">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="report.css">
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
+    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+  </svg>
+</div>
+<nav>
+<div class="nav-desktop">
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <div class="nav-right">
+    <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+    <button type="button" class="nav-signin-btn js-site-auth-btn"><img src="icons/discord.webp" alt=""/><span class="js-site-auth-text">Sign in</span></button>
+  </div>
+</div>
+<button class="nav-hamburger" id="navHamburger" type="button" aria-label="Menu" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<a class="nav-logo-mobile" href="https://frostclient.eu">
+  <img src="favicon.ico" alt="" class="nav-logo-icon"/><span>Frost</span>
+</a>
+</nav>
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <a href="https://frostclient.eu">← Back to Home</a>
+</div>
+
+<div class="legal-page report-page">
+  <div class="legal-eyebrow">FrostClient Beta</div>
+  <h1>Report a Bug</h1>
+  <p class="section-intro">FrostClient is currently in beta — running into bugs is expected, and every report helps us fix things faster. Sign in with Discord and fill out the form below with as much detail as you can.</p>
+
+  <div class="report-card" id="reportCard">
+    <div class="report-state active" id="stateLoading">
+      <div class="apply-spinner"></div>
+      <p class="apply-text" style="text-align:center;margin-bottom:0;">Checking your sign-in…</p>
+    </div>
+
+    <div class="report-state" id="stateLogin">
+      <div class="apply-title">Sign in to continue</div>
+      <p class="apply-text">Sign in with Discord so we know who's reporting — this doesn't require being a member of our server.</p>
+      <button type="button" class="apply-btn" id="reportLoginBtn">Sign in with Discord</button>
+    </div>
+
+    <div class="report-state" id="stateForm">
+      <div class="apply-title">Bug details</div>
+
+      <div class="report-field">
+        <label>Where did this happen? <span class="required-star">*</span></label>
+        <div class="pill-toggle" id="categoryToggle">
+          <button type="button" class="pill-toggle-btn" data-value="launcher">Launcher</button>
+          <button type="button" class="pill-toggle-btn" data-value="game">Game</button>
+        </div>
+      </div>
+
+      <div class="report-field">
+        <label>Does this happen on a vanilla instance, without any custom mods added? <span class="required-star">*</span></label>
+        <div class="pill-toggle" id="moddedToggle">
+          <button type="button" class="pill-toggle-btn" data-value="vanilla">Yes — vanilla / no custom mods</button>
+          <button type="button" class="pill-toggle-btn" data-value="modded">No — I added custom mods</button>
+        </div>
+      </div>
+
+      <div class="report-field" id="modListField" hidden>
+        <label>List all your custom mods <span class="required-star">*</span></label>
+        <textarea class="apply-input" id="modListInput" placeholder="One mod per line, or comma-separated"></textarea>
+      </div>
+
+      <div class="report-field">
+        <label>Bug log file <span class="required-star">*</span></label>
+        <button type="button" class="report-howto-toggle" id="howtoToggle">How do I export a bug log? ▾</button>
+        <div class="report-howto" id="howtoBox" hidden>
+          <p>In the Frost Launcher: open the instance you had the issue on → <strong>Instance Resources</strong> → <strong>Settings</strong> tab → <strong>Export Bug Log</strong>. Save the <code>.buglog</code> file it generates and upload it below.</p>
+        </div>
+        <input type="file" id="buglogInput" accept=".buglog" hidden>
+        <button type="button" class="report-file-btn" id="buglogPickBtn">Choose .buglog file…</button>
+        <div class="report-file-chosen" id="buglogChosen"></div>
+      </div>
+
+      <div class="report-field">
+        <label>Describe the bug in detail <span class="required-star">*</span></label>
+        <textarea class="apply-input" id="descriptionInput" placeholder="What happened, what did you expect, steps to reproduce..."></textarea>
+      </div>
+
+      <div class="report-field">
+        <label>Attach screenshots or a video <span class="optional-tag">(optional)</span></label>
+        <input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden>
+        <button type="button" class="report-file-btn" id="mediaPickBtn">Choose files…</button>
+        <div class="report-file-chosen" id="mediaChosen"></div>
+      </div>
+
+      <div class="report-field">
+        <label>Or link to images/video <span class="optional-tag">(optional)</span></label>
+        <input type="text" class="apply-input" id="linkInput" placeholder="https://...">
+      </div>
+
+      <p class="report-error" id="formError" hidden></p>
+      <button type="button" class="apply-btn" id="reportSubmitBtn" disabled>Submit Report</button>
+    </div>
+
+    <div class="report-state" id="stateSubmitting">
+      <div class="apply-spinner"></div>
+      <p class="apply-text" style="text-align:center;margin-bottom:0;">Sending your report…</p>
+    </div>
+
+    <div class="report-state" id="stateDone">
+      <svg class="success-check" viewBox="0 0 52 52" width="64" height="64">
+        <circle class="success-check-circle" cx="26" cy="26" r="24"/>
+        <path class="success-check-mark" d="M14 27l7 7 16-16"/>
+      </svg>
+      <div class="apply-title" style="text-align:center;">Report sent</div>
+      <p class="apply-text" style="margin-bottom:0;text-align:center;">Thanks for helping us squash bugs — the team will take a look.</p>
+    </div>
+
+    <div class="report-state" id="stateError">
+      <div class="apply-title">Something went wrong</div>
+      <p class="apply-text" id="errorText">Please try again.</p>
+      <button type="button" class="apply-btn" id="reportRetryBtn">Try again</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">❄ FROST</div>
+      <p class="footer-tagline">A fast, free Minecraft client<br/>built for players who care.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="https://frostclient.eu/?openDownload">Download</a>
+      <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
+      <a href="https://frostclient.eu/settings">Transferring Settings</a>
+      <a href="https://frostclient.eu/reviews">Reviews</a>
+      <a href="https://frostclient.eu/partner">Creator Program</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <button type="button" class="footer-link-btn js-site-auth-btn"><span class="js-site-auth-text">Sign in</span></button>
+      <a href="https://frostclient.eu/lite">Frost Lite</a>
+      <a href="https://frostclient.eu/lite/download" class="js-lite-access-link">Download Lite</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="https://frostclient.eu/faq">FAQ</a>
+      <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+      <a href="https://frostclient.eu/terms">Terms of Service</a>
+      <a href="https://frostclient.eu/imprint">Imprint</a>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <div class="footer-social-icons">
+        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
+        <a href="https://www.youtube.com/@frost-client" target="_blank" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
+        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© Frost 2026. All rights reserved.<br>
+      Made by: Zipp
+    </span>
+    <span>Not affiliated with Minecraft or Mojang.</span>
+  </div>
+</footer>
+
+<script src="report.js"></script>
+<script src="site-auth.js"></script>
+<script src="beta-toast.js"></script>
+</body>
+</html>
