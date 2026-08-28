@@ -84,24 +84,35 @@
     modal.classList.add('active');
   }
   function closeModal() { modal.classList.remove('active'); }
-  const litePromptModal   = document.getElementById('litePromptModal');
-  const litePromptCloseBtn = document.getElementById('litePromptCloseBtn');
-  const litePromptNoBtn   = document.getElementById('litePromptNoBtn');
-  function openLitePrompt() { litePromptModal.classList.add('active'); }
-  function closeLitePrompt() { litePromptModal.classList.remove('active'); }
-  litePromptCloseBtn.addEventListener('click', closeLitePrompt);
-  litePromptModal.addEventListener('click', (e) => { if (e.target === litePromptModal) closeLitePrompt(); });
-  litePromptNoBtn.addEventListener('click', () => {
-    closeLitePrompt();
+
+  const downloadChoiceModal = document.getElementById('downloadChoiceModal');
+  const downloadChoiceCloseBtn = document.getElementById('downloadChoiceCloseBtn');
+  function openDownloadChoice() { downloadChoiceModal.classList.add('active'); }
+  function closeDownloadChoice() { downloadChoiceModal.classList.remove('active'); }
+  downloadChoiceCloseBtn.addEventListener('click', closeDownloadChoice);
+  downloadChoiceModal.addEventListener('click', (e) => { if (e.target === downloadChoiceModal) closeDownloadChoice(); });
+
+  (function setLauncherOsIcon() {
+    const ua = (navigator.userAgent || '') + ' ' + (navigator.platform || '');
+    let os = 'win';
+    if (/Windows|Win32|Win64/i.test(ua)) os = 'win';
+    else if (/Macintosh|Mac OS X|MacIntel|MacARM/i.test(ua)) os = 'mac';
+    else if (/Linux|X11/i.test(ua)) os = 'linux';
+    document.querySelectorAll('.dl-os-icon').forEach(el => {
+      el.classList.toggle('active', el.dataset.os === os);
+    });
+  })();
+
+  openBtns.forEach(btn => btn.addEventListener('click', () => openDownloadChoice()));
+  document.getElementById('downloadModpackBtn').addEventListener('click', () => {
+    closeDownloadChoice();
     openModal();
   });
-
-  openBtns.forEach(btn => btn.addEventListener('click', () => openLitePrompt()));
   closeBtn.addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    if (litePromptModal.classList.contains('active')) closeLitePrompt();
+    if (downloadChoiceModal.classList.contains('active')) closeDownloadChoice();
     else if (modal.classList.contains('active')) closeModal();
   });
   vulkanBtn.addEventListener('click', () => selectRenderer('vulkan'));
