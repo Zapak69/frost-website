@@ -1,5 +1,9 @@
 (function () {
   const params = new URLSearchParams(window.location.search);
+  if (params.has('cracked')) {
+    window.location.replace('cracked');
+    return;
+  }
   let target = null;
 
   for (const key of params.keys()) {

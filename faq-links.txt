@@ -53,8 +53,8 @@ install-open-mrpack  -> https://frostclient.eu/faq?install-open-mrpack
                          Step 3: "Open the downloaded .mrpack file"
 install-launch       -> https://frostclient.eu/faq?install-launch
                          Step 4: "Launch from the Modrinth App"
-cracked              -> https://frostclient.eu/faq?cracked
-                         "Don't own Minecraft?" (AstralRinth note)
+cracked              -> https://frostclient.eu/cracked (faq?cracked redirects here too)
+                         Full step-by-step cracked/AstralRinth install guide page
 
 Support
 -------

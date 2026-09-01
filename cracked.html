@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cracked Install Guide | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Frost">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="cracked.css">
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
+    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+  </svg>
+</div>
+<nav>
+<div class="nav-desktop">
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <div class="nav-right">
+    <a class="nav-back" href="https://frostclient.eu/faq">← Back to FAQ</a>
+  </div>
+</div>
+<button class="nav-hamburger" id="navHamburger" type="button" aria-label="Menu" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<a class="nav-logo-mobile" href="https://frostclient.eu">
+  <img src="favicon.ico" alt="" class="nav-logo-icon"/><span>Frost</span>
+</a>
+</nav>
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <a href="https://frostclient.eu/faq">← Back to FAQ</a>
+  <a href="https://frostclient.eu">Home</a>
+</div>
+
+<div class="legal-page">
+  <div class="legal-eyebrow">Install Guide</div>
+  <h1>Installing Frost on a cracked account</h1>
+  <p class="legal-meta">The official Minecraft launcher and the official Modrinth App both require a premium (Microsoft-authenticated) Minecraft account — neither supports cracked/offline accounts. If that's what you play on, this guide walks you through installing Frost with AstralRinth instead — a fork of the Modrinth App with offline account support. It takes about five minutes.</p>
+
+  <h2 id="steps">Step-by-step installation</h2>
+  <div class="install-steps">
+    <div class="install-step" id="step-download-astralrinth">
+      <div class="install-step-num">1</div>
+      <div class="install-step-content">
+        <h3>Download AstralRinth</h3>
+        <p>Open the <a href="https://git.astralium.su/didirus/AstralRinth/releases" target="_blank">AstralRinth releases page</a> and grab the newest release for your system:</p>
+        <ul>
+          <li><strong>Windows</strong> — the <code>.msi</code> (or <code>.exe</code>) installer</li>
+          <li><strong>macOS</strong> — the <code>.dmg</code> file</li>
+          <li><strong>Linux</strong> — the <code>.AppImage</code>, <code>.deb</code> or <code>.rpm</code>, whatever fits your distro</li>
+        </ul>
+      </div>
+    </div>
+    <div class="install-step" id="step-install-astralrinth">
+      <div class="install-step-num">2</div>
+      <div class="install-step-content">
+        <h3>Install and launch it</h3>
+        <p>Run the downloaded installer and go through it like any other app, then launch AstralRinth. It looks and works almost exactly like the official Modrinth App — same layout, same flow — so anything written about the Modrinth App applies here too.</p>
+      </div>
+    </div>
+    <div class="install-step" id="step-offline-account">
+      <div class="install-step-num">3</div>
+      <div class="install-step-content">
+        <h3>Add your offline account</h3>
+        <p>Click the account icon in the top-right corner of AstralRinth, choose the <strong>offline account</strong> option, and type the username you want to play under. That's the whole sign-in — no Microsoft login needed.</p>
+      </div>
+    </div>
+    <div class="install-step" id="step-download-frost">
+      <div class="install-step-num">4</div>
+      <div class="install-step-content">
+        <h3>Download Frost</h3>
+        <p>Click the download button on the <a href="https://frostclient.eu">Frost homepage</a>, pick your renderer (Vulkan or OpenGL) and Minecraft version, and you'll be redirected to Modrinth — download the <code>.mrpack</code> file from there.</p>
+        <p>Not sure which renderer to pick? Start with Vulkan for the best FPS; if it won't launch on your system, the OpenGL build works everywhere. More on this in the <a href="faq?vulkan-difference">FAQ</a>.</p>
+      </div>
+    </div>
+    <div class="install-step" id="step-open-mrpack">
+      <div class="install-step-num">5</div>
+      <div class="install-step-content">
+        <h3>Open the .mrpack file</h3>
+        <p>Double-click the downloaded <code>.mrpack</code> file. AstralRinth picks it up automatically and installs Frost as a new instance — mods, configs, everything included, no manual setup.</p>
+        <p>If double-clicking opens something else (or nothing), open AstralRinth, hit the <strong>+</strong> button to add an instance, choose <strong>From file</strong>, and select the <code>.mrpack</code> there instead.</p>
+      </div>
+    </div>
+    <div class="install-step" id="step-play">
+      <div class="install-step-num">6</div>
+      <div class="install-step-content">
+        <h3>Launch and play</h3>
+        <p>Once the install finishes, Frost shows up as an instance on the AstralRinth home screen. Select it, press <strong>Play</strong>, and you're in — with your offline account from step 3.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-box amber" id="premium-note">
+    <strong>Own Minecraft?</strong> If you have a premium (Microsoft) account, use the official <a href="https://modrinth.com/app" target="_blank">Modrinth App</a> instead — the install steps are the same, see the <a href="faq?installation">FAQ installation guide</a>.
+  </div>
+
+  <div class="note-box" id="servers-note">
+    <strong>Heads up:</strong> an offline account only works on servers that allow cracked players (offline-mode servers). Official servers that require a Microsoft account will still reject it — that's a Minecraft account thing, not a Frost thing.
+  </div>
+
+  <h2 id="support">Something not working?</h2>
+  <p>Come find us on <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord</a> — that's where the team and community hang out and where support happens fastest.</p>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">❄ FROST</div>
+      <p class="footer-tagline">A fast, free Minecraft client<br/>built for players who care.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="https://frostclient.eu/?openDownload">Download</a>
+      <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
+      <a href="https://frostclient.eu/settings">Transferring Settings</a>
+      <a href="https://frostclient.eu/reviews">Reviews</a>
+      <a href="https://frostclient.eu/partner">Creator Program</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <a href="https://frostclient.eu/lite">Frost Lite</a>
+      <a href="https://frostclient.eu/lite/download">Download Lite</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="https://frostclient.eu/faq">FAQ</a>
+      <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+      <a href="https://frostclient.eu/terms">Terms of Service</a>
+      <a href="https://frostclient.eu/imprint">Imprint</a>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <div class="footer-social-icons">
+        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
+        <a href="https://www.youtube.com/@frost-client" target="_blank" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
+        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© Frost 2026. All rights reserved.<br>
+      Made by: Zipp
+    </span>
+    <span>Not affiliated with Minecraft or Mojang.</span>
+  </div>
+</footer>
+
+<script src="cracked.js"></script>
+</body>
+</html>
