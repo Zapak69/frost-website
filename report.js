@@ -134,9 +134,8 @@
   });
 
   const buglogInput = document.getElementById('buglogInput');
-  document.getElementById('buglogPickBtn').addEventListener('click', () => buglogInput.click());
-  buglogInput.addEventListener('change', () => {
-    const f = buglogInput.files[0];
+  const buglogDropzone = document.getElementById('buglogDropzone');
+  function acceptBuglogFile(f) {
     setFormError('');
     if (!f) { buglogFile = null; document.getElementById('buglogChosen').textContent = ''; updateSubmitEnabled(); return; }
     if (!f.name.toLowerCase().endsWith('.buglog')) {
@@ -158,40 +157,109 @@
     buglogFile = f;
     document.getElementById('buglogChosen').textContent = f.name + ' (' + formatBytes(f.size) + ')';
     updateSubmitEnabled();
+  }
+  buglogDropzone.addEventListener('click', () => buglogInput.click());
+  buglogInput.addEventListener('change', () => acceptBuglogFile(buglogInput.files[0]));
+  ['dragenter', 'dragover'].forEach(evt => buglogDropzone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    buglogDropzone.classList.add('dragover');
+  }));
+  ['dragleave', 'drop'].forEach(evt => buglogDropzone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    buglogDropzone.classList.remove('dragover');
+  }));
+  buglogDropzone.addEventListener('drop', (e) => {
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) acceptBuglogFile(f);
   });
 
   const mediaInput = document.getElementById('mediaInput');
-  document.getElementById('mediaPickBtn').addEventListener('click', () => mediaInput.click());
-  mediaInput.addEventListener('change', () => {
-    setFormError('');
-    const files = Array.from(mediaInput.files || []);
-    if (files.length > MAX_MEDIA_FILES) {
-      setFormError('You can attach at most ' + MAX_MEDIA_FILES + ' files.');
-      mediaInput.value = '';
-      mediaFiles = [];
-      document.getElementById('mediaChosen').textContent = '';
-      return;
-    }
-    let total = 0;
-    for (const f of files) {
-      if (f.size > MAX_MEDIA_FILE_BYTES) {
-        setFormError('"' + f.name + '" is too large (max 8 MB per file).');
-        mediaInput.value = '';
-        mediaFiles = [];
-        document.getElementById('mediaChosen').textContent = '';
-        return;
+  const mediaDropzone = document.getElementById('mediaDropzone');
+  const mediaGrid = document.getElementById('mediaGrid');
+  let mediaPreviewUrls = [];
+
+  function renderMediaGrid() {
+    for (const url of mediaPreviewUrls) URL.revokeObjectURL(url);
+    mediaPreviewUrls = [];
+    mediaGrid.innerHTML = '';
+    mediaFiles.forEach((f, idx) => {
+      const item = document.createElement('div');
+      item.className = 'report-media-item';
+      const url = URL.createObjectURL(f);
+      mediaPreviewUrls.push(url);
+      let media;
+      if (f.type.startsWith('video/')) {
+        media = document.createElement('video');
+        media.muted = true;
+        media.playsInline = true;
+        media.preload = 'metadata';
+      } else {
+        media = document.createElement('img');
+        media.alt = '';
       }
-      total += f.size;
+      media.src = url;
+      item.appendChild(media);
+      const name = document.createElement('div');
+      name.className = 'report-media-name';
+      name.textContent = f.name;
+      item.appendChild(name);
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'report-media-remove';
+      remove.setAttribute('aria-label', 'Remove ' + f.name);
+      remove.textContent = '×';
+      remove.addEventListener('click', () => {
+        mediaFiles.splice(idx, 1);
+        setFormError('');
+        renderMediaGrid();
+      });
+      item.appendChild(remove);
+      mediaGrid.appendChild(item);
+    });
+  }
+
+  function acceptMediaFiles(list) {
+    setFormError('');
+    const incoming = Array.from(list || []);
+    for (const f of incoming) {
+      if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) {
+        setFormError('"' + f.name + '" is not an image or video.');
+        continue;
+      }
+      if (f.size > MAX_MEDIA_FILE_BYTES) {
+        setFormError('"' + f.name + '" is too large (max 8 MB per file — trim or compress long videos).');
+        continue;
+      }
+      if (mediaFiles.length >= MAX_MEDIA_FILES) {
+        setFormError('You can attach at most ' + MAX_MEDIA_FILES + ' files.');
+        break;
+      }
+      const total = mediaFiles.reduce((sum, x) => sum + x.size, 0);
+      if (total + f.size > MAX_MEDIA_TOTAL_BYTES) {
+        setFormError('Attached files are too large combined (max 24 MB total).');
+        break;
+      }
+      mediaFiles.push(f);
     }
-    if (total > MAX_MEDIA_TOTAL_BYTES) {
-      setFormError('Attached files are too large combined (max 24 MB total).');
-      mediaInput.value = '';
-      mediaFiles = [];
-      document.getElementById('mediaChosen').textContent = '';
-      return;
-    }
-    mediaFiles = files;
-    document.getElementById('mediaChosen').textContent = files.map(f => f.name).join(', ');
+    renderMediaGrid();
+  }
+
+  mediaDropzone.addEventListener('click', () => mediaInput.click());
+  mediaInput.addEventListener('change', () => {
+    acceptMediaFiles(mediaInput.files);
+    mediaInput.value = '';
+  });
+  ['dragenter', 'dragover'].forEach(evt => mediaDropzone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    mediaDropzone.classList.add('dragover');
+  }));
+  ['dragleave', 'drop'].forEach(evt => mediaDropzone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    mediaDropzone.classList.remove('dragover');
+  }));
+  mediaDropzone.addEventListener('drop', (e) => {
+    const fl = e.dataTransfer && e.dataTransfer.files;
+    if (fl && fl.length) acceptMediaFiles(fl);
   });
 
   function formatBytes(n) {

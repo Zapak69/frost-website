@@ -36,6 +36,7 @@
       label: 'Video Editor & Social Media',
       fields: COMMON_FIELDS.concat([
         ['experience', 'Previous video editing / social media experience', 'What you edited, which platforms you ran...', true],
+        ['replayMod', 'Can you work with the Replay/Flashback mod for in-game cinematics?', 'Yes/no — and if yes, what have you recorded with it...', true],
         ['portfolio', 'Show us your work', 'Links to videos, edits, accounts you managed...', true],
         WHY_FIELD
       ])

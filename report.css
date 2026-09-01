@@ -254,5 +254,24 @@
   }
   .report-file-btn:hover { border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.06); }
   .report-file-chosen { margin-top: 10px; font-size: 12.5px; color: var(--muted); word-break: break-word; }
+  .report-dropzone {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    width: 100%; padding: 26px 20px;
+    background: var(--surface2); border: 1.5px dashed var(--border); border-radius: 14px;
+    font-family: inherit; color: var(--text); cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .report-dropzone:hover { border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.06); }
+  .report-dropzone.dragover { border-color: var(--frost-blue, #4fc8f8); background: rgba(79,200,248,0.08); }
+  .report-dropzone svg { width: 22px; height: 22px; color: var(--muted); }
+  .report-dropzone-title { font-size: 13.5px; font-weight: 600; }
+  .report-dropzone-sub { font-size: 12px; color: var(--muted); }
+  .report-media-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .report-media-grid:empty { display: none; }
+  .report-media-item { position: relative; width: 92px; height: 92px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: var(--surface2); }
+  .report-media-item img, .report-media-item video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .report-media-name { position: absolute; left: 0; right: 0; bottom: 0; padding: 3px 5px; font-size: 9.5px; color: #fff; background: rgba(0,0,0,0.62); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .report-media-remove { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%; border: none; background: rgba(0,0,0,0.65); color: #fff; font-size: 13px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+  .report-media-remove:hover { background: rgba(212,18,18,0.85); }
 
   .report-error { font-size: 13px; color: var(--danger); margin-bottom: 16px; }
