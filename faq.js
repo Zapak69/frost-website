@@ -17,7 +17,7 @@
   target.classList.add('faq-highlight');
   setTimeout(() => target.classList.remove('faq-highlight'), 1800);
 
-  setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
 })();
 
 (function () {

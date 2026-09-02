@@ -113,6 +113,7 @@
     const ctaTypewriterToken = { v: 0 };
     const trialDaysEl = card.querySelector('.js-trial-days');
     const trialLabelEl = card.querySelector('.js-trial-label');
+    const annualPerkEl = card.querySelector('.plan-annual-perk');
     moveToggleIndicator(toggle);
     window.addEventListener('resize', function () { moveToggleIndicator(toggle); });
 
@@ -151,9 +152,14 @@
         fadeSwap(periodEl, plan.period);
         if (periodEl) setTimeout(function () { periodEl.style.width = plan.periodWidth; }, 180);
         fadeSwap(perDayEl, plan.perDay);
+        if (annualPerkEl) annualPerkEl.hidden = billing !== 'annual';
         if (link) link.href = billing === 'annual' ? link.dataset.annualHref : link.dataset.monthlyHref;
       });
     });
+    if (new URLSearchParams(window.location.search).get('billing') === 'annual') {
+      const annualBtn = toggle.querySelector('.billing-toggle-btn[data-billing="annual"]');
+      if (annualBtn && !annualBtn.classList.contains('active')) annualBtn.click();
+    }
   });
   const TOKEN_KEY = 'frostToken';
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
