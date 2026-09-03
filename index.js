@@ -195,6 +195,15 @@ for (let i = 0; i < 100; i++) particles.push({
   });
   mobileMenu.querySelectorAll('a, button').forEach(el => el.addEventListener('click', closeMenu));
 })();
+function frostQueueToastShow(el, otherIds) {
+  const isMobile = window.matchMedia('(max-width: 600px)').matches;
+  if (!isMobile) { el.classList.add('show'); return; }
+  const others = otherIds.map(id => document.getElementById(id)).filter(Boolean);
+  (function tryShow() {
+    if (others.some(o => o.classList.contains('show'))) { setTimeout(tryShow, 400); return; }
+    el.classList.add('show');
+  })();
+}
 (function () {
   const KEY = 'frostTeamToastDismissed';
   const toast = document.getElementById('promoToast');
@@ -203,7 +212,7 @@ for (let i = 0; i < 100; i++) particles.push({
   let dismissed = false;
   try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
   if (dismissed) return;
-  setTimeout(() => toast.classList.add('show'), 1200);
+  setTimeout(() => frostQueueToastShow(toast, ['betaToast', 'pollToast']), 1200);
   closeBtn.addEventListener('click', () => {
     toast.classList.remove('show');
     try { localStorage.setItem(KEY, '1'); } catch (e) {}
@@ -215,9 +224,11 @@ for (let i = 0; i < 100; i++) particles.push({
   const VOTED_KEY = 'frostPollVotedAnswer';
   const ANSWERS = ['CRYSTAL', 'MACE', 'SMP', 'UHC'];
 
+  const TOAST_DISMISS_KEY = 'frostPollToastDismissed';
   const toast = document.getElementById('pollToast');
   const toastText = toast ? toast.querySelector('.poll-toast-text') : null;
   const toastCta = document.getElementById('pollToastCta');
+  const toastCloseBtn = document.getElementById('pollToastClose');
   const modal = document.getElementById('pollModal');
   const closeBtn = document.getElementById('pollModalCloseBtn');
   const optionsWrap = document.getElementById('pollOptions');
@@ -226,6 +237,14 @@ for (let i = 0; i < 100; i++) particles.push({
   const thanksEl = document.getElementById('pollThanks');
   const noteEl = document.getElementById('pollNote');
   if (!toast || !modal || !optionsWrap || !submitBtn || !thanksEl) return;
+  let toastDismissed = false;
+  try { toastDismissed = localStorage.getItem(TOAST_DISMISS_KEY) === '1'; } catch (e) {}
+  if (toastCloseBtn) {
+    toastCloseBtn.addEventListener('click', () => {
+      toast.classList.remove('show');
+      try { localStorage.setItem(TOAST_DISMISS_KEY, '1'); } catch (e) {}
+    });
+  }
   const promoToast = document.getElementById('promoToast');
   function repositionToast() {
     if (promoToast && promoToast.classList.contains('show')) {
@@ -258,8 +277,8 @@ for (let i = 0; i < 100; i++) particles.push({
       url.searchParams.delete('vote');
       history.replaceState(null, '', url.pathname + url.search + url.hash);
     } catch (e) {}
-  } else {
-    setTimeout(() => { repositionToast(); toast.classList.add('show'); }, 1200);
+  } else if (!toastDismissed) {
+    setTimeout(() => { repositionToast(); frostQueueToastShow(toast, ['betaToast', 'promoToast']); }, 1200);
   }
 
   function animatePct(el, toVal) {

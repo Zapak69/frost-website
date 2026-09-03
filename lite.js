@@ -576,6 +576,15 @@
   mobileMenu.querySelectorAll('a, button').forEach(el => el.addEventListener('click', closeMenu));
 })();
 
+function frostQueueToastShow(el, otherIds) {
+  const isMobile = window.matchMedia('(max-width: 600px)').matches;
+  if (!isMobile) { el.classList.add('show'); return; }
+  const others = otherIds.map(id => document.getElementById(id)).filter(Boolean);
+  (function tryShow() {
+    if (others.some(o => o.classList.contains('show'))) { setTimeout(tryShow, 400); return; }
+    el.classList.add('show');
+  })();
+}
 (function () {
   const KEY = 'frostPromoToastDismissed';
   const toast = document.getElementById('promoToast');
@@ -589,7 +598,7 @@
   let dismissed = false;
   try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
   if (dismissed) return;
-  setTimeout(() => toast.classList.add('show'), 1200);
+  setTimeout(() => frostQueueToastShow(toast, ['betaToast']), 1200);
   closeBtn.addEventListener('click', () => hidePromoToast(true));
 })();
 

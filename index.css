@@ -648,7 +648,7 @@
     left: 24px; bottom: 24px; max-width: 320px;
     background: var(--surface2);
     border: 1px solid rgba(255,214,10,0.4); border-radius: 20px;
-    padding: 18px 20px;
+    padding: 18px 40px 18px 20px;
     display: flex; align-items: flex-start; gap: 12px;
     box-shadow: 0 20px 60px -12px rgba(0,0,0,0.6), 0 0 24px rgba(255,214,10,0.06);
     transform: translateX(-130%); opacity: 0; pointer-events: none;
@@ -666,6 +666,8 @@
     transition: filter 0.2s;
   }
   .poll-toast-cta:hover { filter: brightness(1.08); }
+  .poll-toast-close { position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; padding: 4px; }
+  .poll-toast-close:hover { color: var(--text); }
   @media(max-width:600px){ .poll-toast { left: 16px; right: 16px; max-width: none; } }
 
   .modal-box--poll { max-width: 480px; }
