@@ -133,7 +133,14 @@
     if (!params.has('openDownload')) return;
 
     const requested = (params.get('openDownload') || '').toLowerCase();
-    openModal(requested === 'opengl' ? 'opengl' : 'vulkan');
+    if (requested === 'opengl' || requested === 'vulkan') {
+      // Only /opengl links straight into a specific renderer's modpack version picker,
+      // skipping the launcher-vs-modpack choice - it exists for crash-troubleshooting links
+      // where the visitor already knows they want the OpenGL modpack.
+      openModal(requested);
+    } else {
+      openDownloadChoice();
+    }
 
     const cleanUrl = new URL(window.location.href);
     cleanUrl.searchParams.delete('openDownload');
