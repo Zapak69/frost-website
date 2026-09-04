@@ -1,3 +1,7 @@
+(function () {
+  const match = /^\/share\/([A-Za-z0-9]{6,16})\/?$/.exec(location.pathname);
+  if (match) location.replace('/share/?c=' + match[1].toUpperCase());
+})();
 const particleCanvas = document.getElementById('particles');
 const particleCtx = particleCanvas.getContext('2d');
 let particleW, particleH, particles = [];

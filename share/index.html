@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shared Instance | Frost Client</title>
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
+<meta name="robots" content="noindex, follow">
+<meta property="og:title" content="Shared Frost Client instance">
+<meta property="og:description" content="Open this link in the Frost Launcher to install the shared mods, resource packs and shaders.">
+<link rel="stylesheet" href="share.css">
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="../favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <a class="nav-back" href="https://frostclient.eu">← frostclient.eu</a>
+</nav>
+
+<main class="share-page">
+  <div class="share-eyebrow">Frost Launcher</div>
+  <h1>Shared <span class="grad">Instance</span></h1>
+  <p class="share-sub">Open it in the Frost Launcher and the mods, resource packs and shaders get installed for you.</p>
+
+  <div class="share-card">
+    <div class="state active" id="stateLoading">
+      <div class="spinner"></div>
+      <p class="state-text">Loading share...</p>
+    </div>
+
+    <div class="state" id="stateError">
+      <div class="state-title" id="errorTitle">Share not found</div>
+      <p class="state-text" id="errorText">This share code does not exist. Check the link and try again.</p>
+      <a class="btn-secondary" href="https://frostclient.eu">Back to FrostClient</a>
+    </div>
+
+    <div class="state" id="stateReady">
+      <div class="inst-name" id="instName">-</div>
+      <div class="inst-meta">
+        <span class="pill" id="instVersion">-</span>
+        <span class="pill pill-muted" id="instCreator">-</span>
+        <span class="pill pill-muted" id="instExpiry">-</span>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="lists" id="lists"></div>
+      <div class="unresolved" id="unresolved" hidden>
+        <div class="unresolved-title">Not on Modrinth. You will need to add these yourself:</div>
+        <div class="chips" id="unresolvedChips"></div>
+      </div>
+      <div class="actions">
+        <a class="btn-primary" id="openBtn" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+          Open in Frost Launcher
+        </a>
+        <button type="button" class="btn-secondary" id="copyBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy code <code id="codeText">-</code>
+        </button>
+      </div>
+      <p class="state-note">No launcher yet? <a href="https://frostclient.eu/?openDownload">Download the Frost Launcher</a>, then paste the code under Library → Import shared instance.</p>
+    </div>
+  </div>
+</main>
+
+<script src="share.js"></script>
+</body>
+</html>
