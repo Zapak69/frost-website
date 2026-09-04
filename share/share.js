@@ -51,7 +51,13 @@
     const inst = share.instance || {};
     document.getElementById('instName').textContent = inst.name || 'Shared instance';
     document.getElementById('instVersion').textContent = [inst.minecraftVersion, inst.renderer].filter(Boolean).join(' ');
-    document.getElementById('instCreator').textContent = 'Shared by ' + ((share.creator && share.creator.name) || 'a Frost user');
+    const creator = share.creator || {};
+    const creatorEl = document.getElementById('instCreator');
+    const avatar = document.getElementById('creatorAvatar');
+    if (creator.avatar) { avatar.src = creator.avatar; avatar.hidden = false; }
+    document.getElementById('creatorName').textContent = creator.username ? '@' + creator.username : (creator.name || 'a Frost user');
+    creatorEl.classList.toggle('is-lite', !!creator.lite);
+    creatorEl.title = creator.lite ? 'Shared by a Frost Lite member' : 'Shared by';
     document.getElementById('instExpiry').textContent = share.expiresAt ? 'Expires ' + new Date(share.expiresAt).toLocaleDateString() : '';
     const mods = share.mods || [];
     const packs = share.resourcepacks || [];
@@ -97,8 +103,7 @@
     let data = null;
     try { data = await res.json(); } catch (e) { data = null; }
     if (!data || !data.ok) {
-      if (data && data.error === 'expired') showError('Share expired', 'This share link is older than 30 days. Ask the creator to share the instance again.');
-      else showError('Share not found', 'This share code does not exist. Check the link and try again.');
+      showError('Link expired or not found', 'This share link has expired or never existed. Ask the creator to share the instance again.');
       return;
     }
     render(data);
