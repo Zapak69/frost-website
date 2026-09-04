@@ -499,6 +499,18 @@
   .dl-choice-tile-sub { font-size: 12.5px; font-weight: 500; color: var(--muted); }
   .dl-choice-tile-lite { border-color: rgba(191,90,242,0.35); background: rgba(191,90,242,0.06); }
   .dl-choice-tile-lite:hover { border-color: var(--lite); background: rgba(191,90,242,0.12); }
+  .dl-choice-tile-beta { border-color: rgba(255,105,97,0.45); background: rgba(255,105,97,0.08); box-shadow: 0 0 0 1px rgba(255,105,97,0.12) inset; }
+  .dl-choice-tile-beta:hover { border-color: rgba(255,105,97,0.7); background: rgba(255,105,97,0.14); }
+  .dl-beta-ribbon {
+    position: absolute; top: 12px; right: -30px;
+    width: 110px; padding: 4px 0; transform: rotate(35deg);
+    background: #d9453c; color: #fff;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .dl-alt-links { margin-top: 18px; font-size: 12px; color: var(--muted); text-align: center; }
+  .dl-alt-links a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; margin: 0 6px; transition: color 0.2s; }
+  .dl-alt-links a:hover { color: var(--text); }
   .dl-lite-ribbon {
     position: absolute; top: 12px; right: -30px;
     width: 110px; padding: 4px 0; transform: rotate(35deg);

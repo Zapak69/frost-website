@@ -180,10 +180,10 @@
 
   const PUBLIC_DL_BASE = 'https://bot.frostclient.eu/public_dl/';
   const LAUNCHER_FILES = {
-    win: { file: 'Frost-Launcher-Testing-win.exe', label: 'Windows' },
-    macArm: { file: 'Frost-Launcher-Testing-mac-arm64.dmg', label: 'macOS (Apple Silicon)' },
-    macIntel: { file: 'Frost-Launcher-Testing-mac-x64.dmg', label: 'macOS (Intel)' },
-    linux: { file: 'Frost-Launcher-Testing-linux.AppImage', label: 'Linux' }
+    win: { file: 'Frost-Launcher-win.exe', label: 'Windows' },
+    macArm: { file: 'Frost-Launcher-mac-arm64.dmg', label: 'macOS (Apple Silicon)' },
+    macIntel: { file: 'Frost-Launcher-mac-x64.dmg', label: 'macOS (Intel)' },
+    linux: { file: 'Frost-Launcher-linux.AppImage', label: 'Linux' }
   };
 
   function detectOs() {
@@ -195,7 +195,7 @@
   }
 
   function launcherUrl(file) {
-    return PUBLIC_DL_BASE + file + '?token=' + encodeURIComponent(loadToken());
+    return PUBLIC_DL_BASE + file;
   }
 
   function setupChooser(dl) {

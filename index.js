@@ -92,15 +92,42 @@
   downloadChoiceCloseBtn.addEventListener('click', closeDownloadChoice);
   downloadChoiceModal.addEventListener('click', (e) => { if (e.target === downloadChoiceModal) closeDownloadChoice(); });
 
-  (function setLauncherOsIcon() {
+  (function setupLauncherTile() {
+    const PUBLIC_DL_BASE = 'https://bot.frostclient.eu/public_dl/';
+    const LAUNCHER_FILES = {
+      win: { file: 'Frost-Launcher-win.exe', label: 'Windows', icon: 'win' },
+      macArm: { file: 'Frost-Launcher-mac-arm64.dmg', label: 'macOS (Apple Silicon)', icon: 'mac' },
+      macIntel: { file: 'Frost-Launcher-mac-x64.dmg', label: 'macOS (Intel)', icon: 'mac' },
+      linux: { file: 'Frost-Launcher-linux.AppImage', label: 'Linux', icon: 'linux' }
+    };
     const ua = (navigator.userAgent || '') + ' ' + (navigator.platform || '');
     let os = 'win';
     if (/Windows|Win32|Win64/i.test(ua)) os = 'win';
-    else if (/Macintosh|Mac OS X|MacIntel|MacARM/i.test(ua)) os = 'mac';
+    else if (/Macintosh|Mac OS X|MacIntel|MacARM/i.test(ua)) os = 'macArm';
     else if (/Linux|X11/i.test(ua)) os = 'linux';
+    const primary = LAUNCHER_FILES[os];
     document.querySelectorAll('.dl-os-icon').forEach(el => {
-      el.classList.toggle('active', el.dataset.os === os);
+      el.classList.toggle('active', el.dataset.os === primary.icon);
     });
+    const tile = document.getElementById('dlLauncherTile');
+    const sub = document.getElementById('dlLauncherTileSub');
+    if (tile) tile.href = PUBLIC_DL_BASE + primary.file;
+    if (sub) sub.textContent = 'Open beta · ' + primary.label;
+    const altEl = document.getElementById('dlLauncherAltLinks');
+    if (altEl) {
+      altEl.innerHTML = '';
+      const label = document.createElement('span');
+      label.textContent = 'Launcher for other systems:';
+      altEl.appendChild(label);
+      Object.keys(LAUNCHER_FILES).forEach(key => {
+        if (key === os) return;
+        const a = document.createElement('a');
+        a.href = PUBLIC_DL_BASE + LAUNCHER_FILES[key].file;
+        a.textContent = LAUNCHER_FILES[key].label;
+        a.rel = 'noopener';
+        altEl.appendChild(a);
+      });
+    }
   })();
 
   openBtns.forEach(btn => btn.addEventListener('click', () => openDownloadChoice()));

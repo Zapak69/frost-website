@@ -52,32 +52,32 @@
   <div class="role-grid">
     <div class="role-card">
       <div class="role-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div>
-      <div class="role-card-title">Video Editors &amp; Social Media</div>
+      <div class="role-card-title" data-role="video">Video Editors &amp; Social Media</div>
       <p>Take care of the videos we share across our social networks — editing, posting, keeping our channels alive.</p>
     </div>
     <div class="role-card">
       <div class="role-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></div>
-      <div class="role-card-title">Graphic Designers</div>
+      <div class="role-card-title" data-role="graphic">Graphic Designers</div>
       <p>Create designs for the client — branding, UI assets, artwork that shapes how FrostClient looks.</p>
     </div>
     <div class="role-card">
       <div class="role-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="m7 8 3 3 3-3 4 4"/></svg></div>
-      <div class="role-card-title">Visualizer</div>
+      <div class="role-card-title" data-role="visualizer">Visualizer</div>
       <p>Create visualizations of how the launcher or FrostClient could look — concepts and mockups that guide development.</p>
     </div>
     <div class="role-card">
       <div class="role-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></div>
-      <div class="role-card-title">Staff Team</div>
+      <div class="role-card-title" data-role="staff">Staff Team</div>
       <p>Pure support — handling tickets, answering questions, and taking care of our users every day.</p>
     </div>
     <div class="role-card">
       <div class="role-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg></div>
-      <div class="role-card-title">Cape Designer</div>
+      <div class="role-card-title" data-role="cape_designer">Cape Designer</div>
       <p>Create brand-new capes and designs for the Frost cape collection.</p>
     </div>
     <div class="role-card">
       <div class="role-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div>
-      <div class="role-card-title">Cape Animator</div>
+      <div class="role-card-title" data-role="cape_animator">Cape Animator</div>
       <p>Bring capes to life — create the animated versions of our cape designs.</p>
     </div>
   </div>
@@ -103,6 +103,7 @@
     </div>
     <div id="applyBoxDenied" style="display:none;">
       <h3>Application not accepted</h3>
+      <p id="applyDenyReason" style="display:none;"></p>
       <p style="margin-bottom:0;">We can't say yes right now. You're welcome to apply again on <strong id="applyRetryDate">—</strong>.</p>
     </div>
   </div>

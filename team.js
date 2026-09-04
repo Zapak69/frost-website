@@ -159,6 +159,11 @@
           if (data.retryAt && data.retryAt > Date.now()) {
             const dateEl = document.getElementById('applyRetryDate');
             if (dateEl) dateEl.textContent = formatRetryDate(data.retryAt);
+            const reasonEl = document.getElementById('applyDenyReason');
+            if (reasonEl) {
+              reasonEl.textContent = data.denyReason ? 'Reason: ' + data.denyReason : '';
+              reasonEl.style.display = data.denyReason ? '' : 'none';
+            }
             setBoxState('applyBoxDenied');
           } else {
             try { localStorage.removeItem(APPLIED_KEY); } catch (e) {}
@@ -253,14 +258,58 @@
           showErrorState('Your session expired. Please click Apply again to sign in.');
           return;
         }
+        if (data && data.error === 'role_closed') {
+          submitBtn.disabled = false;
+          markRoleClosed(currentRole);
+          showErrorState("This position isn't taking applications right now. Please pick a different one.");
+          return;
+        }
         submitBtn.disabled = false;
         showErrorState("Couldn't submit your application. Please try again.");
       })
       .catch(function () { submitBtn.disabled = false; showErrorState('Network error. Please try again.'); });
   });
 
+  const closedRoles = new Set();
+  function markRoleClosed(roleId) {
+    closedRoles.add(roleId);
+    document.querySelectorAll('#applyRolePicker .role-pick-btn[data-role="' + roleId + '"]').forEach(function (btn) {
+      btn.classList.add('closed');
+      btn.disabled = true;
+      if (!btn.querySelector('.role-closed-tag')) {
+        const tag = document.createElement('em');
+        tag.className = 'role-closed-tag';
+        tag.textContent = 'Closed';
+        btn.querySelector('strong').appendChild(tag);
+      }
+    });
+    document.querySelectorAll('.role-card-title[data-role="' + roleId + '"]').forEach(function (title) {
+      if (title.querySelector('.role-closed-tag')) return;
+      const tag = document.createElement('span');
+      tag.className = 'role-closed-tag';
+      tag.textContent = 'Closed';
+      title.appendChild(tag);
+      const card = title.closest('.role-card');
+      if (card) card.classList.add('closed');
+    });
+  }
+  function applyRecruitmentConfig(data) {
+    if (!data || !data.ok || !data.roles) return;
+    const ids = Object.keys(data.roles);
+    ids.forEach(function (id) { if (!data.roles[id].open) markRoleClosed(id); });
+    if (ids.length > 0 && ids.every(function (id) { return !data.roles[id].open; })) {
+      appsOpen = false;
+      if (!hasApplied()) markClosed();
+    }
+  }
+  fetch('https://bot.frostclient.eu/staff-apply-config', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(applyRecruitmentConfig)
+    .catch(function () {});
+
   document.querySelectorAll('#applyRolePicker .role-pick-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
+      if (closedRoles.has(btn.dataset.role)) return;
       buildForm(btn.dataset.role);
       show('applyStep1');
     });
