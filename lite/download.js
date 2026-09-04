@@ -181,15 +181,14 @@
   const PUBLIC_DL_BASE = 'https://bot.frostclient.eu/public_dl/';
   const LAUNCHER_FILES = {
     win: { file: 'Frost-Launcher-win.exe', label: 'Windows' },
-    macArm: { file: 'Frost-Launcher-mac-arm64.dmg', label: 'macOS (Apple Silicon)' },
-    macIntel: { file: 'Frost-Launcher-mac-x64.dmg', label: 'macOS (Intel)' },
+    mac: { file: 'Frost-Launcher-mac.dmg', label: 'macOS (Apple Silicon & Intel)' },
     linux: { file: 'Frost-Launcher-linux.AppImage', label: 'Linux' }
   };
 
   function detectOs() {
     const ua = (navigator.userAgent || '') + ' ' + (navigator.platform || '');
     if (/Windows|Win32|Win64/i.test(ua)) return 'win';
-    if (/Macintosh|Mac OS X|MacIntel|MacARM/i.test(ua)) return 'macArm';
+    if (/Macintosh|Mac OS X|MacIntel|MacARM/i.test(ua)) return 'mac';
     if (/Linux|X11/i.test(ua)) return 'linux';
     return 'win';
   }

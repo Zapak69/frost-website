@@ -96,14 +96,13 @@
     const PUBLIC_DL_BASE = 'https://bot.frostclient.eu/public_dl/';
     const LAUNCHER_FILES = {
       win: { file: 'Frost-Launcher-win.exe', label: 'Windows', icon: 'win' },
-      macArm: { file: 'Frost-Launcher-mac-arm64.dmg', label: 'macOS (Apple Silicon)', icon: 'mac' },
-      macIntel: { file: 'Frost-Launcher-mac-x64.dmg', label: 'macOS (Intel)', icon: 'mac' },
+      mac: { file: 'Frost-Launcher-mac.dmg', label: 'macOS (Apple Silicon & Intel)', icon: 'mac' },
       linux: { file: 'Frost-Launcher-linux.AppImage', label: 'Linux', icon: 'linux' }
     };
     const ua = (navigator.userAgent || '') + ' ' + (navigator.platform || '');
     let os = 'win';
     if (/Windows|Win32|Win64/i.test(ua)) os = 'win';
-    else if (/Macintosh|Mac OS X|MacIntel|MacARM/i.test(ua)) os = 'macArm';
+    else if (/Macintosh|Mac OS X|MacIntel|MacARM/i.test(ua)) os = 'mac';
     else if (/Linux|X11/i.test(ua)) os = 'linux';
     const primary = LAUNCHER_FILES[os];
     document.querySelectorAll('.dl-os-icon').forEach(el => {
