@@ -104,6 +104,7 @@
   }
   function saveToken(t) {
     try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    document.dispatchEvent(new CustomEvent('frostAccountLogin'));
   }
   function clearToken() {
     try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}

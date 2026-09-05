@@ -163,6 +163,7 @@
   });
   const TOKEN_KEY = 'frostToken';
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
+  const RETURN_TO_KEY = 'frostAuthReturnTo';
   const GAME_SESSION_KEY = 'frostLiteGameSession';
   const GAME_PORT_KEY = 'frostLiteGamePort';
   function gameSession() {
@@ -229,6 +230,7 @@
   }
   function saveToken(t) {
     try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    document.dispatchEvent(new CustomEvent('frostAccountLogin'));
   }
   function loadToken() {
     try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
@@ -247,6 +249,15 @@
         }
         throw err;
       });
+  }
+  function takeReturnTo() {
+    let target = '';
+    try {
+      target = sessionStorage.getItem(RETURN_TO_KEY) || '';
+      sessionStorage.removeItem(RETURN_TO_KEY);
+    } catch (e) {}
+    if (!/^\/(?!\/)/.test(target) || /^\/lite\/?(\?|#|$)/.test(target)) return '';
+    return target;
   }
   function setAccessFlag(has) {
     try {
@@ -341,6 +352,7 @@
   function exchange(code) {
     show('stateLoading');
     setAuthPhase('checking');
+    const returnTo = takeReturnTo();
     fetchJsonWithRetry(LITE_API_URL + '?action=liteAuth&code=' + encodeURIComponent(code), { cache: 'no-store' }, 2)
       .then(data => {
         if (!data.ok) {
@@ -351,6 +363,11 @@
           return;
         }
         if (data.gameToken) saveToken(data.gameToken);
+        if (returnTo && !gameSession()) {
+          setAccessFlag(data.status === 'eligible');
+          window.location.replace(returnTo);
+          return;
+        }
         render(data);
       })
       .catch(() => { setAuthPhase('loggedOut'); showError('Network error while contacting the server. Please try again.'); });
@@ -461,6 +478,7 @@
       window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
 
       if (storedState && csrfState !== storedState) {
+        takeReturnTo();
         showError('Sign-in session mismatch. Please try again.');
         return;
       }
@@ -474,6 +492,11 @@
       cleanUrl.searchParams.delete('error_description');
       cleanUrl.searchParams.delete('state');
       window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+      const cancelledReturnTo = takeReturnTo();
+      if (cancelledReturnTo && !gameSession()) {
+        window.location.replace(cancelledReturnTo);
+        return;
+      }
       document.getElementById('loginNote').textContent = 'Sign-in was cancelled. You can try again whenever you like.';
       show('stateLogin');
       return;

@@ -44,7 +44,8 @@
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
 
-  const TOKEN_KEY = 'frostLiteToken';
+  const TOKEN_KEY = 'frostToken';
+  const LEGACY_TOKEN_KEY = 'frostLiteToken';
   const OAUTH_STATE_KEY = 'frostLiteOauthState';
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI_GAME = 'https://frostclient.eu/lite/login';
@@ -126,10 +127,14 @@
     try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
   }
   function loadToken() {
-    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+    try {
+      localStorage.removeItem(LEGACY_TOKEN_KEY);
+      return localStorage.getItem(TOKEN_KEY) || '';
+    } catch (e) { return ''; }
   }
   function clearToken() {
-    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem('frostLiteAccess'); } catch (e) {}
+    document.dispatchEvent(new CustomEvent('frostAccountLogout'));
   }
 
   function showError(msg, detail) {
@@ -185,23 +190,22 @@
             : "Discord didn't respond correctly. Please try again.", data.detail);
           return;
         }
-        if (data.token) saveToken(data.token);
+        if (data.gameToken) { saveToken(data.gameToken); document.dispatchEvent(new CustomEvent('frostAccountLogin')); }
         render(data);
       })
       .catch(() => showError('Network error while contacting the server. Please try again.'));
   }
   function recheck(token) {
     show('stateLoading');
-    fetch(LITE_API_URL + '?action=liteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
+    fetch(LITE_API_URL + '?action=siteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (!data.ok) {
-          clearToken();
-          if (data.error === 'token_expired') { show('stateLogin'); return; }
+          if (data.error === 'token_expired') { clearToken(); show('stateLogin'); return; }
           showError("Discord didn't respond correctly. Please try again.", data.detail);
           return;
         }
-        if (data.token) saveToken(data.token);
+        if (!data.gameToken) data.gameToken = token;
         render(data);
       })
       .catch(() => showError('Network error while contacting the server. Please try again.'));

@@ -43,7 +43,8 @@
 
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
-  const TOKEN_KEY = 'frostReviewToken';
+  const TOKEN_KEY = 'frostToken';
+  const LEGACY_TOKEN_KEY = 'frostReviewToken';
   const OAUTH_STATE_KEY = 'frostReviewOauthState';
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI_REVIEW = 'https://frostclient.eu/review';
@@ -53,9 +54,22 @@
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
   }
 
-  function saveToken(t) { try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {} }
-  function loadToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
-  function clearToken() { try { localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+  function saveToken(t) {
+    if (!t) return;
+    let changed = false;
+    try { changed = localStorage.getItem(TOKEN_KEY) !== t; localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    if (changed) document.dispatchEvent(new CustomEvent('frostAccountLogin'));
+  }
+  function loadToken() {
+    try {
+      localStorage.removeItem(LEGACY_TOKEN_KEY);
+      return localStorage.getItem(TOKEN_KEY) || '';
+    } catch (e) { return ''; }
+  }
+  function clearToken() {
+    try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem('frostLiteAccess'); } catch (e) {}
+    document.dispatchEvent(new CustomEvent('frostAccountLogout'));
+  }
 
   function showError(msg) {
     document.getElementById('errorText').textContent = msg || "We couldn't sign you in. Please try again.";

@@ -34,12 +34,13 @@
 
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
-  const TOKEN_KEY = 'frostStatisticsToken';
+  const TOKEN_KEY = 'frostToken';
+  const LEGACY_OWNER_TOKEN_KEY = 'frostStatisticsOwnerToken';
+  const LEGACY_TOKEN_KEY = 'frostStatisticsToken';
   const OAUTH_STATE_KEY = 'frostStatisticsOauthState';
   const CACHE_KEY = 'frostStatisticsCache';
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI_STATISTICS = 'https://frostclient.eu/statistics';
-  const OWNER_TOKEN_KEY = 'frostStatisticsOwnerToken';
   const BRIDGE_URL = 'https://bot.frostclient.eu/statistics-data';
   function saveCache(data) {
     try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) {}
@@ -57,12 +58,24 @@
     document.getElementById('navLogoutBtn').style.display = (id === 'stateData') ? 'inline-block' : 'none';
   }
 
-  function saveToken(t) { try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {} }
-  function loadToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
-  function clearToken() { try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(CACHE_KEY); } catch (e) {} }
+  function saveToken(t) {
+    try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    document.dispatchEvent(new CustomEvent('frostAccountLogin'));
+  }
+  function loadToken() {
+    try {
+      const legacy = localStorage.getItem(LEGACY_OWNER_TOKEN_KEY);
+      if (legacy && !localStorage.getItem(TOKEN_KEY)) localStorage.setItem(TOKEN_KEY, legacy);
+      localStorage.removeItem(LEGACY_OWNER_TOKEN_KEY);
+      localStorage.removeItem(LEGACY_TOKEN_KEY);
+      return localStorage.getItem(TOKEN_KEY) || '';
+    } catch (e) { return ''; }
+  }
+  function clearToken() {
+    try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(CACHE_KEY); localStorage.removeItem('frostLiteAccess'); } catch (e) {}
+    document.dispatchEvent(new CustomEvent('frostAccountLogout'));
+  }
 
-  function saveOwnerToken(t) { try { localStorage.setItem(OWNER_TOKEN_KEY, t); } catch (e) {} }
-  function loadOwnerToken() { try { return localStorage.getItem(OWNER_TOKEN_KEY) || ''; } catch (e) { return ''; } }
 
   function showError(msg) {
     document.getElementById('errorText').textContent = msg || 'Please try again.';
@@ -448,22 +461,13 @@
   });
 
   function fetchStatistics() {
-    const ownerToken = loadOwnerToken();
-    const viaCodeGs = function () {
-      const token = loadToken();
-      if (!token) return Promise.resolve({ ok: false, error: 'token_expired' });
-      return fetch(LITE_API_URL + '?action=statisticsCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
-        .then(r => r.json());
-    };
-    if (!ownerToken) return viaCodeGs();
+    const token = loadToken();
+    if (!token) return Promise.resolve({ ok: false, error: 'token_expired' });
     return fetch(BRIDGE_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ownerToken: ownerToken })
-    })
-      .then(r => r.json())
-      .then(d => (d && d.ok) ? d : viaCodeGs())
-      .catch(viaCodeGs);
+      body: JSON.stringify({ ownerToken: token })
+    }).then(r => r.json());
   }
   const statAnimState = {};
   const COUNT_UP_MS = 700;
@@ -749,8 +753,8 @@
   function applyData(data) {
     if (!data || data.ok !== true) {
       if (data && data.error === 'forbidden') {
-        clearToken();
-        show('stateDenied');
+        try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
+        show(loadToken() ? 'stateDenied' : 'stateLogin');
         return;
       }
       if (data && data.error === 'token_expired') {
@@ -761,7 +765,7 @@
       showError('Could not load statistics. Please try again.');
       return;
     }
-    if (data.ownerToken) saveOwnerToken(data.ownerToken);
+    if (data.ownerToken) saveToken(data.ownerToken);
     renderStats(data);
     renderSessions(data.sessions || []);
     show('stateData');
@@ -793,7 +797,6 @@
   document.getElementById('navLogoutBtn').addEventListener('click', () => {
     if (refreshTimer) clearInterval(refreshTimer);
     clearToken();
-    try { localStorage.removeItem(OWNER_TOKEN_KEY); } catch (e) {}
     show('stateLogin');
   });
 
@@ -819,10 +822,7 @@
       }
       fetch(LITE_API_URL + '?action=statisticsAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
         .then(r => r.json())
-        .then(function (data) {
-          if (data && data.ok && data.token) saveToken(data.token);
-          applyData(data);
-        })
+        .then(applyData)
         .catch(() => showError('Network error while contacting the server. Please try again.'));
       return;
     }
@@ -837,7 +837,7 @@
       return;
     }
 
-    if (!loadToken() && !loadOwnerToken()) { show('stateLogin'); return; }
+    if (!loadToken()) { show('stateLogin'); return; }
 
     const cached = loadCache();
     if (cached) {

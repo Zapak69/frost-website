@@ -18,7 +18,8 @@
 (function () {
   const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
   const BUG_REPORT_URL = 'https://bot.frostclient.eu/bug-report';
-  const TOKEN_KEY = 'frostReportToken';
+  const TOKEN_KEY = 'frostToken';
+  const LEGACY_TOKEN_KEY = 'frostReportToken';
   const OAUTH_STATE_KEY = 'frostReportOauthState';
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI = 'https://frostclient.eu/report';
@@ -34,13 +35,22 @@
   }
 
   function loadToken() {
-    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+    try {
+      const legacy = localStorage.getItem(LEGACY_TOKEN_KEY);
+      if (legacy) {
+        localStorage.removeItem(LEGACY_TOKEN_KEY);
+        if (!localStorage.getItem(TOKEN_KEY)) localStorage.setItem(TOKEN_KEY, legacy);
+      }
+      return localStorage.getItem(TOKEN_KEY) || '';
+    } catch (e) { return ''; }
   }
   function saveToken(t) {
     try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    document.dispatchEvent(new CustomEvent('frostAccountLogin'));
   }
   function clearToken() {
-    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem('frostLiteAccess'); } catch (e) {}
+    document.dispatchEvent(new CustomEvent('frostAccountLogout'));
   }
 
   function fetchJsonWithRetry(url, options, retries) {

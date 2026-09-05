@@ -2,10 +2,25 @@
 (function () {
   var LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
   var TOKEN_KEY = 'frostToken';
+  var LEGACY_TOKEN_KEYS = ['frostReportToken', 'frostStatisticsOwnerToken'];
+  var LEGACY_DISCARD_KEYS = ['frostStatisticsToken', 'frostReviewToken', 'frostLiteToken'];
   var OAUTH_STATE_KEY = 'frostLiteOauthState';
+  var RETURN_TO_KEY = 'frostAuthReturnTo';
   var ACCOUNT_URL = 'https://frostclient.eu/lite';
   var DISCORD_CLIENT_ID = '1512834635640475898';
   var DISCORD_REDIRECT_URI = 'https://frostclient.eu/lite';
+
+  function migrateLegacyTokens() {
+    try {
+      if (!localStorage.getItem(TOKEN_KEY)) {
+        for (var i = 0; i < LEGACY_TOKEN_KEYS.length; i++) {
+          var legacy = localStorage.getItem(LEGACY_TOKEN_KEYS[i]);
+          if (legacy) { localStorage.setItem(TOKEN_KEY, legacy); break; }
+        }
+      }
+      LEGACY_TOKEN_KEYS.concat(LEGACY_DISCARD_KEYS).forEach(function (k) { localStorage.removeItem(k); });
+    } catch (e) {}
+  }
 
   function loadToken() {
     try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
@@ -15,6 +30,7 @@
     try {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem('frostLiteAccess');
+      LEGACY_TOKEN_KEYS.concat(LEGACY_DISCARD_KEYS).forEach(function (k) { localStorage.removeItem(k); });
     } catch (e) {}
   }
 
@@ -32,6 +48,12 @@
 
   function startLogin(btn) {
     try { fetch(LITE_API_URL + '?action=liteConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
+    try {
+      var here = new URL(window.location.href);
+      here.searchParams.delete('code'); here.searchParams.delete('state'); here.searchParams.delete('error'); here.searchParams.delete('error_description');
+      if (/^\/lite\/?$/.test(here.pathname)) sessionStorage.removeItem(RETURN_TO_KEY);
+      else sessionStorage.setItem(RETURN_TO_KEY, here.pathname + here.search + here.hash);
+    } catch (e) {}
     var csrfState = '';
     try {
       var buf = new Uint8Array(16);
@@ -415,8 +437,10 @@
   window.FrostAccount = { open: openAccountModal };
 
   function init() {
+    migrateLegacyTokens();
     applyState();
-    document.addEventListener('frostAccountLogout', applyState);
+    document.addEventListener('frostAccountLogout', function () { accountDataCache = null; accountDataPromise = null; applyState(); });
+    document.addEventListener('frostAccountLogin', function () { accountDataCache = null; accountDataPromise = null; applyState(); prefetchAccountInfo(); });
     if (loadToken()) prefetchAccountInfo();
     document.querySelectorAll('.js-site-auth-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
