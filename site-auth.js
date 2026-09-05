@@ -9,6 +9,8 @@
   var USER_CACHE_KEY = 'frostAccountUser';
   var ICON_USER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
   var ICON_LOGOUT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>';
+  var ICON_CAPE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>';
+  var STORE_CAPES_URL = 'https://store.frostclient.eu/my-capes';
   var ICON_CHEVRON = '<svg class="frost-nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
   var ACCOUNT_URL = 'https://frostclient.eu/lite';
   var DISCORD_CLIENT_ID = '1512834635640475898';
@@ -169,8 +171,8 @@
       '.frost-nav-menu{position:fixed;min-width:168px;background:var(--surface,#1c1c1e);border:1px solid var(--border,rgba(255,255,255,0.1));',
       'border-radius:14px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,0.5);opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity 0.18s ease,transform 0.18s ease;z-index:2000;}',
       '.frost-nav-menu.open{opacity:1;transform:none;pointer-events:auto;}',
-      '.frost-nav-menu-item{display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border:none;border-radius:9px;background:transparent;color:var(--text,#f5f5f7);',
-      'font-family:inherit;font-size:13px;font-weight:600;text-align:left;cursor:pointer;transition:background 0.15s ease;}',
+      '.frost-nav-menu-item{display:flex;align-items:center;gap:9px;width:100%;box-sizing:border-box;padding:9px 12px;border:none;border-radius:9px;background:transparent;color:var(--text,#f5f5f7);',
+      'font-family:inherit;font-size:13px;font-weight:600;text-align:left;text-decoration:none;cursor:pointer;transition:background 0.15s ease;}',
       '.frost-nav-menu-item:hover{background:rgba(255,255,255,0.07);}',
       '.frost-nav-menu-item svg{width:15px;height:15px;flex-shrink:0;color:var(--muted,#86868b);}',
       '.frost-nav-menu-item.is-danger{color:#ff6b6b;}',
@@ -196,11 +198,13 @@
     navMenu.setAttribute('role', 'menu');
     navMenu.innerHTML =
       '<button type="button" class="frost-nav-menu-item frost-nav-manage" role="menuitem">' + ICON_USER + 'Manage</button>' +
+      '<a class="frost-nav-menu-item frost-nav-capes" role="menuitem" href="' + STORE_CAPES_URL + '">' + ICON_CAPE + 'My Capes</a>' +
       '<button type="button" class="frost-nav-menu-item is-danger frost-nav-signout" role="menuitem">' + ICON_LOGOUT + 'Sign Out</button>';
     navMenu.querySelector('.frost-nav-manage').addEventListener('click', function () {
       closeNavMenu();
       openAccountModal();
     });
+    navMenu.querySelector('.frost-nav-capes').addEventListener('click', function () { closeNavMenu(); });
     navMenu.querySelector('.frost-nav-signout').addEventListener('click', function () {
       closeNavMenu();
       clearToken();
