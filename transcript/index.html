@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ticket Transcript | Frost Client</title>
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:title" content="Frost Client ticket transcript">
+<meta property="og:description" content="Transcript of a closed FrostClient support ticket. Available for 24 hours.">
+<link rel="stylesheet" href="transcript.css">
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="https://frostclient.eu"><img src="../favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <a class="nav-back" href="https://frostclient.eu">← frostclient.eu</a>
+</nav>
+
+<main class="transcript-page">
+  <div class="transcript-eyebrow">Frost Support</div>
+  <h1>Ticket <span class="grad">Transcript</span></h1>
+  <p class="transcript-sub">A copy of your closed support ticket. This page is available for 24 hours after the ticket was closed.</p>
+
+  <div class="transcript-card">
+    <div class="state active" id="stateLoading">
+      <div class="spinner"></div>
+      <p class="state-text">Loading transcript...</p>
+    </div>
+
+    <div class="state" id="stateError">
+      <div class="state-title" id="errorTitle">Transcript not found</div>
+      <p class="state-text" id="errorText">This transcript does not exist. Check the link and try again.</p>
+      <a class="btn-secondary" href="https://frostclient.eu">Back to FrostClient</a>
+    </div>
+
+    <div class="state" id="stateReady">
+      <div class="ticket-head">
+        <div class="ticket-name" id="ticketName">-</div>
+        <div class="ticket-meta" id="ticketPills"></div>
+      </div>
+      <div class="ticket-info" id="ticketInfo"></div>
+      <div class="messages" id="messages"></div>
+      <p class="state-note">Attachments link to Discord and may stop working before the transcript expires. Need help again? Open a new ticket on the <a href="https://frostclient.eu/discord">FrostClient Discord</a>.</p>
+    </div>
+  </div>
+</main>
+
+<script src="transcript.js"></script>
+</body>
+</html>

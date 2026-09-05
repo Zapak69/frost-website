@@ -1,6 +1,8 @@
 (function () {
   const match = /^\/share\/([A-Za-z0-9]{6,16})\/?$/.exec(location.pathname);
   if (match) location.replace('/share/?c=' + match[1].toUpperCase());
+  const transcript = /^\/transcript\/([a-f0-9]{32})\/?$/.exec(location.pathname);
+  if (transcript) location.replace('/transcript/?t=' + transcript[1]);
 })();
 const particleCanvas = document.getElementById('particles');
 const particleCtx = particleCanvas.getContext('2d');
