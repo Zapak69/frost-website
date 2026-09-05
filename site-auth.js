@@ -43,9 +43,9 @@
     try { return JSON.parse(localStorage.getItem(USER_CACHE_KEY) || 'null'); } catch (e) { return null; }
   }
 
-  function saveUserCache(user) {
+  function saveUserCache(user, liteActive) {
     if (!user || !user.id) return;
-    try { localStorage.setItem(USER_CACHE_KEY, JSON.stringify({ id: user.id, name: user.name || '', username: user.username || '', avatar: user.avatar || '' })); } catch (e) {}
+    try { localStorage.setItem(USER_CACHE_KEY, JSON.stringify({ id: user.id, name: user.name || '', username: user.username || '', avatar: user.avatar || '', lite: liteActive === true })); } catch (e) {}
   }
 
   function fetchJsonWithRetry(url, options, retries) {
@@ -93,6 +93,7 @@
     if (btn.dataset.frostOriginal === undefined) btn.dataset.frostOriginal = btn.innerHTML;
     var name = (user && (user.name || user.username)) || 'Account';
     btn.classList.add('frost-nav-pill');
+    btn.classList.toggle('is-lite', !!(user && user.lite) || hasLiteAccess());
     btn.innerHTML = '<img class="frost-nav-avatar" alt="" src="' + avatarUrl(user) + '"><span class="js-site-auth-text frost-nav-name"></span>' + ICON_CHEVRON;
     btn.querySelector('.frost-nav-name').textContent = name;
     btn.querySelector('.frost-nav-avatar').addEventListener('error', function () { this.style.display = 'none'; });
@@ -101,7 +102,7 @@
 
   function restoreNavBtn(btn) {
     if (btn.dataset.frostOriginal !== undefined) btn.innerHTML = btn.dataset.frostOriginal;
-    btn.classList.remove('frost-nav-pill', 'open');
+    btn.classList.remove('frost-nav-pill', 'is-lite', 'open');
     btn.removeAttribute('aria-haspopup');
     btn.removeAttribute('aria-expanded');
   }
@@ -153,14 +154,20 @@
     var style = document.createElement('style');
     style.id = 'frostNavAccountStyles';
     style.textContent = [
-      '.frost-nav-account{position:relative;display:inline-flex;align-items:center;}',
       '.nav-signin-btn.frost-nav-pill{padding:4px 10px 4px 4px;gap:8px;color:var(--text,#f5f5f7);}',
+      '.nav-signin-btn.frost-nav-pill.is-lite{border-color:transparent;color:#1a0a1f;background:linear-gradient(120deg,#ff73fa 0%,#b845ff 45%,#ff73fa 100%);background-size:220% 220%;',
+      'animation:frostLitePill 4s ease-in-out infinite;box-shadow:0 0 18px -6px rgba(255,115,250,0.7);}',
+      '.nav-signin-btn.frost-nav-pill.is-lite:hover{background:linear-gradient(120deg,#ff73fa 0%,#b845ff 45%,#ff73fa 100%);background-size:220% 220%;color:#1a0a1f;border-color:transparent;filter:brightness(1.08);}',
+      '.nav-signin-btn.frost-nav-pill.is-lite .frost-nav-chevron{color:rgba(26,10,31,0.7);}',
+      '.nav-signin-btn.frost-nav-pill.is-lite img.frost-nav-avatar{box-shadow:0 0 0 1.5px rgba(255,255,255,0.75);}',
+      '@keyframes frostLitePill{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}',
+      '@media (prefers-reduced-motion: reduce){.nav-signin-btn.frost-nav-pill.is-lite{animation:none;}}',
       '.nav-signin-btn.frost-nav-pill img.frost-nav-avatar{display:block;width:24px;height:24px;border-radius:50%;object-fit:cover;background:rgba(255,255,255,0.08);}',
       '.nav-signin-btn.frost-nav-pill .frost-nav-name{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
       '.nav-signin-btn.frost-nav-pill .frost-nav-chevron{width:14px;height:14px;color:var(--muted,#86868b);transition:transform 0.2s ease;flex-shrink:0;}',
       '.nav-signin-btn.frost-nav-pill.open .frost-nav-chevron{transform:rotate(180deg);}',
-      '.frost-nav-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:168px;background:var(--surface,#1c1c1e);border:1px solid var(--border,rgba(255,255,255,0.1));',
-      'border-radius:14px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,0.5);opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity 0.18s ease,transform 0.18s ease;z-index:200;}',
+      '.frost-nav-menu{position:fixed;min-width:168px;background:var(--surface,#1c1c1e);border:1px solid var(--border,rgba(255,255,255,0.1));',
+      'border-radius:14px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,0.5);opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity 0.18s ease,transform 0.18s ease;z-index:2000;}',
       '.frost-nav-menu.open{opacity:1;transform:none;pointer-events:auto;}',
       '.frost-nav-menu-item{display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border:none;border-radius:9px;background:transparent;color:var(--text,#f5f5f7);',
       'font-family:inherit;font-size:13px;font-weight:600;text-align:left;cursor:pointer;transition:background 0.15s ease;}',
@@ -173,17 +180,17 @@
     document.head.appendChild(style);
   }
 
+  function positionNavMenu() {
+    if (!navMenu || !navMenuBtn) return;
+    var r = navMenuBtn.getBoundingClientRect();
+    navMenu.style.top = Math.round(r.bottom + 8) + 'px';
+    navMenu.style.right = Math.max(8, Math.round(window.innerWidth - r.right)) + 'px';
+  }
+
   function ensureNavMenu(btn) {
     if (navMenu && navMenuBtn === btn) return navMenu;
     if (navMenu) navMenu.remove();
     injectNavStyles();
-    var wrap = btn.parentElement;
-    if (!wrap || !wrap.classList.contains('frost-nav-account')) {
-      wrap = document.createElement('span');
-      wrap.className = 'frost-nav-account';
-      btn.parentNode.insertBefore(wrap, btn);
-      wrap.appendChild(btn);
-    }
     navMenu = document.createElement('div');
     navMenu.className = 'frost-nav-menu';
     navMenu.setAttribute('role', 'menu');
@@ -199,7 +206,7 @@
       clearToken();
       document.dispatchEvent(new CustomEvent('frostAccountLogout'));
     });
-    wrap.appendChild(navMenu);
+    document.body.appendChild(navMenu);
     navMenuBtn = btn;
     return navMenu;
   }
@@ -213,6 +220,7 @@
   function toggleNavMenu(btn) {
     var menu = ensureNavMenu(btn);
     var open = !menu.classList.contains('open');
+    if (open) positionNavMenu();
     menu.classList.toggle('open', open);
     btn.classList.toggle('open', open);
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -226,6 +234,7 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeNavMenu();
   });
+  window.addEventListener('resize', function () { if (navMenu && navMenu.classList.contains('open')) positionNavMenu(); });
 
   function injectModalStyles() {
     if (document.getElementById('frostAccountStyles')) return;
@@ -505,7 +514,7 @@
     accountDataPromise = fetchAccountInfo(token).then(function (data) {
       if (data && data.ok) {
         accountDataCache = data;
-        saveUserCache(data.user);
+        saveUserCache(data.user, data.liteActive);
         applyState();
       } else if (data && data.error === 'token_expired') {
         clearToken();
@@ -540,7 +549,7 @@
         return;
       }
       accountDataCache = data;
-      saveUserCache(data.user);
+      saveUserCache(data.user, data.liteActive);
       applyState();
       els.loading.style.display = 'none';
       els.error.style.display = 'none';
