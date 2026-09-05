@@ -6,6 +6,10 @@
   var LEGACY_DISCARD_KEYS = ['frostStatisticsToken', 'frostReviewToken', 'frostLiteToken'];
   var OAUTH_STATE_KEY = 'frostLiteOauthState';
   var RETURN_TO_KEY = 'frostAuthReturnTo';
+  var USER_CACHE_KEY = 'frostAccountUser';
+  var ICON_USER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+  var ICON_LOGOUT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>';
+  var ICON_CHEVRON = '<svg class="frost-nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
   var ACCOUNT_URL = 'https://frostclient.eu/lite';
   var DISCORD_CLIENT_ID = '1512834635640475898';
   var DISCORD_REDIRECT_URI = 'https://frostclient.eu/lite';
@@ -30,8 +34,18 @@
     try {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem('frostLiteAccess');
+      localStorage.removeItem(USER_CACHE_KEY);
       LEGACY_TOKEN_KEYS.concat(LEGACY_DISCARD_KEYS).forEach(function (k) { localStorage.removeItem(k); });
     } catch (e) {}
+  }
+
+  function loadUserCache() {
+    try { return JSON.parse(localStorage.getItem(USER_CACHE_KEY) || 'null'); } catch (e) { return null; }
+  }
+
+  function saveUserCache(user) {
+    if (!user || !user.id) return;
+    try { localStorage.setItem(USER_CACHE_KEY, JSON.stringify({ id: user.id, name: user.name || '', username: user.username || '', avatar: user.avatar || '' })); } catch (e) {}
   }
 
   function fetchJsonWithRetry(url, options, retries) {
@@ -74,13 +88,37 @@
     try { return localStorage.getItem('frostLiteAccess') === '1'; } catch (e) { return false; }
   }
 
+  function renderNavPill(btn, user) {
+    injectNavStyles();
+    if (btn.dataset.frostOriginal === undefined) btn.dataset.frostOriginal = btn.innerHTML;
+    var name = (user && (user.name || user.username)) || 'Account';
+    btn.classList.add('frost-nav-pill');
+    btn.innerHTML = '<img class="frost-nav-avatar" alt="" src="' + avatarUrl(user) + '"><span class="js-site-auth-text frost-nav-name"></span>' + ICON_CHEVRON;
+    btn.querySelector('.frost-nav-name').textContent = name;
+    btn.querySelector('.frost-nav-avatar').addEventListener('error', function () { this.style.display = 'none'; });
+    btn.setAttribute('aria-haspopup', 'true');
+  }
+
+  function restoreNavBtn(btn) {
+    if (btn.dataset.frostOriginal !== undefined) btn.innerHTML = btn.dataset.frostOriginal;
+    btn.classList.remove('frost-nav-pill', 'open');
+    btn.removeAttribute('aria-haspopup');
+    btn.removeAttribute('aria-expanded');
+  }
+
   function applyState() {
     var loggedIn = !!loadToken();
+    var user = loggedIn ? loadUserCache() : null;
     document.querySelectorAll('.js-site-auth-btn').forEach(function (btn) {
-      var textEl = btn.querySelector('.js-site-auth-text') || btn;
-      textEl.textContent = loggedIn ? 'Manage' : 'Sign in';
       btn.classList.toggle('is-logged-in', loggedIn);
+      if (btn.classList.contains('nav-signin-btn')) {
+        if (loggedIn) renderNavPill(btn, user);
+        else restoreNavBtn(btn);
+      }
+      var textEl = btn.querySelector('.js-site-auth-text') || btn;
+      if (!btn.classList.contains('frost-nav-pill')) textEl.textContent = loggedIn ? 'Manage' : 'Sign in';
     });
+    if (!loggedIn) closeNavMenu();
     var showDownloadLink = loggedIn && hasLiteAccess();
     document.querySelectorAll('.js-lite-access-link').forEach(function (a) {
       if (a.dataset.defaultHref === undefined) a.dataset.defaultHref = a.getAttribute('href');
@@ -106,6 +144,88 @@
     if (isNaN(d.getTime())) return '—';
     return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   }
+
+  var navMenu = null;
+  var navMenuBtn = null;
+
+  function injectNavStyles() {
+    if (document.getElementById('frostNavAccountStyles')) return;
+    var style = document.createElement('style');
+    style.id = 'frostNavAccountStyles';
+    style.textContent = [
+      '.frost-nav-account{position:relative;display:inline-flex;align-items:center;}',
+      '.nav-signin-btn.frost-nav-pill{padding:4px 10px 4px 4px;gap:8px;color:var(--text,#f5f5f7);}',
+      '.nav-signin-btn.frost-nav-pill img.frost-nav-avatar{display:block;width:24px;height:24px;border-radius:50%;object-fit:cover;background:rgba(255,255,255,0.08);}',
+      '.nav-signin-btn.frost-nav-pill .frost-nav-name{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.nav-signin-btn.frost-nav-pill .frost-nav-chevron{width:14px;height:14px;color:var(--muted,#86868b);transition:transform 0.2s ease;flex-shrink:0;}',
+      '.nav-signin-btn.frost-nav-pill.open .frost-nav-chevron{transform:rotate(180deg);}',
+      '.frost-nav-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:168px;background:var(--surface,#1c1c1e);border:1px solid var(--border,rgba(255,255,255,0.1));',
+      'border-radius:14px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,0.5);opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity 0.18s ease,transform 0.18s ease;z-index:200;}',
+      '.frost-nav-menu.open{opacity:1;transform:none;pointer-events:auto;}',
+      '.frost-nav-menu-item{display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border:none;border-radius:9px;background:transparent;color:var(--text,#f5f5f7);',
+      'font-family:inherit;font-size:13px;font-weight:600;text-align:left;cursor:pointer;transition:background 0.15s ease;}',
+      '.frost-nav-menu-item:hover{background:rgba(255,255,255,0.07);}',
+      '.frost-nav-menu-item svg{width:15px;height:15px;flex-shrink:0;color:var(--muted,#86868b);}',
+      '.frost-nav-menu-item.is-danger{color:#ff6b6b;}',
+      '.frost-nav-menu-item.is-danger svg{color:#ff6b6b;}',
+      '.frost-nav-menu-item.is-danger:hover{background:rgba(255,80,80,0.12);}'
+    ].join('');
+    document.head.appendChild(style);
+  }
+
+  function ensureNavMenu(btn) {
+    if (navMenu && navMenuBtn === btn) return navMenu;
+    if (navMenu) navMenu.remove();
+    injectNavStyles();
+    var wrap = btn.parentElement;
+    if (!wrap || !wrap.classList.contains('frost-nav-account')) {
+      wrap = document.createElement('span');
+      wrap.className = 'frost-nav-account';
+      btn.parentNode.insertBefore(wrap, btn);
+      wrap.appendChild(btn);
+    }
+    navMenu = document.createElement('div');
+    navMenu.className = 'frost-nav-menu';
+    navMenu.setAttribute('role', 'menu');
+    navMenu.innerHTML =
+      '<button type="button" class="frost-nav-menu-item frost-nav-manage" role="menuitem">' + ICON_USER + 'Manage</button>' +
+      '<button type="button" class="frost-nav-menu-item is-danger frost-nav-signout" role="menuitem">' + ICON_LOGOUT + 'Sign Out</button>';
+    navMenu.querySelector('.frost-nav-manage').addEventListener('click', function () {
+      closeNavMenu();
+      openAccountModal();
+    });
+    navMenu.querySelector('.frost-nav-signout').addEventListener('click', function () {
+      closeNavMenu();
+      clearToken();
+      document.dispatchEvent(new CustomEvent('frostAccountLogout'));
+    });
+    wrap.appendChild(navMenu);
+    navMenuBtn = btn;
+    return navMenu;
+  }
+
+  function closeNavMenu() {
+    if (!navMenu) return;
+    navMenu.classList.remove('open');
+    if (navMenuBtn) { navMenuBtn.classList.remove('open'); navMenuBtn.setAttribute('aria-expanded', 'false'); }
+  }
+
+  function toggleNavMenu(btn) {
+    var menu = ensureNavMenu(btn);
+    var open = !menu.classList.contains('open');
+    menu.classList.toggle('open', open);
+    btn.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  document.addEventListener('click', function (e) {
+    if (!navMenu || !navMenu.classList.contains('open')) return;
+    if (navMenuBtn && (navMenuBtn.contains(e.target) || navMenu.contains(e.target))) return;
+    closeNavMenu();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeNavMenu();
+  });
 
   function injectModalStyles() {
     if (document.getElementById('frostAccountStyles')) return;
@@ -383,7 +503,14 @@
     var token = loadToken();
     if (!token) return;
     accountDataPromise = fetchAccountInfo(token).then(function (data) {
-      if (data && data.ok) accountDataCache = data;
+      if (data && data.ok) {
+        accountDataCache = data;
+        saveUserCache(data.user);
+        applyState();
+      } else if (data && data.error === 'token_expired') {
+        clearToken();
+        document.dispatchEvent(new CustomEvent('frostAccountLogout'));
+      }
       return data;
     }).catch(function () { return null; });
   }
@@ -413,6 +540,8 @@
         return;
       }
       accountDataCache = data;
+      saveUserCache(data.user);
+      applyState();
       els.loading.style.display = 'none';
       els.error.style.display = 'none';
       els.content.style.display = '';
@@ -445,7 +574,8 @@
     document.querySelectorAll('.js-site-auth-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         if (btn.classList.contains('is-logged-in')) {
-          openAccountModal();
+          if (btn.classList.contains('frost-nav-pill')) toggleNavMenu(btn);
+          else openAccountModal();
         } else {
           startLogin(btn);
         }

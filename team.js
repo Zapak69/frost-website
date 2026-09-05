@@ -325,6 +325,15 @@
   });
 
   const applyBtns = document.querySelectorAll('.js-staff-apply-btn');
+  function applyAuthUi() {
+    const loggedIn = !!loadToken();
+    applyBtns.forEach(function (btn) { btn.classList.toggle('is-logged-in', loggedIn); });
+    const intro = document.getElementById('applyBoxIntro');
+    if (intro) intro.textContent = loggedIn ? intro.dataset.loggedIn : intro.dataset.loggedOut;
+  }
+  applyAuthUi();
+  document.addEventListener('frostAccountLogin', applyAuthUi);
+  document.addEventListener('frostAccountLogout', applyAuthUi);
   if (hasApplied()) markApplied();
   checkStatus();
 

@@ -201,9 +201,15 @@
   <div class="partner-apply-box">
     <div id="applyBoxNormal">
       <h3>Ready to get your code?</h3>
-      <p>Sign in with Discord and pick a discount code — takes under a minute, no waiting on a review.</p>
+      <p id="applyBoxIntro" data-logged-out="Sign in with Discord and pick a discount code — takes under a minute, no waiting on a review." data-logged-in="Pick a discount code — takes under a minute, no waiting on a review.">Sign in with Discord and pick a discount code — takes under a minute, no waiting on a review.</p>
       <div class="partner-member-note"><span class="partner-member-note-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><span><strong>You must be a member of our Discord server</strong> — if you're not, we have no way to reach you.</span></div>
       <button type="button" class="partner-cta js-apply-btn"><img src="icons/discord.webp" alt=""/>Get Started</button>
+    </div>
+    <div id="applyBoxPartner" style="display:none;">
+      <div class="partner-already-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>You're already a creator</div>
+      <h3>Your creator code is active</h3>
+      <p>Orders, payouts, assets and rank-ups all live in your dashboard.</p>
+      <a class="partner-cta" href="https://partner.frostclient.eu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Open Dashboard</a>
     </div>
   </div>
 </div>

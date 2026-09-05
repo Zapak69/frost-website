@@ -108,6 +108,7 @@
   }
   .partner-cta:hover { filter: brightness(0.9); transform: translateY(-1px); text-decoration: none; }
   .partner-cta img { width: 20px; height: 20px; }
+  .partner-cta.is-logged-in img { display: none; }
   .partner-cta.loading { opacity: 0.7; pointer-events: none; }
   .partner-member-note {
     display: flex; align-items: flex-start; gap: 10px; text-align: left;

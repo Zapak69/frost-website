@@ -78,15 +78,31 @@
         throw err;
       });
   }
+  let alreadyPartner = false;
+  function markAlreadyPartner() {
+    alreadyPartner = true;
+    const normal = document.getElementById('applyBoxNormal');
+    const partnerBox = document.getElementById('applyBoxPartner');
+    if (normal) normal.style.display = 'none';
+    if (partnerBox) partnerBox.style.display = '';
+    document.querySelectorAll('.js-apply-btn').forEach(function (btn) {
+      if (btn.closest('.partner-apply-box')) return;
+      btn.textContent = 'Open Dashboard';
+    });
+  }
+  function applyAuthUi() {
+    const loggedIn = !!loadToken();
+    document.querySelectorAll('.js-apply-btn').forEach(function (btn) { btn.classList.toggle('is-logged-in', loggedIn); });
+    const intro = document.getElementById('applyBoxIntro');
+    if (intro) intro.textContent = loggedIn ? intro.dataset.loggedIn : intro.dataset.loggedOut;
+  }
   function checkAlreadyPartner() {
     const token = loadToken();
     if (!token) return;
     fetch(PARTNER_STATUS_URL + '?token=' + encodeURIComponent(token), { cache: 'no-store' })
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        if (data && data.ok && data.isPartner) {
-          window.location.href = 'https://partner.frostclient.eu';
-        }
+        if (data && data.ok && data.isPartner) markAlreadyPartner();
       })
       .catch(function () {});
   }
@@ -194,7 +210,8 @@
           return;
         }
         if (data && data.error === 'already_partner') {
-          window.location.href = 'https://partner.frostclient.eu';
+          closeModal();
+          markAlreadyPartner();
           return;
         }
         step1Error.style.display = 'block';
@@ -228,6 +245,20 @@
   });
 
   const applyBtns = document.querySelectorAll('.js-apply-btn');
+  applyAuthUi();
+  document.addEventListener('frostAccountLogin', applyAuthUi);
+  document.addEventListener('frostAccountLogout', function () {
+    alreadyPartner = false;
+    applyAuthUi();
+    const normal = document.getElementById('applyBoxNormal');
+    const partnerBox = document.getElementById('applyBoxPartner');
+    if (normal) normal.style.display = '';
+    if (partnerBox) partnerBox.style.display = 'none';
+    document.querySelectorAll('.js-apply-btn').forEach(function (btn) {
+      if (btn.closest('.partner-apply-box')) return;
+      btn.textContent = btn.classList.contains('footer-link-btn') ? 'Get your Media code' : 'Get Started';
+    });
+  });
   checkAlreadyPartner();
 
   function startLogin() {
@@ -249,6 +280,10 @@
 
   applyBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
+      if (alreadyPartner) {
+        window.location.href = 'https://partner.frostclient.eu';
+        return;
+      }
       const token = loadToken();
       if (token) {
         resetForm();
@@ -302,7 +337,8 @@
           return;
         }
         if (data.status === 'already_partner') {
-          window.location.href = 'https://partner.frostclient.eu';
+          closeModal();
+          markAlreadyPartner();
           return;
         }
         if (data.status === 'eligible' && data.partnerToken) {
