@@ -1,4 +1,20 @@
 (function () {
+  const tabs = document.querySelectorAll('.install-tab');
+  const panels = document.querySelectorAll('.install-panel');
+  if (!tabs.length) return;
+  function showInstallTab(name) {
+    tabs.forEach(tab => {
+      const active = tab.dataset.installTab === name;
+      tab.classList.toggle('active', active);
+      tab.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    panels.forEach(panel => { panel.hidden = panel.dataset.installPanel !== name; });
+  }
+  tabs.forEach(tab => tab.addEventListener('click', () => showInstallTab(tab.dataset.installTab)));
+  window.frostShowInstallTab = showInstallTab;
+})();
+
+(function () {
   const params = new URLSearchParams(window.location.search);
   if (params.has('cracked')) {
     window.location.replace('cracked');
@@ -13,6 +29,9 @@
   if (!target) return;
 
   if (target.tagName === 'DETAILS') target.open = true;
+  const tabPanel = target.closest('.install-panel');
+  if (tabPanel && window.frostShowInstallTab) window.frostShowInstallTab(tabPanel.dataset.installPanel);
+  if (target.classList.contains('install-tab') && window.frostShowInstallTab) window.frostShowInstallTab(target.dataset.installTab);
 
   target.classList.add('faq-highlight');
   setTimeout(() => target.classList.remove('faq-highlight'), 1800);

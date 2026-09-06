@@ -41,21 +41,6 @@ lite-vs-frost        -> https://frostclient.eu/faq?lite-vs-frost
 lite-cancel          -> https://frostclient.eu/faq?lite-cancel
                          "How do I cancel my Lite subscription?"
 
-Installation
--------------
-installation         -> https://frostclient.eu/faq?installation
-                         (whole section)
-install-modrinth-app -> https://frostclient.eu/faq?install-modrinth-app
-                         Step 1: "Install the Modrinth App"
-install-redeem       -> https://frostclient.eu/faq?install-redeem
-                         Step 2: "Download Frost"
-install-open-mrpack  -> https://frostclient.eu/faq?install-open-mrpack
-                         Step 3: "Open the downloaded .mrpack file"
-install-launch       -> https://frostclient.eu/faq?install-launch
-                         Step 4: "Launch from the Modrinth App"
-cracked              -> https://frostclient.eu/cracked (faq?cracked redirects here too)
-                         Full step-by-step cracked/AstralRinth install guide page
-
 Launcher
 --------
 launcher             -> https://frostclient.eu/faq?launcher
@@ -80,6 +65,33 @@ launcher-share       -> https://frostclient.eu/faq?launcher-share
                          "How do I share my instance with a friend?"
 launcher-lite-locked -> https://frostclient.eu/faq?launcher-lite-locked
                          "My Lite version suddenly shows 'Subscribe to Lite'"
+
+Installation
+-------------
+installation         -> https://frostclient.eu/faq?installation
+                         (whole section, two tabs)
+install-launcher     -> https://frostclient.eu/faq?install-launcher
+                         Tab: "Installing with the Frost Launcher" (default)
+install-launcher-download -> https://frostclient.eu/faq?install-launcher-download
+                         Launcher step 1: "Download the Frost Launcher"
+install-launcher-signin -> https://frostclient.eu/faq?install-launcher-signin
+                         Launcher step 2: "Sign in"
+install-launcher-version -> https://frostclient.eu/faq?install-launcher-version
+                         Launcher step 3: "Pick a version"
+install-launcher-play -> https://frostclient.eu/faq?install-launcher-play
+                         Launcher step 4: "Press Play"
+install-mrpack       -> https://frostclient.eu/faq?install-mrpack
+                         Tab: "Installing as .mrpack"
+install-modrinth-app -> https://frostclient.eu/faq?install-modrinth-app
+                         .mrpack step 1: "Install the Modrinth App" (opens the .mrpack tab)
+install-redeem       -> https://frostclient.eu/faq?install-redeem
+                         .mrpack step 2: "Download Frost"
+install-open-mrpack  -> https://frostclient.eu/faq?install-open-mrpack
+                         .mrpack step 3: "Open the downloaded .mrpack file"
+install-launch       -> https://frostclient.eu/faq?install-launch
+                         .mrpack step 4: "Launch from the Modrinth App"
+cracked              -> https://frostclient.eu/cracked (faq?cracked redirects here too)
+                         Full step-by-step cracked/AstralRinth install guide page
 
 Support
 -------

@@ -132,44 +132,6 @@
     </details>
   </div>
 
-  <h2 id="installation">Installation</h2>
-  <p class="section-intro">Frost is distributed as a <code>.mrpack</code> modpack file through Modrinth. Installing it takes two steps once you have your download.</p>
-
-  <div class="install-steps">
-    <div class="install-step" id="install-modrinth-app">
-      <div class="install-step-num">1</div>
-      <div class="install-step-content">
-        <h3>Install the Modrinth App</h3>
-        <p>Frost installs through the <a href="https://modrinth.com/app" target="_blank">Modrinth App</a> — download and install it first if you don't already have it.</p>
-      </div>
-    </div>
-    <div class="install-step" id="install-redeem">
-      <div class="install-step-num">2</div>
-      <div class="install-step-content">
-        <h3>Download Frost</h3>
-        <p>Click the download button on the <a href="https://frostclient.eu">homepage</a> — pick your renderer and version and download the <code>.mrpack</code> file from modrinth where you will be redirected.</p>
-      </div>
-    </div>
-    <div class="install-step" id="install-open-mrpack">
-      <div class="install-step-num">3</div>
-      <div class="install-step-content">
-        <h3>Open the downloaded .mrpack file</h3>
-        <p>That's it — just double-click the downloaded file. The Modrinth App picks it up automatically and installs Frost Client for you, no manual setup required.</p>
-      </div>
-    </div>
-    <div class="install-step" id="install-launch">
-      <div class="install-step-num">4</div>
-      <div class="install-step-content">
-        <h3>Launch from the Modrinth App</h3>
-        <p>Once the install finishes, you'll find Frost listed as an instance in the Modrinth App — select it and press Play.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="note-box amber">
-    <strong>Don't own Minecraft?</strong> The official Modrinth App requires a premium (Microsoft-authenticated) Minecraft account. If you play on a cracked/offline account, follow our <a href="cracked">step-by-step cracked install guide</a> instead — it walks you through installing Frost with AstralRinth, an offline-friendly fork of the Modrinth App.
-  </div>
-
   <h2 id="launcher">Launcher</h2>
   <div class="faq-list">
     <details class="faq-item" id="launcher-download">
@@ -233,6 +195,80 @@
         <p>That means your Lite subscription isn't active anymore, so the Lite instance is locked. <a href="https://frostclient.eu/lite">Resubscribe</a> to keep playing it, or pick a different (regular) version from the version selector — those always stay free.</p>
       </div>
     </details>
+  </div>
+
+  <h2 id="installation">Installation</h2>
+  <p class="section-intro">There are two ways to get Frost: the <strong>Frost Launcher</strong> (recommended, installs everything for you) or the classic <code>.mrpack</code> modpack file through the Modrinth App. Pick the one you want to follow.</p>
+
+  <div class="install-tabs" role="tablist">
+    <button type="button" class="install-tab active" id="install-launcher" data-install-tab="launcher" role="tab" aria-selected="true">Installing with the Frost Launcher</button>
+    <button type="button" class="install-tab" id="install-mrpack" data-install-tab="mrpack" role="tab" aria-selected="false">Installing as .mrpack</button>
+  </div>
+
+  <div class="install-steps install-panel" data-install-panel="launcher">
+    <div class="install-step" id="install-launcher-download">
+      <div class="install-step-num">1</div>
+      <div class="install-step-content">
+        <h3>Download the Frost Launcher</h3>
+        <p>Hit <strong>Download Free</strong> on the <a href="https://frostclient.eu/?openDownload">homepage</a> and grab the installer for your system — Windows (.exe), macOS (.dmg) or Linux (.AppImage) — then run it.</p>
+      </div>
+    </div>
+    <div class="install-step" id="install-launcher-signin">
+      <div class="install-step-num">2</div>
+      <div class="install-step-content">
+        <h3>Sign in</h3>
+        <p>Sign in with Discord (you need to be on the <a href="https://discord.gg/Kn8ydsABU8" target="_blank">FrostClient Discord server</a>) and add your Microsoft account for Minecraft. Both take a few seconds and you only do it once.</p>
+      </div>
+    </div>
+    <div class="install-step" id="install-launcher-version">
+      <div class="install-step-num">3</div>
+      <div class="install-step-content">
+        <h3>Pick a version</h3>
+        <p>Open <strong>Library → Install another version</strong>, choose the Minecraft version and the renderer (OpenGL or Vulkan, Lite if you have a subscription) and confirm. The launcher downloads Java, the game and every mod by itself.</p>
+      </div>
+    </div>
+    <div class="install-step" id="install-launcher-play">
+      <div class="install-step-num">4</div>
+      <div class="install-step-content">
+        <h3>Press Play</h3>
+        <p>That's it — press <strong>Play</strong> on the home screen. Updates, mods, capes and instance sharing are all handled inside the launcher from now on.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="install-steps install-panel" data-install-panel="mrpack" hidden>
+    <div class="install-step" id="install-modrinth-app">
+      <div class="install-step-num">1</div>
+      <div class="install-step-content">
+        <h3>Install the Modrinth App</h3>
+        <p>The <code>.mrpack</code> route installs through the <a href="https://modrinth.com/app" target="_blank">Modrinth App</a> — download and install it first if you don't already have it.</p>
+      </div>
+    </div>
+    <div class="install-step" id="install-redeem">
+      <div class="install-step-num">2</div>
+      <div class="install-step-content">
+        <h3>Download Frost</h3>
+        <p>Click the download button on the <a href="https://frostclient.eu">homepage</a> — pick your renderer and version and download the <code>.mrpack</code> file from modrinth where you will be redirected.</p>
+      </div>
+    </div>
+    <div class="install-step" id="install-open-mrpack">
+      <div class="install-step-num">3</div>
+      <div class="install-step-content">
+        <h3>Open the downloaded .mrpack file</h3>
+        <p>That's it — just double-click the downloaded file. The Modrinth App picks it up automatically and installs Frost Client for you, no manual setup required.</p>
+      </div>
+    </div>
+    <div class="install-step" id="install-launch">
+      <div class="install-step-num">4</div>
+      <div class="install-step-content">
+        <h3>Launch from the Modrinth App</h3>
+        <p>Once the install finishes, you'll find Frost listed as an instance in the Modrinth App — select it and press Play.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-box amber">
+    <strong>Don't own Minecraft?</strong> Both the Frost Launcher and the official Modrinth App require a premium (Microsoft-authenticated) Minecraft account. If you play on a cracked/offline account, follow our <a href="cracked">step-by-step cracked install guide</a> instead — it walks you through installing Frost with AstralRinth, an offline-friendly fork of the Modrinth App.
   </div>
 
   <h2 id="support">Support</h2>
