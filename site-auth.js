@@ -584,6 +584,14 @@
     document.addEventListener('frostAccountLogout', function () { accountDataCache = null; accountDataPromise = null; applyState(); });
     document.addEventListener('frostAccountLogin', function () { accountDataCache = null; accountDataPromise = null; applyState(); prefetchAccountInfo(); });
     if (loadToken()) prefetchAccountInfo();
+    if (window.location.hash === '#account') {
+      if (loadToken()) {
+        try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (e) {}
+        openAccountModal();
+      } else {
+        startLogin();
+      }
+    }
     document.querySelectorAll('.js-site-auth-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         if (btn.classList.contains('is-logged-in')) {

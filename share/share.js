@@ -51,6 +51,9 @@
     const inst = share.instance || {};
     document.getElementById('instName').textContent = inst.name || 'Shared instance';
     document.getElementById('instVersion').textContent = [inst.minecraftVersion, inst.renderer].filter(Boolean).join(' ');
+    const needsLite = inst.renderer === 'Lite' || /-lite$/i.test(inst.serverId || '');
+    document.getElementById('instVersion').classList.toggle('pill-lite', needsLite);
+    document.getElementById('liteNote').hidden = !needsLite;
     const creator = share.creator || {};
     const creatorEl = document.getElementById('instCreator');
     const avatar = document.getElementById('creatorAvatar');
