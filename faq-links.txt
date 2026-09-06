@@ -56,6 +56,31 @@ install-launch       -> https://frostclient.eu/faq?install-launch
 cracked              -> https://frostclient.eu/cracked (faq?cracked redirects here too)
                          Full step-by-step cracked/AstralRinth install guide page
 
+Launcher
+--------
+launcher             -> https://frostclient.eu/faq?launcher
+                         (whole section)
+launcher-download    -> https://frostclient.eu/faq?launcher-download
+                         "Where do I download the Frost Launcher?"
+launcher-update-fails -> https://frostclient.eu/faq?launcher-update-fails
+                         "The launcher won't update itself — what do I do?"
+launcher-modrinth    -> https://frostclient.eu/faq?launcher-modrinth
+                         "Do I still need the Modrinth App?"
+launcher-discord     -> https://frostclient.eu/faq?launcher-discord
+                         "Why do I have to sign in with Discord?"
+launcher-java-error  -> https://frostclient.eu/faq?launcher-java-error
+                         "I get 'Could not create the Java Virtual Machine' when I press Play"
+launcher-crash-logs  -> https://frostclient.eu/faq?launcher-crash-logs
+                         "The game crashed — where do I find the logs?"
+launcher-mac-open    -> https://frostclient.eu/faq?launcher-mac-open
+                         "macOS says the launcher is damaged or from an unidentified developer"
+launcher-add-mods    -> https://frostclient.eu/faq?launcher-add-mods
+                         "Can I add my own mods?"
+launcher-share       -> https://frostclient.eu/faq?launcher-share
+                         "How do I share my instance with a friend?"
+launcher-lite-locked -> https://frostclient.eu/faq?launcher-lite-locked
+                         "My Lite version suddenly shows 'Subscribe to Lite'"
+
 Support
 -------
 support              -> https://frostclient.eu/faq?support

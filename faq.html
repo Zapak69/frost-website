@@ -45,7 +45,7 @@
 <div class="legal-page">
   <div class="legal-eyebrow">Support</div>
   <h1>Frequently Asked Questions</h1>
-  <p class="legal-meta">Last updated: July 5, 2026</p>
+  <p class="legal-meta">Last updated: September 6, 2026</p>
 
   <h2>General</h2>
   <div class="faq-list">
@@ -168,6 +168,71 @@
 
   <div class="note-box amber">
     <strong>Don't own Minecraft?</strong> The official Modrinth App requires a premium (Microsoft-authenticated) Minecraft account. If you play on a cracked/offline account, follow our <a href="cracked">step-by-step cracked install guide</a> instead — it walks you through installing Frost with AstralRinth, an offline-friendly fork of the Modrinth App.
+  </div>
+
+  <h2 id="launcher">Launcher</h2>
+  <div class="faq-list">
+    <details class="faq-item" id="launcher-download">
+      <summary>Where do I download the Frost Launcher?</summary>
+      <div class="faq-item-body">
+        <p>Right here on <a href="https://frostclient.eu/?openDownload">frostclient.eu</a> — hit <strong>Download Free</strong> and pick your platform: Windows (.exe installer), macOS (.dmg, works on both Intel and Apple Silicon) or Linux (.AppImage). The launcher installs every Frost version for you, no Modrinth App needed.</p>
+      </div>
+    </details>
+    <details class="faq-item" id="launcher-update-fails">
+      <summary>The launcher won't update itself — what do I do?</summary>
+      <div class="faq-item-body">
+        <p>Normally the launcher downloads and installs updates on its own. If it gets stuck on the update screen or keeps failing, just <a href="https://frostclient.eu/?openDownload">download the latest installer from the website</a> and run it over your current installation. Your instances, settings and accounts stay exactly where they are.</p>
+        <p>On Windows the update log is in <code>%TEMP%\frost-launcher-update.log</code> — send it to us on Discord if the problem keeps coming back.</p>
+      </div>
+    </details>
+    <details class="faq-item" id="launcher-modrinth">
+      <summary>Do I still need the Modrinth App?</summary>
+      <div class="faq-item-body">
+        <p>No. The Frost Launcher replaces it — it downloads the game, Java and every Frost version by itself. The .mrpack route through the Modrinth App still works if you prefer it, but the launcher is the recommended way now.</p>
+      </div>
+    </details>
+    <details class="faq-item" id="launcher-discord">
+      <summary>Why do I have to sign in with Discord?</summary>
+      <div class="faq-item-body">
+        <p>Your Discord account is what links FrostClient Lite, your capes and instance sharing to you. You need to be a member of the <a href="https://discord.gg/Kn8ydsABU8" target="_blank">FrostClient Discord server</a> — join it first, then sign in from the launcher.</p>
+      </div>
+    </details>
+    <details class="faq-item" id="launcher-java-error">
+      <summary>I get "Could not create the Java Virtual Machine" when I press Play</summary>
+      <div class="faq-item-body">
+        <p>Java refused to start before the game even loaded. First make sure you're on the latest launcher version (older launchers used Java 21 for Minecraft 26.x, which needs Java 25 — the launcher now downloads the right one by itself). If it still happens, open the instance's <strong>Settings</strong> tab in the Library, lower the RAM slider and remove any custom JVM arguments you added.</p>
+      </div>
+    </details>
+    <details class="faq-item" id="launcher-crash-logs">
+      <summary>The game crashed — where do I find the logs?</summary>
+      <div class="faq-item-body">
+        <p>Open the instance in <strong>Library</strong> and switch to the <strong>Crash Logs</strong> tab — every crash report is listed there. Use <strong>Logs → Export bug log</strong> to save a .buglog file and send it through <a href="https://frostclient.eu/report">frostclient.eu/report</a>; it contains your mod list, system info, latest log and crash reports, which is everything we need.</p>
+      </div>
+    </details>
+    <details class="faq-item" id="launcher-mac-open">
+      <summary>macOS says the launcher is damaged or from an unidentified developer</summary>
+      <div class="faq-item-body">
+        <p>The launcher isn't notarized by Apple yet, so macOS blocks the first start. Right-click the app and choose <strong>Open</strong>, or go to <strong>System Settings → Privacy &amp; Security</strong> and click <strong>Open Anyway</strong>. You only have to do this once.</p>
+      </div>
+    </details>
+    <details class="faq-item" id="launcher-add-mods">
+      <summary>Can I add my own mods?</summary>
+      <div class="faq-item-body">
+        <p>Yes. Open the instance in <strong>Library → Mods</strong> and either use <strong>Add Mods</strong> to browse Modrinth straight from the launcher, or drag and drop .jar files into the list. You can also toggle mods on and off there — the launcher warns you if another mod depends on the one you're removing.</p>
+      </div>
+    </details>
+    <details class="faq-item" id="launcher-share">
+      <summary>How do I share my instance with a friend?</summary>
+      <div class="faq-item-body">
+        <p>Open the instance in the Library and press the <strong>share</strong> button — you get a link and a code. Your friend opens the link (or pastes the code under <strong>Library → Import shared instance</strong>) and the launcher installs the same mods, resource packs and shaders for them. Links last 24 hours (up to 7 days with Lite). Sharing a Lite version requires Lite on the other side too.</p>
+      </div>
+    </details>
+    <details class="faq-item" id="launcher-lite-locked">
+      <summary>My Lite version suddenly shows "Subscribe to Lite"</summary>
+      <div class="faq-item-body">
+        <p>That means your Lite subscription isn't active anymore, so the Lite instance is locked. <a href="https://frostclient.eu/lite">Resubscribe</a> to keep playing it, or pick a different (regular) version from the version selector — those always stay free.</p>
+      </div>
+    </details>
   </div>
 
   <h2 id="support">Support</h2>
