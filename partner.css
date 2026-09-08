@@ -198,6 +198,15 @@
     font-size: 13px; color: var(--muted); line-height: 1.55;
   }
   .partner-member-note strong { color: var(--danger); }
+  .apply-switch { display: inline-flex; padding: 4px; border-radius: 980px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); margin-bottom: 24px; }
+  .apply-switch-btn { border: none; background: transparent; color: var(--muted); font-family: inherit; font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: 980px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .apply-switch-btn:hover { color: var(--text); }
+  .apply-switch-btn.active { background: var(--text); color: #000; }
+  .partner-already-badge.is-closed, .partner-already-badge.is-denied { color: var(--danger); background: rgba(255,105,97,0.1); border-color: rgba(255,105,97,0.3); }
+  .apply-field label .optional-tag { text-transform: none; font-weight: 400; letter-spacing: 0; }
+  .apply-field label .required-star { color: var(--danger); margin-left: 2px; }
+  textarea.apply-input { resize: vertical; min-height: 66px; line-height: 1.5; font-family: inherit; }
+  #serverFields .apply-field { animation: none; }
   .partner-member-note-icon { flex-shrink: 0; width: 16px; height: 16px; margin-top: 1px; color: var(--danger); }
   .partner-member-note-icon svg { width: 16px; height: 16px; display: block; }
   .apply-other-note { font-size: 13px; color: var(--muted); margin-top: 20px; margin-bottom: 0; }
@@ -217,7 +226,7 @@
     transition: opacity 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease, visibility 0s linear 0s;
   }
   .modal-box {
-    position: relative; width: 100%; max-width: 440px;
+    position: relative; width: 100%; max-width: 440px; max-height: 88vh; overflow-y: auto;
     background: var(--surface); border: 1px solid var(--border); border-radius: 24px;
     padding: 38px 34px;
     box-shadow: 0 30px 90px -20px rgba(0,0,0,0.7);

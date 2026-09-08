@@ -41,12 +41,28 @@
   const OAUTH_STATE_KEY = 'frostPartnerOauthState';
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI_PARTNER = 'https://frostclient.eu/partner';
+  const STAFF_APPLY_URL = 'https://bot.frostclient.eu/staff-apply';
+  const STAFF_APPLY_STATUS_URL = 'https://bot.frostclient.eu/staff-apply-status';
+  const STAFF_APPLY_CONFIG_URL = 'https://bot.frostclient.eu/staff-apply-config';
+  const INTENT_KEY = 'frostPartnerApplyIntent';
+  const SERVER_ROLE = 'server_partnership';
+  const SERVER_FIELDS = [
+    ['serverName', 'Server name', 'e.g. FrostMC Network', false],
+    ['serverIp', 'Server IP / address', 'play.example.com', false],
+    ['serverVersion', 'Minecraft version(s) and platform', 'e.g. 1.21.x, Java, Paper / Fabric...', false],
+    ['playerCount', 'Average and peak player count', 'e.g. 150 average, 400 peak', false],
+    ['discordInvite', 'Server Discord invite', 'https://discord.gg/...', false],
+    ['website', 'Website, store or socials', 'Links to your website, store, YouTube, TikTok... (or "none")', false],
+    ['contact', 'Your role on the server and how to reach you', 'Owner / manager / marketing, Discord username or e-mail', false],
+    ['offer', 'What would the partnership look like and what can you offer FrostClient players?', 'Cross-promotion, events, in-game perks, featured spots...', true],
+    ['why', 'Why do you want to partner with FrostClient?', 'Tell us why your server and FrostClient are a good match...', true]
+  ];
 
   const modal = document.getElementById('applyModal');
   const closeBtn = document.getElementById('applyModalClose');
   if (!modal) return;
 
-  const states = ['applyStateWorking', 'applyStateNotMember', 'applyStep1', 'applyStateDone', 'applyStateError'];
+  const states = ['applyStateWorking', 'applyStateNotMember', 'applyStep1', 'applyStateDone', 'applyStepServer', 'applyStateServerDone', 'applyStateError'];
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
   }
@@ -92,9 +108,10 @@
   }
   function applyAuthUi() {
     const loggedIn = !!loadToken();
-    document.querySelectorAll('.js-apply-btn').forEach(function (btn) { btn.classList.toggle('is-logged-in', loggedIn); });
-    const intro = document.getElementById('applyBoxIntro');
-    if (intro) intro.textContent = loggedIn ? intro.dataset.loggedIn : intro.dataset.loggedOut;
+    document.querySelectorAll('.js-apply-btn, .js-server-apply-btn').forEach(function (btn) { btn.classList.toggle('is-logged-in', loggedIn); });
+    [document.getElementById('applyBoxIntro'), document.getElementById('serverBoxIntro')].forEach(function (intro) {
+      if (intro) intro.textContent = loggedIn ? intro.dataset.loggedIn : intro.dataset.loggedOut;
+    });
   }
   function checkAlreadyPartner() {
     const token = loadToken();
@@ -111,6 +128,166 @@
     document.getElementById('applyErrorText').textContent = msg;
     show('applyStateError');
   }
+
+  let currentFlow = 'creator';
+  let serverClosed = false;
+  let serverBoxState = 'serverBoxNormal';
+  const SERVER_BOX_IDS = ['serverBoxNormal', 'serverBoxClosed', 'serverBoxSubmitted', 'serverBoxAccepted', 'serverBoxDenied'];
+  function setServerBoxState(id) {
+    serverBoxState = id;
+    SERVER_BOX_IDS.forEach(function (b) {
+      const el = document.getElementById(b);
+      if (el) el.style.display = b === id ? '' : 'none';
+    });
+  }
+  function applyServerClosed() {
+    if (serverClosed && serverBoxState === 'serverBoxNormal') setServerBoxState('serverBoxClosed');
+  }
+  function setApplyTab(tab) {
+    document.querySelectorAll('#applySwitch .apply-switch-btn').forEach(function (btn) {
+      const on = btn.dataset.applyTab === tab;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-selected', String(on));
+    });
+    const creator = document.getElementById('applyTabCreator');
+    const server = document.getElementById('applyTabServer');
+    if (creator) creator.style.display = tab === 'creator' ? '' : 'none';
+    if (server) server.style.display = tab === 'server' ? '' : 'none';
+  }
+  document.querySelectorAll('#applySwitch .apply-switch-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () { setApplyTab(btn.dataset.applyTab); });
+  });
+  if (window.location.hash === '#server') setApplyTab('server');
+  function formatRetryDate(ms) {
+    try { return new Date(ms).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) { return ''; }
+  }
+  function checkServerStatus() {
+    const token = loadToken();
+    if (!token) return;
+    fetch(STAFF_APPLY_STATUS_URL + '?token=' + encodeURIComponent(token), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data || !data.ok || data.role !== SERVER_ROLE) return;
+        if (data.status === 'pending') {
+          setServerBoxState('serverBoxSubmitted');
+        } else if (data.status === 'accepted') {
+          setServerBoxState('serverBoxAccepted');
+        } else if (data.status === 'denied' && data.retryAt && data.retryAt > Date.now()) {
+          const dateEl = document.getElementById('serverRetryDate');
+          if (dateEl) dateEl.textContent = formatRetryDate(data.retryAt);
+          const reasonEl = document.getElementById('serverDenyReason');
+          if (reasonEl) {
+            reasonEl.textContent = data.denyReason ? 'Reason: ' + data.denyReason : '';
+            reasonEl.style.display = data.denyReason ? '' : 'none';
+          }
+          setServerBoxState('serverBoxDenied');
+        }
+      })
+      .catch(function () {});
+  }
+  fetch(STAFF_APPLY_CONFIG_URL, { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      const role = data && data.ok && data.roles && data.roles[SERVER_ROLE];
+      if (role && !role.open) { serverClosed = true; applyServerClosed(); }
+    })
+    .catch(function () {});
+  const serverFieldsWrap = document.getElementById('serverFields');
+  const serverSubmitBtn = document.getElementById('serverSubmitBtn');
+  const serverStepError = document.getElementById('serverStepError');
+  function updateServerSubmitEnabled() {
+    serverSubmitBtn.disabled = !Array.from(serverFieldsWrap.querySelectorAll('.apply-input')).every(function (el) { return el.dataset.key === 'extra' || el.value.trim(); });
+  }
+  function buildServerForm() {
+    serverFieldsWrap.innerHTML = '';
+    SERVER_FIELDS.concat([['extra', 'Anything else we should know?', 'Optional', true]]).forEach(function (f) {
+      const wrap = document.createElement('div');
+      wrap.className = 'apply-field';
+      const label = document.createElement('label');
+      label.textContent = f[1] + ' ';
+      const tag = document.createElement('span');
+      tag.className = f[0] === 'extra' ? 'optional-tag' : 'required-star';
+      tag.textContent = f[0] === 'extra' ? '(optional)' : '*';
+      label.appendChild(tag);
+      wrap.appendChild(label);
+      const input = document.createElement(f[3] ? 'textarea' : 'input');
+      if (!f[3]) input.type = 'text';
+      input.className = 'apply-input';
+      input.dataset.key = f[0];
+      input.placeholder = f[2];
+      input.autocomplete = 'off';
+      input.addEventListener('input', updateServerSubmitEnabled);
+      wrap.appendChild(input);
+      serverFieldsWrap.appendChild(wrap);
+    });
+    serverSubmitBtn.disabled = true;
+    serverSubmitBtn.classList.remove('is-loading');
+    serverStepError.style.display = 'none';
+  }
+  function openServerForm() {
+    currentFlow = 'server';
+    buildServerForm();
+    show('applyStepServer');
+    openModal();
+  }
+  function showServerError(msg) {
+    serverStepError.style.display = 'block';
+    serverStepError.textContent = msg;
+  }
+  serverSubmitBtn.addEventListener('click', function () {
+    if (serverSubmitBtn.disabled) return;
+    const token = loadToken();
+    if (!token) { showErrorState('Your session expired. Please click Apply now again to sign in.'); return; }
+    serverSubmitBtn.disabled = true;
+    serverSubmitBtn.classList.add('is-loading');
+    serverStepError.style.display = 'none';
+    const answers = {};
+    serverFieldsWrap.querySelectorAll('.apply-input').forEach(function (el) { answers[el.dataset.key] = el.value.trim(); });
+    fetch(STAFF_APPLY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ staffToken: token, role: SERVER_ROLE, answers: answers })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data && data.ok) {
+          show('applyStateServerDone');
+          setServerBoxState('serverBoxSubmitted');
+          return;
+        }
+        serverSubmitBtn.disabled = false;
+        serverSubmitBtn.classList.remove('is-loading');
+        if (data && data.error === 'not_member') { show('applyStateNotMember'); return; }
+        if (data && data.error === 'token_expired') {
+          clearToken();
+          showErrorState('Your session expired. Please click Apply now again to sign in.');
+          return;
+        }
+        if (data && data.error === 'role_closed') {
+          serverClosed = true;
+          applyServerClosed();
+          showServerError('Server applications are closed right now. Please check back later.');
+          return;
+        }
+        if (data && data.error === 'cooldown') { showServerError('Your previous application was not accepted — you can apply again from ' + formatRetryDate(data.retryAt) + '.'); return; }
+        if (data && data.error === 'missing_fields') { showServerError('Please fill in every required field.'); return; }
+        showServerError("Couldn't send your application. Please try again.");
+      })
+      .catch(function () {
+        serverSubmitBtn.disabled = false;
+        serverSubmitBtn.classList.remove('is-loading');
+        showServerError('Network error. Please try again.');
+      });
+  });
+  document.getElementById('serverDoneCloseBtn').addEventListener('click', closeModal);
+  document.querySelectorAll('.js-server-apply-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (serverClosed) return;
+      currentFlow = 'server';
+      if (loadToken()) { openServerForm(); return; }
+      startLogin();
+    });
+  });
   const linkInput = document.getElementById('applyLink');
   const codeInput = document.getElementById('applyCode');
   const codeStatus = document.getElementById('applyCodeStatus');
@@ -239,7 +416,7 @@
       });
   });
 
-  document.getElementById('applyRetryBtn').addEventListener('click', function () { show('applyStep1'); });
+  document.getElementById('applyRetryBtn').addEventListener('click', function () { show(currentFlow === 'server' ? 'applyStepServer' : 'applyStep1'); });
   document.getElementById('applyRetryAfterJoin').addEventListener('click', function () {
     startLogin();
   });
@@ -250,6 +427,8 @@
   document.addEventListener('frostAccountLogout', function () {
     alreadyPartner = false;
     applyAuthUi();
+    setServerBoxState('serverBoxNormal');
+    applyServerClosed();
     const normal = document.getElementById('applyBoxNormal');
     const partnerBox = document.getElementById('applyBoxPartner');
     if (normal) normal.style.display = '';
@@ -260,6 +439,8 @@
     });
   });
   checkAlreadyPartner();
+  checkServerStatus();
+  document.addEventListener('frostAccountLogin', checkServerStatus);
 
   function startLogin() {
     let csrfState = '';
@@ -268,6 +449,7 @@
       crypto.getRandomValues(buf);
       csrfState = Array.from(buf).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
       sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+      sessionStorage.setItem(INTENT_KEY, currentFlow);
     } catch (e) {}
     const url = 'https://discord.com/oauth2/authorize'
       + '?client_id=' + encodeURIComponent(DISCORD_CLIENT_ID)
@@ -280,6 +462,7 @@
 
   applyBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
+      currentFlow = 'creator';
       if (alreadyPartner) {
         window.location.href = 'https://partner.frostclient.eu';
         return;
@@ -312,6 +495,9 @@
     let storedState = '';
     try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
     try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+    let intent = '';
+    try { intent = sessionStorage.getItem(INTENT_KEY) || ''; sessionStorage.removeItem(INTENT_KEY); } catch (e) {}
+    if (intent === 'server') { currentFlow = 'server'; setApplyTab('server'); }
 
     const cleanUrl = new URL(window.location.href);
     cleanUrl.searchParams.delete('code');
@@ -337,12 +523,15 @@
           return;
         }
         if (data.status === 'already_partner') {
-          closeModal();
+          if (data.partnerToken) saveToken(data.partnerToken);
           markAlreadyPartner();
+          if (intent === 'server' && data.partnerToken) { openServerForm(); return; }
+          closeModal();
           return;
         }
         if (data.status === 'eligible' && data.partnerToken) {
           saveToken(data.partnerToken);
+          if (intent === 'server') { openServerForm(); return; }
           resetForm();
           show('applyStep1');
           return;
