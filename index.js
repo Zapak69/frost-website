@@ -108,6 +108,8 @@
     document.querySelectorAll('.dl-os-icon').forEach(el => {
       el.classList.toggle('active', el.dataset.os === primary.icon);
     });
+    const heroLabel = document.getElementById('heroDownloadLabel');
+    if (heroLabel) heroLabel.textContent = 'Download for ' + { win: 'Windows', mac: 'macOS', linux: 'Linux' }[os];
     const tile = document.getElementById('dlLauncherTile');
     const sub = document.getElementById('dlLauncherTileSub');
     if (tile) tile.href = PUBLIC_DL_BASE + primary.file;
