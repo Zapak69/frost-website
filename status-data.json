@@ -1,14 +1,14 @@
 {
-  "updatedAt": "2026-09-09T17:44:00Z",
+  "updatedAt": "2026-09-09T17:53:00Z",
   "services": [
     { "name": "Website", "status": "operational", "note": "" },
     { "name": "Store", "status": "operational", "note": "" },
+    { "name": "Launcher", "status": "maintenance", "note": "" },
     { "name": "Partner Dashboard", "status": "operational", "note": "" },
     { "name": "FrostClient Lite", "status": "maintenance", "note": "" },
     { "name": "FrostClient", "status": "maintenance", "note": "" },
-    { "name": "Discord Bot", "status": "operational", "note": "" },
     { "name": "Servers", "status": "operational", "note": "" },
     { "name": "Payments", "status": "operational", "note": "" },
-    { "name": "Launcher", "status": "maintenance", "note": "" }
+    { "name": "Support", "status": "operational", "note": "" }
   ]
 }
