@@ -117,21 +117,27 @@
     const altEl = document.getElementById('dlLauncherAltLinks');
     if (altEl) {
       altEl.innerHTML = '';
+      const row1 = document.createElement('div');
+      row1.className = 'dl-alt-links-row';
       const label = document.createElement('span');
       label.textContent = 'Launcher for other systems:';
-      altEl.appendChild(label);
+      row1.appendChild(label);
       Object.keys(LAUNCHER_FILES).forEach(key => {
         if (key === os) return;
         const a = document.createElement('a');
         a.href = PUBLIC_DL_BASE + LAUNCHER_FILES[key].file;
         a.textContent = LAUNCHER_FILES[key].label;
         a.rel = 'noopener';
-        altEl.appendChild(a);
+        row1.appendChild(a);
       });
+      altEl.appendChild(row1);
+      const row2 = document.createElement('div');
+      row2.className = 'dl-alt-links-row';
       const secA = document.createElement('a');
       secA.href = 'https://frostclient.eu/security';
       secA.textContent = 'Safety & Security';
-      altEl.appendChild(secA);
+      row2.appendChild(secA);
+      altEl.appendChild(row2);
     }
   })();
 

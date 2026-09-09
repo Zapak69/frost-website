@@ -211,21 +211,27 @@
     });
     const altEl = document.getElementById('dlAltLinks');
     altEl.innerHTML = '';
+    const row1 = document.createElement('div');
+    row1.className = 'dl-alt-links-row';
     const altLabel = document.createElement('span');
     altLabel.textContent = 'Launcher for other systems:';
-    altEl.appendChild(altLabel);
+    row1.appendChild(altLabel);
     Object.keys(LAUNCHER_FILES).forEach(key => {
       if (key === os) return;
       const a = document.createElement('a');
       a.href = launcherUrl(LAUNCHER_FILES[key].file);
       a.textContent = LAUNCHER_FILES[key].label;
       a.rel = 'noopener';
-      altEl.appendChild(a);
+      row1.appendChild(a);
     });
+    altEl.appendChild(row1);
+    const row2 = document.createElement('div');
+    row2.className = 'dl-alt-links-row';
     const secA = document.createElement('a');
     secA.href = 'https://frostclient.eu/security';
     secA.textContent = 'Safety & Security';
-    altEl.appendChild(secA);
+    row2.appendChild(secA);
+    altEl.appendChild(row2);
   }
 
 

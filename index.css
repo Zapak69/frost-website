@@ -513,6 +513,7 @@
   .dl-alt-links { margin-top: 18px; font-size: 12px; color: var(--muted); text-align: center; }
   .dl-alt-links a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; margin: 0 6px; transition: color 0.2s; }
   .dl-alt-links a:hover { color: var(--text); }
+  .dl-alt-links-row + .dl-alt-links-row { margin-top: 6px; }
   .dl-lite-ribbon {
     position: absolute; top: 12px; right: -30px;
     width: 110px; padding: 4px 0; transform: rotate(35deg);
