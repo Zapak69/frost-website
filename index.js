@@ -128,6 +128,10 @@
         a.rel = 'noopener';
         altEl.appendChild(a);
       });
+      const secA = document.createElement('a');
+      secA.href = 'https://frostclient.eu/security';
+      secA.textContent = 'Safety & Security';
+      altEl.appendChild(secA);
     }
   })();
 
