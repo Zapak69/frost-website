@@ -97,6 +97,14 @@
   </ul>
   <p>If SmartScreen blocks the installer, click <strong>More info → Run anyway</strong>. If your antivirus quarantines it and you'd like a second opinion beyond our own scan, the VirusTotal link above runs the same file through 60+ independent engines at once.</p>
 
+  <h2>How we handle your Microsoft &amp; Discord sign-in</h2>
+  <p>Signing in to your Minecraft account happens entirely inside a Microsoft-hosted window — the launcher never sees your password, and neither do we. The Microsoft, Xbox and Minecraft tokens that come back from that sign-in are written to a config file on your own device and stay there; we never upload or store them on our servers.</p>
+  <ul class="security-list">
+    <li><strong>Your password never touches Frost.</strong> The Microsoft and Discord login screens you see are the real Microsoft/Discord pages, loaded directly — nothing you type on them passes through our code.</li>
+    <li><strong>Tokens are stored locally only.</strong> They live in the launcher's own config file on your device, never on a Frost server. As a fallback verification step — used only when your Discord-linked session data isn't available — your Minecraft token may be relayed through our server to Mojang's own API purely to confirm which account it belongs to; it's never written to disk or logged on our end.</li>
+    <li><strong>Discord sign-in only shares what its consent screen tells you it will.</strong> We request the standard <code>identify</code> scope (and, for staff/creator tools, read-only role membership) — your Discord password is never exposed to us, by design of how Discord's own login works.</li>
+  </ul>
+
   <h2>Report a security concern</h2>
   <p>Found something that looks off, or want to report a real vulnerability? Reach out on <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord</a> and ping a staff member directly rather than posting it publicly, so we can look into it before anyone else can act on it.</p>
 </div>

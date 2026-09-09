@@ -72,12 +72,17 @@
     document.getElementById('lastUpdated').textContent = data.updatedAt ? ('Last updated: ' + formatTime(data.updatedAt)) : '';
   }
 
-  fetch('status-data.json?t=' + Date.now(), { cache: 'no-store' })
+  fetch('https://bot.frostclient.eu/status-data?t=' + Date.now(), { cache: 'no-store' })
     .then(r => r.json())
     .then(render)
     .catch(() => {
-      document.getElementById('lastUpdated').textContent = '';
-      document.getElementById('statusList').innerHTML = '<p style="color:var(--muted);font-size:14px;">Could not load status data. Please try again shortly.</p>';
+      fetch('status-data.json?t=' + Date.now(), { cache: 'no-store' })
+        .then(r => r.json())
+        .then(render)
+        .catch(() => {
+          document.getElementById('lastUpdated').textContent = '';
+          document.getElementById('statusList').innerHTML = '<p style="color:var(--muted);font-size:14px;">Could not load status data. Please try again shortly.</p>';
+        });
     });
 })();
 
