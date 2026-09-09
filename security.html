@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Security | Frost</title>
+<meta name="description" content="Frost Client Launcher is scanned with VirusTotal and published with a verifiable file hash. See the latest results and learn how to check your download yourself."/>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Frost">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="security.css">
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
+    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+  </svg>
+</div>
+<nav>
+<div class="nav-desktop">
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <div class="nav-right">
+    <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+    <button type="button" class="nav-signin-btn js-site-auth-btn"><img src="icons/discord.webp" alt=""/><span class="js-site-auth-text">Sign in</span></button>
+  </div>
+</div>
+<button class="nav-hamburger" id="navHamburger" type="button" aria-label="Menu" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<a class="nav-logo-mobile" href="https://frostclient.eu">
+  <img src="favicon.ico" alt="" class="nav-logo-icon"/><span>Frost</span>
+</a>
+</nav>
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <a href="https://frostclient.eu">← Back to Home</a>
+</div>
+
+<div class="legal-page security-page">
+  <div class="legal-eyebrow">Security</div>
+  <h1>Is Frost Client safe to download?</h1>
+  <p class="legal-meta">Short answer: yes. Every Windows build we publish is scanned with VirusTotal, and we publish the exact file hash so you can check your own download matches what we built — not something that was swapped out in between.</p>
+
+  <div class="scan-card">
+    <div class="scan-card-top">
+      <div class="scan-result">
+        <div class="scan-result-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <div>
+          <div class="scan-result-ratio"><span id="scanFlagged">0</span> / <span id="scanTotal">66</span></div>
+          <div class="scan-result-label">security vendors flagged this file</div>
+        </div>
+      </div>
+      <a class="scan-vt-link" id="scanVtLink" href="https://www.virustotal.com/gui/file/f29d82c1092dfc27f3f5dd27ec45a3e9a350945edafae36a438fb9a6c19a2da3" target="_blank" rel="noopener">
+        View live report on VirusTotal
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+      </a>
+    </div>
+    <div class="scan-card-details">
+      <div class="scan-detail">
+        <span class="scan-detail-label">File</span>
+        <span class="scan-detail-value mono" id="scanFile">Frost Client Launcher Setup.exe</span>
+      </div>
+      <div class="scan-detail">
+        <span class="scan-detail-label">Scanned</span>
+        <span class="scan-detail-value" id="scanDate">September 9, 2026, 10:16 UTC</span>
+      </div>
+      <div class="scan-detail">
+        <span class="scan-detail-label">SHA-256</span>
+        <span class="scan-detail-value mono hash-value" id="scanHash">f29d82c1092dfc27f3f5dd27ec45a3e9a350945edafae36a438fb9a6c19a2da3</span>
+      </div>
+    </div>
+    <p class="scan-card-footnote">This is the Windows installer, distributed from this site and our updater as <code>Frost-Launcher-win.exe</code> — same bytes, same hash, just renamed for the download. We re-scan and update this page with every release.</p>
+  </div>
+
+  <h2>Verify your own download</h2>
+  <p>Don't take our word for it — check the file you actually downloaded against the hash above. If the two match, your copy is byte-for-byte identical to what we built and scanned.</p>
+  <div class="verify-block">
+    <div class="verify-os">Windows (PowerShell)</div>
+    <pre class="verify-code"><code>certutil -hashfile "Frost-Launcher-win.exe" SHA256</code></pre>
+  </div>
+  <p class="verify-hint">Compare the output to the SHA-256 value above — every character should match.</p>
+
+  <h2>Why does my antivirus still warn me?</h2>
+  <p>Occasionally Windows Defender SmartScreen or a specific antivirus engine flags the installer anyway, even with a clean VirusTotal result. That's a known, common situation for small independent apps and isn't a sign of anything malicious — it comes down to two things:</p>
+  <ul class="security-list">
+    <li><strong>No code-signing certificate yet.</strong> Commercial certificates cost money we're still working towards, so our installer is currently unsigned. Windows trusts a file partly based on how many people have already run it and whether it carries a paid signature — a new, unsigned build starts at zero reputation no matter how clean it actually is.</li>
+    <li><strong>Heuristic, not signature-based, detection.</strong> Some antivirus engines flag installers that download and write files after launch — which is exactly what any Minecraft launcher does — using generic behavioral rules rather than detecting anything specific in our code.</li>
+  </ul>
+  <p>If SmartScreen blocks the installer, click <strong>More info → Run anyway</strong>. If your antivirus quarantines it and you'd like a second opinion beyond our own scan, the VirusTotal link above runs the same file through 60+ independent engines at once.</p>
+
+  <h2>Report a security concern</h2>
+  <p>Found something that looks off, or want to report a real vulnerability? Reach out on <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord</a> and ping a staff member directly rather than posting it publicly, so we can look into it before anyone else can act on it.</p>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">❄ FROST</div>
+      <p class="footer-tagline">A fast, free Minecraft client<br/>built for players who care.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="https://frostclient.eu/?openDownload">Download</a>
+      <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
+      <a href="https://frostclient.eu/settings">Transferring Settings</a>
+      <a href="https://frostclient.eu/reviews">Reviews</a>
+      <a href="https://frostclient.eu/partner">Creator Program</a>
+      <a href="https://store.frostclient.eu">Store</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <button type="button" class="footer-link-btn js-site-auth-btn"><span class="js-site-auth-text">Sign in</span></button>
+      <a href="https://frostclient.eu/lite">Frost Lite</a>
+      <a href="https://frostclient.eu/lite/download" class="js-lite-access-link">Download Lite</a>
+    </div>
+    <div class="footer-col">
+      <h4>Creator</h4>
+      <a href="https://partner.frostclient.eu">Dashboard</a>
+      <a href="https://partner.frostclient.eu/balance">Withdraw</a>
+      <a href="https://partner.frostclient.eu/assets">Assets</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="https://frostclient.eu/faq">FAQ</a>
+      <a href="https://frostclient.eu/status">Status</a>
+      <a href="https://frostclient.eu/security">Security</a>
+      <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+      <a href="https://frostclient.eu/terms">Terms of Service</a>
+      <a href="https://frostclient.eu/imprint">Imprint</a>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <a href="https://frostclient.eu/team">Join FrostClient</a>
+      <div class="footer-social-icons">
+        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
+        <a href="https://www.youtube.com/@frost-client" target="_blank" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
+        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© Frost 2026. All rights reserved.<br>
+      Made by: Zipp
+    </span>
+    <span>Not affiliated with Minecraft or Mojang.</span>
+  </div>
+</footer>
+
+<script src="security.js"></script>
+<script src="site-auth.js"></script>
+<script src="beta-toast.js"></script>
+</body>
+</html>
