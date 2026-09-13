@@ -621,7 +621,7 @@ function frostQueueToastShow(el, otherIds) {
   let dismissed = false;
   try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
   if (dismissed) return;
-  setTimeout(() => frostQueueToastShow(toast, ['betaToast']), 1200);
+  setTimeout(() => frostQueueToastShow(toast, []), 1200);
   closeBtn.addEventListener('click', () => hidePromoToast(true));
 })();
 

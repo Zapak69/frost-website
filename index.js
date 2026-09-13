@@ -96,7 +96,7 @@
     const PUBLIC_DL_BASE = 'https://bot.frostclient.eu/public_dl/';
     const LAUNCHER_FILES = {
       win: { file: 'Frost-Launcher-win.exe', label: 'Windows', icon: 'win' },
-      mac: { file: 'Frost-Launcher-mac.dmg', label: 'macOS (Apple Silicon & Intel)', icon: 'mac' },
+      mac: { file: 'Frost-Launcher-mac.dmg', label: 'macOS', icon: 'mac' },
       linux: { file: 'Frost-Launcher-linux.AppImage', label: 'Linux', icon: 'linux' }
     };
     const ua = (navigator.userAgent || '') + ' ' + (navigator.platform || '');
@@ -113,7 +113,7 @@
     const tile = document.getElementById('dlLauncherTile');
     const sub = document.getElementById('dlLauncherTileSub');
     if (tile) tile.href = PUBLIC_DL_BASE + primary.file;
-    if (sub) sub.textContent = 'Open beta · ' + primary.label;
+    if (sub) sub.textContent = primary.label;
     const altEl = document.getElementById('dlLauncherAltLinks');
     if (altEl) {
       altEl.innerHTML = '';
@@ -250,7 +250,7 @@ function frostQueueToastShow(el, otherIds) {
   let dismissed = false;
   try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
   if (dismissed) return;
-  setTimeout(() => frostQueueToastShow(toast, ['betaToast', 'pollToast']), 1200);
+  setTimeout(() => frostQueueToastShow(toast, ['pollToast']), 1200);
   closeBtn.addEventListener('click', () => {
     toast.classList.remove('show');
     try { localStorage.setItem(KEY, '1'); } catch (e) {}
@@ -316,7 +316,7 @@ function frostQueueToastShow(el, otherIds) {
       history.replaceState(null, '', url.pathname + url.search + url.hash);
     } catch (e) {}
   } else if (!toastDismissed) {
-    setTimeout(() => { repositionToast(); frostQueueToastShow(toast, ['betaToast', 'promoToast']); }, 1200);
+    setTimeout(() => { repositionToast(); frostQueueToastShow(toast, ['promoToast']); }, 1200);
   }
 
   function animatePct(el, toVal) {
