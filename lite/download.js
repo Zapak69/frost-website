@@ -204,7 +204,7 @@
     const primary = LAUNCHER_FILES[os];
     const launcherBtn = document.getElementById('dlLauncherBtn');
     launcherBtn.href = launcherUrl(primary.file);
-    document.getElementById('dlLauncherSub').textContent = primary.label;
+    document.getElementById('dlLauncherSub').textContent = 'Latest · ' + primary.label;
     const osIconKey = os === 'win' ? 'win' : (os === 'linux' ? 'linux' : 'mac');
     document.querySelectorAll('.dl-os-icon').forEach(el => {
       el.classList.toggle('active', el.dataset.os === osIconKey);

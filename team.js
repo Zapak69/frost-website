@@ -145,14 +145,29 @@
       return new Date(ms).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
     } catch (e) { return ''; }
   }
+  const openPositionsSection = document.getElementById('staffOpenPositionsSection');
+  const bannedNotice = document.getElementById('staffBannedNotice');
+  const bannedReasonEl = document.getElementById('staffBannedReason');
+  function showBannedNotice(reason) {
+    if (openPositionsSection) openPositionsSection.style.display = 'none';
+    if (bannedNotice) bannedNotice.style.display = 'block';
+    if (bannedReasonEl) bannedReasonEl.textContent = reason ? 'Reason: ' + reason : '';
+    document.querySelectorAll('.js-staff-apply-btn').forEach(function (btn) { btn.style.display = 'none'; });
+    closeModal();
+  }
+  // Returns a promise resolving to the application status ('none' if there isn't one, null on
+  // failure) so callers that need to know whether the page is already fully handled (banned) can
+  // wait for it instead of racing ahead and showing the role picker for a moment first.
   function checkStatus() {
     const token = loadToken();
-    if (!token) return;
-    fetch(STAFF_APPLY_STATUS_URL + '?token=' + encodeURIComponent(token), { cache: 'no-store' })
+    if (!token) return Promise.resolve(null);
+    return fetch(STAFF_APPLY_STATUS_URL + '?token=' + encodeURIComponent(token), { cache: 'no-store' })
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        if (!data || !data.ok) return;
-        if (data.status === 'pending') {
+        if (!data || !data.ok) return null;
+        if (data.status === 'banned') {
+          showBannedNotice(data.banReason);
+        } else if (data.status === 'pending') {
           setBoxState('applyBoxSubmitted');
         } else if (data.status === 'accepted') {
           setBoxState('applyBoxAccepted');
@@ -171,8 +186,9 @@
             setBoxState('applyBoxNormal');
           }
         }
+        return data.status;
       })
-      .catch(function () {});
+      .catch(function () { return null; });
   }
 
   function showErrorState(msg) {
@@ -252,6 +268,10 @@
         }
         if (data && data.error === 'not_member') {
           show('applyStateNotMember');
+          return;
+        }
+        if (data && data.error === 'banned') {
+          showBannedNotice(data.banReason);
           return;
         }
         if (data && data.error === 'token_expired') {
@@ -425,7 +445,9 @@
         }
         if (data.status === 'eligible' && data.staffToken) {
           saveToken(data.staffToken);
-          show('applyStep0');
+          checkStatus().then(function (appStatus) {
+            if (appStatus !== 'banned') show('applyStep0');
+          });
           return;
         }
         showErrorState('Something unexpected happened. Please try again.');

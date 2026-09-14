@@ -113,7 +113,7 @@
     const tile = document.getElementById('dlLauncherTile');
     const sub = document.getElementById('dlLauncherTileSub');
     if (tile) tile.href = PUBLIC_DL_BASE + primary.file;
-    if (sub) sub.textContent = primary.label;
+    if (sub) sub.textContent = 'Latest · ' + primary.label;
     const altEl = document.getElementById('dlLauncherAltLinks');
     if (altEl) {
       altEl.innerHTML = '';

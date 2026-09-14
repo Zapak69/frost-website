@@ -248,3 +248,10 @@
     text-decoration: underline; text-underline-offset: 3px;
   }
   .apply-back-link:hover { color: var(--text); }
+
+  .staff-banned-notice { border: 1px solid rgba(255,105,97,0.35); background: rgba(255,105,97,0.06); border-radius: 22px; padding: 40px 32px; margin-top: 8px; text-align: center; }
+  .staff-banned-notice-icon { width: 40px; height: 40px; color: var(--danger); margin: 0 auto 16px; }
+  .staff-banned-notice-icon svg { width: 100%; height: 100%; display: block; }
+  .staff-banned-notice h2 { margin-top: 0; }
+  .staff-banned-notice p { max-width: 480px; margin-left: auto; margin-right: auto; }
+  .staff-banned-reason { color: var(--danger); font-weight: 600; }

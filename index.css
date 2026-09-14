@@ -501,6 +501,8 @@
   #heroDownloadBtn svg.dl-os-icon.active { display: block; }
   .dl-choice-tile-lite { border-color: rgba(191,90,242,0.35); background: rgba(191,90,242,0.06); }
   .dl-choice-tile-lite:hover { border-color: var(--lite); background: rgba(191,90,242,0.12); }
+  .dl-choice-tile-outdated { overflow: visible; border-color: var(--red); }
+  .dl-choice-tile-outdated:hover { border-color: var(--red); }
   .dl-lite-row {
     margin-top: 18px;
     display: flex; align-items: center; justify-content: space-between; gap: 16px;

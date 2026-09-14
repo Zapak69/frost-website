@@ -121,6 +121,8 @@
     transition: border-color 0.2s, background 0.2s, transform 0.2s;
   }
   .dl-choice:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+  .dl-choice-outdated { overflow: visible; border-color: var(--red); }
+  .dl-choice-outdated:hover { border-color: var(--red); }
   .dl-choice.is-loading { pointer-events: none; }
   .dl-choice.is-loading svg { visibility: hidden; }
   .dl-choice.is-loading::before {
