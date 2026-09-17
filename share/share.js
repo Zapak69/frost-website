@@ -71,6 +71,7 @@
     stats.appendChild(stat(packs.length, 'Resource packs', onModrinth(packs) + ' on Modrinth'));
     stats.appendChild(stat(shaders.length, 'Shaders', share.activeShader && share.activeShader !== 'OFF' ? 'Active: ' + share.activeShader.replace(/\.zip$/i, '') : 'None active'));
     stats.appendChild(stat(share.config && share.config.included ? 'Yes' : 'No', 'Config', share.config && share.config.included ? Math.max(1, Math.round((share.config.size || 0) / 1024)) + ' KB' : 'Not included'));
+    stats.appendChild(stat(share.downloads || 0, 'Downloads', (share.downloads || 0) === 1 ? 'time imported' : 'times imported'));
     const lists = document.getElementById('lists');
     [listBlock('Mods', mods), listBlock('Resource packs', packs), listBlock('Shaders', shaders)].filter(Boolean).forEach(node => lists.appendChild(node));
     const unresolved = [...mods, ...packs, ...shaders].filter(i => !i.modrinth && !i.pack);
