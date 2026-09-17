@@ -349,19 +349,36 @@
     afterResult('error', data);
   }
 
+  function mapBotLoginStatus(data) {
+    const status = !data.isMember ? 'not_member' : (data.hasLiteRole ? 'eligible' : 'not_booster');
+    const out = { ok: true, status: status, user: data.user, gameToken: data.gameToken };
+    if (status === 'eligible') {
+      out.accessVia = 'subscriber';
+      out.dl = btoa('https://bot.frostclient.eu/dl/frost-lite.mrpack');
+    }
+    return out;
+  }
+
   function exchange(code) {
     show('stateLoading');
     setAuthPhase('checking');
     const returnTo = takeReturnTo();
-    fetchJsonWithRetry(LITE_API_URL + '?action=liteAuth&code=' + encodeURIComponent(code), { cache: 'no-store' }, 2)
-      .then(data => {
-        if (!data.ok) {
+    fetch('https://bot.frostclient.eu/launcher/discord-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: code, redirectUri: DISCORD_REDIRECT_URI }),
+      cache: 'no-store'
+    })
+      .then(r => r.json())
+      .then(rawData => {
+        if (!rawData.ok) {
           setAuthPhase('loggedOut');
-          showError(data.error === 'auth_failed'
+          showError(rawData.error === 'auth_failed'
             ? 'Discord sign-in failed. Please try again.'
-            : "Discord didn't respond correctly. Please try again.", data.detail);
+            : "Discord didn't respond correctly. Please try again.", rawData.detail);
           return;
         }
+        const data = mapBotLoginStatus(rawData);
         if (data.gameToken) saveToken(data.gameToken);
         if (returnTo && !gameSession()) {
           setAccessFlag(data.status === 'eligible');
@@ -395,7 +412,6 @@
         if (window.FrostAccount) window.FrostAccount.open();
         return;
       }
-      try { fetch(LITE_API_URL + '?action=liteConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
       let csrfState = '';
       try {
         const buf = new Uint8Array(16);

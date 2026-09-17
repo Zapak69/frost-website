@@ -179,9 +179,24 @@
     afterResult('error', data);
   }
 
+  function mapBotLoginStatus(data) {
+    const status = !data.isMember ? 'not_member' : (data.hasLiteRole ? 'eligible' : 'not_booster');
+    const out = { ok: true, status: status, user: data.user, gameToken: data.gameToken };
+    if (status === 'eligible') {
+      out.accessVia = 'subscriber';
+      out.dl = btoa('https://bot.frostclient.eu/dl/frost-lite.mrpack');
+    }
+    return out;
+  }
+
   function exchange(code) {
     show('stateLoading');
-    fetch(LITE_API_URL + '?action=gameLiteAuth&code=' + encodeURIComponent(code), { cache: 'no-store' })
+    fetch('https://bot.frostclient.eu/launcher/discord-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: code }),
+      cache: 'no-store'
+    })
       .then(r => r.json())
       .then(data => {
         if (!data.ok) {
@@ -191,7 +206,7 @@
           return;
         }
         if (data.gameToken) { saveToken(data.gameToken); document.dispatchEvent(new CustomEvent('frostAccountLogin')); }
-        render(data);
+        render(mapBotLoginStatus(data));
       })
       .catch(() => showError('Network error while contacting the server. Please try again.'));
   }
@@ -212,7 +227,6 @@
   }
   document.querySelectorAll('.js-lite-login').forEach(loginBtn => {
     loginBtn.addEventListener('click', () => {
-      try { fetch(LITE_API_URL + '?action=gameLiteConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
       let csrfState = '';
       try {
         const buf = new Uint8Array(16);

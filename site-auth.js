@@ -63,7 +63,6 @@
   }
 
   function startLogin(btn) {
-    try { fetch(LITE_API_URL + '?action=liteConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
     try {
       var here = new URL(window.location.href);
       here.searchParams.delete('code'); here.searchParams.delete('state'); here.searchParams.delete('error'); here.searchParams.delete('error_description');
@@ -448,7 +447,12 @@
   }
 
   function fetchAccountInfo(token) {
-    return fetchJsonWithRetry(LITE_API_URL + '?action=accountInfo&token=' + encodeURIComponent(token), { cache: 'no-store' }, 2);
+    return fetchJsonWithRetry('https://bot.frostclient.eu/site/account-info', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token }),
+      cache: 'no-store'
+    }, 2);
   }
 
   function populateModal(els, data) {

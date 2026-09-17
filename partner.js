@@ -512,7 +512,13 @@
       return;
     }
 
-    fetchJsonWithRetry(LITE_API_URL + '?action=partnerAuth&code=' + encodeURIComponent(code), { cache: 'no-store' }, 2)
+    fetch('https://bot.frostclient.eu/site/partner-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: code }),
+      cache: 'no-store'
+    })
+      .then(function (r) { return r.json(); })
       .then(function (data) {
         if (!data.ok) {
           showErrorState('Discord sign-in failed. Please try again.');
