@@ -137,45 +137,20 @@
 <div class="preview-section">
   <div class="preview-frame reveal">
     <div class="preview-media" id="previewMedia">
-      <div class="preview-slide preview-slide-video is-active" id="previewSlideVideo">
-        <div class="hero-video" id="heroVideo">
-          <video id="heroVideoEl" poster="hero-preview-poster.jpg" preload="metadata" playsinline>
-            <source src="hero-preview.mp4" type="video/mp4"/>
-          </video>
-          <button type="button" class="hero-video-play" id="heroVideoPlayBtn" aria-label="Play video">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>
-          </button>
-          <div class="hero-video-controls" id="heroVideoControls">
-            <button type="button" class="hero-video-btn" id="heroVideoToggleBtn" aria-label="Play">
-              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>
-              <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
-            </button>
-            <span class="hero-video-time" id="heroVideoTime">0:00 / 0:00</span>
-            <div class="hero-video-progress" id="heroVideoProgress" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-              <div class="hero-video-progress-track">
-                <div class="hero-video-progress-buffered" id="heroVideoBuffered"></div>
-                <div class="hero-video-progress-fill" id="heroVideoFill"></div>
-                <div class="hero-video-progress-handle" id="heroVideoHandle"></div>
-              </div>
-            </div>
-            <button type="button" class="hero-video-btn" id="heroVideoMuteBtn" aria-label="Mute">
-              <svg class="icon-vol-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-              <svg class="icon-vol-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-            </button>
-            <button type="button" class="hero-video-btn" id="heroVideoFullscreenBtn" aria-label="Fullscreen">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-            </button>
-          </div>
-        </div>
+      <div class="preview-slide preview-slide-image is-active" id="previewSlideFeatures1">
+        <img src="ingame_features1.png" alt="Frost Client in-game features"/>
+      </div>
+      <div class="preview-slide preview-slide-image" id="previewSlideFeatures2">
+        <img src="ingame_features2.png" alt="Frost Client in-game features"/>
       </div>
       <div class="preview-slide preview-slide-image" id="previewSlideImage">
         <img src="screenshot.png" alt="Frost Client Screenshot" id="heroImg"/>
       </div>
     </div>
-    <button type="button" class="preview-nav preview-nav-next" id="previewNextBtn" aria-label="Show screenshot">
+    <button type="button" class="preview-nav preview-nav-next" id="previewNextBtn" aria-label="Next image">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
     </button>
-    <button type="button" class="preview-nav preview-nav-prev" id="previewPrevBtn" aria-label="Show video" hidden>
+    <button type="button" class="preview-nav preview-nav-prev" id="previewPrevBtn" aria-label="Previous image" hidden>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
     </button>
     <div class="preview-glow"></div>
@@ -183,7 +158,7 @@
 </div>
 <div class="stats-bar reveal-scale">
   <div class="stat-item">
-    <div class="stat-num">60+</div>
+    <div class="stat-num">50+</div>
     <div class="stat-label">Built-in Mods</div>
   </div>
   <div class="stat-item">
@@ -211,22 +186,22 @@
     <div class="feature-card reveal reveal-delay-1">
       <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg></div>
       <h3>FPS Boost</h3>
-      <p>Vulkan and Beryl baked in. Launch and play fast — no setup required.</p>
+      <p>Sodium and VulkanMod baked in. Launch and play fast — no setup required.</p>
     </div>
     <div class="feature-card reveal reveal-delay-2">
       <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-      <h3>Friend List</h3>
-      <p>Add your friends and play together anytime, no need to buy or host a server.</p>
+      <h3>Frost Badges</h3>
+      <p>See a live badge above every other Frost Client player nearby, plus their cape, synced in real time.</p>
     </div>
     <div class="feature-card reveal reveal-delay-3">
       <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 4.5L18 9l-4.1 1.5L12 15l-1.9-4.5L6 9l4.1-1.5Z"/><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9Z"/></svg></div>
       <h3>Cosmetics</h3>
-      <p>Upload free custom capes. Stand out without paying for a third-party service.</p>
+      <p>Free and unlockable capes built right in. Stand out without paying for a third-party service.</p>
     </div>
     <div class="feature-card reveal reveal-delay-1">
       <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L2 19v3h3l7.3-7.3a4 4 0 0 0 5.4-5.4l-2.8 2.8-2-2Z"/></svg></div>
       <h3>Mod Browser</h3>
-      <p>Browse Modrinth & CurseForge mods and install in one click.</p>
+      <p>Browse Modrinth mods and install extras in one click, right from Frost.</p>
     </div>
     <div class="feature-card reveal reveal-delay-2">
       <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></div>
@@ -235,8 +210,8 @@
     </div>
     <div class="feature-card reveal reveal-delay-3">
       <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></div>
-      <h3>More...</h3>
-      <p>Discover more features in-game.</p>
+      <h3>50+ Built-in Mods</h3>
+      <p>PvP tweaks, HUD customization, and more — all built in, all toggleable from one in-game menu.</p>
     </div>
   </div>
 </section>
@@ -340,7 +315,7 @@
 <section class="lite-promo" id="lite">
   <div class="section-eyebrow reveal">Exclusive</div>
   <h2 class="reveal">Want even <span class="lite-accent">more?</span></h2>
-  <p class="lite-promo-desc reveal">FrostClient <strong style="color:#ff73fa;">Lite</strong> is a special build that goes beyond the classic client — built for our biggest supporters.</p>
+  <p class="lite-promo-desc reveal">FrostClient <strong style="color:#ff73fa;">Lite</strong> is a special build built for our biggest supporters — up to <strong>+700 FPS</strong> over vanilla, exclusive capes, and priority support.</p>
   <div class="reveal">
     <a class="btn-lite-promo js-lite-access-link" href="lite">Get FrostClient Lite</a>
   </div>

@@ -135,9 +135,11 @@
   .tier-card-badge { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--frost-blue); margin-bottom: 14px; }
   .tier-card-badge.partner { color: var(--purple); }
   .tier-card-badge.plus { color: var(--gold); }
-  .tier-card-pct { font-size: 36px; font-weight: 700; color: var(--frost-blue); margin-bottom: 10px; letter-spacing: -1px; }
+  .tier-card-pct-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 14px; }
+  .tier-card-pct { font-size: 36px; font-weight: 700; color: var(--frost-blue); letter-spacing: -1px; }
   .tier-card-pct.partner { color: var(--purple); }
   .tier-card-pct.plus { color: var(--gold); }
+  .tier-card-pct-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
   .tier-card-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
   .tier-card .partner-reqs { margin-top: 4px; }
 
