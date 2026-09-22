@@ -435,10 +435,8 @@
   let autoRefreshEnabled = loadAutoRefreshPref();
 
   function updateAutoRefreshUI() {
-    document.getElementById('autoRefreshToggle').classList.toggle('on', autoRefreshEnabled);
-    document.getElementById('refreshNote').textContent = autoRefreshEnabled
-      ? 'Refreshes automatically every 30 seconds.'
-      : 'Auto-refresh paused — the player list won’t change until you turn it back on.';
+    const t = document.getElementById('autoRefreshToggle');
+    if (t) t.classList.toggle('on', autoRefreshEnabled);
   }
 
   function startAutoRefresh() {
@@ -450,7 +448,8 @@
     }, 30000);
   }
 
-  document.getElementById('autoRefreshToggle').addEventListener('click', function () {
+  const autoRefreshToggleEl = document.getElementById('autoRefreshToggle');
+  if (autoRefreshToggleEl) autoRefreshToggleEl.addEventListener('click', function () {
     autoRefreshEnabled = !autoRefreshEnabled;
     saveAutoRefreshPref(autoRefreshEnabled);
     updateAutoRefreshUI();
@@ -498,7 +497,6 @@
     document.getElementById('statPeakAt').textContent = data.peakOnlineAt ? 'hit ' + formatDateTime(data.peakOnlineAt) : '';
     animateStatNumber('statTotalPlayers', data.totalPlayersSeen || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statPartners', data.partnerCount || 0, v => formatNumber(Math.round(v)));
-    animateStatNumber('statPlaytime', data.totalPlaytimeMs || 0, v => formatDuration(Math.round(v)));
     animateStatNumber('statReviewCount', data.totalReviews || 0, v => formatNumber(Math.round(v)));
     animateStatNumber('statPollVotes', data.totalPollVotes || 0, v => formatNumber(Math.round(v)));
     document.getElementById('statVersion').textContent = data.topVersion || 'n/a';
@@ -588,6 +586,7 @@
   function renderSessions(sessions) {
     lastSessions = sessions;
     const grid = document.getElementById('playerGrid');
+    if (!grid) return;
     const emptyNote = document.getElementById('emptyNote');
     const countEl = document.getElementById('trackerCount');
     const searchCountEl = document.getElementById('searchResultsCount');
@@ -704,12 +703,14 @@
 
   function updateSortDirBtn() {
     const btn = document.getElementById('sortDirBtn');
+    if (!btn) return;
     btn.textContent = sessionSortDir === 'asc' ? '↑' : '↓';
     btn.title = sessionSortDir === 'asc' ? 'Ascending - click to reverse' : 'Descending - click to reverse';
   }
   updateSortDirBtn();
 
-  document.getElementById('sessionSort').addEventListener('click', function (e) {
+  const sessionSortEl = document.getElementById('sessionSort');
+  if (sessionSortEl) sessionSortEl.addEventListener('click', function (e) {
     const btn = e.target.closest('.range-btn');
     if (!btn || btn.classList.contains('active')) return;
     this.querySelectorAll('.range-btn').forEach(b => b.classList.toggle('active', b === btn));
@@ -719,14 +720,16 @@
     renderSessions(lastSessions);
   });
 
-  document.getElementById('sortDirBtn').addEventListener('click', function () {
+  const sortDirBtnEl = document.getElementById('sortDirBtn');
+  if (sortDirBtnEl) sortDirBtnEl.addEventListener('click', function () {
     sessionSortDir = sessionSortDir === 'asc' ? 'desc' : 'asc';
     updateSortDirBtn();
     renderSessions(lastSessions);
   });
 
   let searchDebounce = null;
-  document.getElementById('playerSearch').addEventListener('input', function () {
+  const playerSearchEl = document.getElementById('playerSearch');
+  if (playerSearchEl) playerSearchEl.addEventListener('input', function () {
     const value = this.value;
     clearTimeout(searchDebounce);
     searchDebounce = setTimeout(() => {
@@ -735,7 +738,8 @@
     }, 150);
   });
 
-  document.getElementById('playerGrid').addEventListener('click', function (e) {
+  const playerGridEl = document.getElementById('playerGrid');
+  if (playerGridEl) playerGridEl.addEventListener('click', function (e) {
     const btn = e.target.closest('.copy-btn');
     if (!btn) return;
     const text = btn.dataset.copy || '';
