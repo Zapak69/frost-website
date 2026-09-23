@@ -124,18 +124,17 @@
     const liteRow = document.getElementById('dlLiteRow');
     const tile = document.getElementById('dlLauncherTile');
     if (liteRow) liteRow.hidden = active;
-    if (tile) {
-      tile.classList.toggle('is-lite-active', active);
-      let pill = tile.querySelector('.dl-lite-pill');
-      if (active && !pill) {
-        pill = document.createElement('span');
-        pill.className = 'dl-lite-pill';
-        pill.textContent = 'Lite Active';
-        tile.insertBefore(pill, tile.firstChild);
-      } else if (!active && pill) {
-        pill.remove();
-      }
+    if (!tile) return;
+    tile.classList.add('is-highlight');
+    tile.classList.toggle('is-lite', active);
+    let pill = tile.querySelector('.dl-tile-pill');
+    if (!pill) {
+      pill = document.createElement('span');
+      pill.className = 'dl-tile-pill';
+      tile.insertBefore(pill, tile.firstChild);
     }
+    pill.classList.toggle('is-lite', active);
+    pill.textContent = active ? 'Lite Active' : 'Free';
   }
 
   document.addEventListener('frostAccountLogout', applyLiteDownloadState);
@@ -161,7 +160,7 @@
     const tile = document.getElementById('dlLauncherTile');
     const sub = document.getElementById('dlLauncherTileSub');
     if (tile) tile.href = PUBLIC_DL_BASE + primary.file;
-    if (sub) sub.textContent = 'Latest · ' + primary.label;
+    if (sub) sub.textContent = primary.label;
     const altEl = document.getElementById('dlLauncherAltLinks');
     if (altEl) {
       altEl.innerHTML = '';

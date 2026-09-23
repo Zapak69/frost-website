@@ -1021,6 +1021,12 @@
     grid-template-columns: 1fr 1fr;
     gap: 18px;
   }
+  @media(max-width:600px) {
+    .dl-choice-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .dl-choice-tile {
     position: relative; overflow: hidden;
     width: 100%;
@@ -1079,17 +1085,25 @@
     border-color: var(--red);
   }
   .dl-lite-row {
+    --dl-hl-angle: 0deg;
+    --dl-lite-row-veil: rgba(191,90,242,0.06);
     margin-top: 18px;
     display: flex; align-items: center; justify-content: space-between; gap: 16px;
     padding: 16px 20px;
-    border: 1px solid rgba(191,90,242,0.35); border-radius: 18px;
-    background: rgba(191,90,242,0.06);
+    border: 2px solid transparent; border-radius: 18px;
+    background-color: transparent;
+    background-image:
+      linear-gradient(var(--dl-lite-row-veil), var(--dl-lite-row-veil)),
+      linear-gradient(var(--surface), var(--surface)),
+      conic-gradient(from var(--dl-hl-angle), var(--lite-deep) 0%, var(--lite) 25%, #ff73fa 50%, var(--lite) 75%, var(--lite-deep) 100%);
+    background-origin: padding-box, padding-box, border-box;
+    background-clip: padding-box, padding-box, border-box;
     color: var(--text); text-decoration: none;
-    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    transition: transform 0.2s;
+    animation: dlHighlightSpin 4s linear infinite;
   }
   .dl-lite-row:hover {
-    border-color: var(--lite);
-    background: rgba(191,90,242,0.12);
+    --dl-lite-row-veil: rgba(191,90,242,0.12);
     transform: translateY(-2px);
     text-decoration: none;
   }
@@ -1107,14 +1121,18 @@
     font-weight: 700;
   }
   .dl-lite-badge {
+    font-family: var(--font-bold);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    white-space: nowrap;
     color: #fff;
-    background: var(--lite);
+    background: linear-gradient(110deg, var(--lite-deep) 0%, var(--lite) 45%, #ff73fa 100%);
+    border: none;
     border-radius: 999px;
-    padding: 3px 9px;
+    padding: 3px 12px;
+    box-shadow: 0 2px 8px rgba(191, 90, 242, 0.45);
   }
   .dl-lite-desc {
     font-size: 12.5px;
@@ -1164,11 +1182,6 @@
     background: var(--lite); color: #fff;
     font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-align: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
-  @media(max-width:600px) {
-    .dl-choice-grid {
-      grid-template-columns: 1fr;
-    }
   }
   .lite-promo .section-eyebrow {
     color: var(--lite);
@@ -2011,31 +2024,74 @@
     display: none;
   }
 
-  .dl-choice-tile.is-lite-active {
-    border-color: var(--lite, #bf5af2);
-    box-shadow: 0 0 0 1px rgba(191, 90, 242, 0.35), 0 12px 32px rgba(191, 90, 242, 0.18);
+  @property --dl-hl-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
   }
 
-  .dl-choice-tile.is-lite-active:hover {
-    border-color: var(--lite, #bf5af2);
-    background: rgba(191, 90, 242, 0.08);
+  .dl-choice-tile.is-highlight {
+    --dl-hl-angle: 0deg;
+    --dl-hl-veil: transparent;
+    --dl-hl-a: var(--frost-deep);
+    --dl-hl-b: var(--frost-blue);
+    --dl-hl-c: var(--frost-light);
+    --dl-hl-glow: rgba(79, 200, 248, 0.18);
+    overflow: visible;
+    border-width: 2px;
+    border-color: transparent;
+    background-color: var(--surface);
+    background-image:
+      linear-gradient(var(--dl-hl-veil), var(--dl-hl-veil)),
+      linear-gradient(var(--surface), var(--surface)),
+      conic-gradient(from var(--dl-hl-angle), var(--dl-hl-a) 0%, var(--dl-hl-b) 25%, var(--dl-hl-c) 50%, var(--dl-hl-b) 75%, var(--dl-hl-a) 100%);
+    background-origin: padding-box, padding-box, border-box;
+    background-clip: padding-box, padding-box, border-box;
+    box-shadow: 0 12px 32px var(--dl-hl-glow);
+    animation: dlHighlightSpin 4s linear infinite;
   }
 
-  .dl-lite-pill {
+  .dl-choice-tile.is-highlight.is-lite {
+    --dl-hl-a: var(--lite-deep);
+    --dl-hl-b: var(--lite);
+    --dl-hl-c: #ff73fa;
+    --dl-hl-glow: rgba(191, 90, 242, 0.18);
+  }
+
+  .dl-choice-tile.is-highlight:hover {
+    --dl-hl-veil: rgba(255, 255, 255, 0.05);
+    border-color: transparent;
+    background-color: var(--surface);
+  }
+
+  @keyframes dlHighlightSpin {
+    to {
+      --dl-hl-angle: 360deg;
+    }
+  }
+
+  .dl-tile-pill {
     position: absolute;
-    top: 10px;
+    top: -11px;
     left: 50%;
     transform: translateX(-50%);
     padding: 3px 12px;
     border-radius: 999px;
-    border: 1px solid rgba(191, 90, 242, 0.55);
-    background: rgba(191, 90, 242, 0.16);
-    color: var(--lite, #bf5af2);
+    border: none;
+    background: linear-gradient(110deg, var(--frost-deep) 0%, var(--frost-blue) 45%, var(--frost-light) 100%);
+    color: #06121c;
     font-family: var(--font-bold);
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
     white-space: nowrap;
     pointer-events: none;
+    box-shadow: 0 2px 8px rgba(79, 200, 248, 0.45);
+  }
+
+  .dl-tile-pill.is-lite {
+    background: linear-gradient(110deg, var(--lite-deep) 0%, var(--lite) 45%, #ff73fa 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(191, 90, 242, 0.45);
   }
