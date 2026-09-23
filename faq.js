@@ -8,7 +8,9 @@
       tab.classList.toggle('active', active);
       tab.setAttribute('aria-selected', active ? 'true' : 'false');
     });
-    panels.forEach(panel => { panel.hidden = panel.dataset.installPanel !== name; });
+    panels.forEach(panel => {
+      panel.hidden = panel.dataset.installPanel !== name;
+    });
   }
   tabs.forEach(tab => tab.addEventListener('click', () => showInstallTab(tab.dataset.installTab)));
   window.frostShowInstallTab = showInstallTab;
@@ -24,7 +26,10 @@
 
   for (const key of params.keys()) {
     const el = document.getElementById(key);
-    if (el) { target = el; break; }
+    if (el) {
+      target = el;
+      break;
+    }
   }
   if (!target) return;
 

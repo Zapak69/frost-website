@@ -42,14 +42,21 @@
         if (!localStorage.getItem(TOKEN_KEY)) localStorage.setItem(TOKEN_KEY, legacy);
       }
       return localStorage.getItem(TOKEN_KEY) || '';
-    } catch (e) { return ''; }
+    } catch (e) {
+        return '';
+    }
   }
   function saveToken(t) {
-    try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    try {
+        localStorage.setItem(TOKEN_KEY, t);
+    } catch (e) {}
     document.dispatchEvent(new CustomEvent('frostAccountLogin'));
   }
   function clearToken() {
-    try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem('frostLiteAccess'); } catch (e) {}
+    try {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem('frostLiteAccess');
+    } catch (e) {}
     document.dispatchEvent(new CustomEvent('frostAccountLogout'));
   }
 
@@ -105,7 +112,11 @@
   const formError = document.getElementById('formError');
 
   function setFormError(msg) {
-    if (!msg) { formError.hidden = true; formError.textContent = ''; return; }
+    if (!msg) {
+        formError.hidden = true;
+        formError.textContent = '';
+        return;
+    }
     formError.hidden = false;
     formError.textContent = msg;
   }
@@ -147,7 +158,12 @@
   const buglogDropzone = document.getElementById('buglogDropzone');
   function acceptBuglogFile(f) {
     setFormError('');
-    if (!f) { buglogFile = null; document.getElementById('buglogChosen').textContent = ''; updateSubmitEnabled(); return; }
+    if (!f) {
+        buglogFile = null;
+        document.getElementById('buglogChosen').textContent = '';
+        updateSubmitEnabled();
+        return;
+    }
     if (!f.name.toLowerCase().endsWith('.buglog')) {
       setFormError('Please choose a .buglog file.');
       buglogInput.value = '';
@@ -294,7 +310,10 @@
   submitBtn.addEventListener('click', async () => {
     if (submitBtn.disabled) return;
     const token = loadToken();
-    if (!token) { showErrorState('Your session expired. Please sign in again.'); return; }
+    if (!token) {
+        showErrorState('Your session expired. Please sign in again.');
+        return;
+    }
     setFormError('');
     show('stateSubmitting');
     try {
@@ -349,8 +368,12 @@
       const code = params.get('code');
       const returnedState = params.get('state') || '';
       let storedState = '';
-      try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
-      try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+      try {
+          storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || '';
+      } catch (e) {}
+      try {
+          sessionStorage.removeItem(OAUTH_STATE_KEY);
+      } catch (e) {}
 
       const cleanUrl = new URL(window.location.href);
       cleanUrl.searchParams.delete('code');

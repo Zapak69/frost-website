@@ -92,30 +92,52 @@
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
   }
-  function openModal() { modal.classList.add('active'); }
-  function closeModal() { modal.classList.remove('active'); }
+  function openModal() {
+      modal.classList.add('active');
+  }
+  function closeModal() {
+      modal.classList.remove('active');
+  }
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
+  modal.addEventListener('click', function (e) {
+      if (e.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+  });
 
   function loadToken() {
-    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+    try {
+        return localStorage.getItem(TOKEN_KEY) || '';
+    } catch (e) {
+        return '';
+    }
   }
   function saveToken(t) {
-    try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    try {
+        localStorage.setItem(TOKEN_KEY, t);
+    } catch (e) {}
     document.dispatchEvent(new CustomEvent('frostAccountLogin'));
   }
   function clearToken() {
-    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    try {
+        localStorage.removeItem(TOKEN_KEY);
+    } catch (e) {}
   }
   function fetchJsonWithRetry(url, options, retries) {
     return fetch(url, options)
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+          return r.json();
+      })
       .catch(function (err) {
         if (retries > 0) {
-          return new Promise(function (resolve) { setTimeout(resolve, 1200); })
-            .then(function () { return fetchJsonWithRetry(url, options, retries - 1); });
+          return new Promise(function (resolve) {
+              setTimeout(resolve, 1200);
+          })
+            .then(function () {
+                return fetchJsonWithRetry(url, options, retries - 1);
+            });
         }
         throw err;
       });
@@ -131,11 +153,17 @@
     });
   }
   function markApplied() {
-    try { localStorage.setItem(APPLIED_KEY, '1'); } catch (e) {}
+    try {
+        localStorage.setItem(APPLIED_KEY, '1');
+    } catch (e) {}
     setBoxState('applyBoxSubmitted');
   }
   function hasApplied() {
-    try { return localStorage.getItem(APPLIED_KEY) === '1'; } catch (e) { return false; }
+    try {
+        return localStorage.getItem(APPLIED_KEY) === '1';
+    } catch (e) {
+        return false;
+    }
   }
   function markClosed() {
     setBoxState('applyBoxClosed');
@@ -143,7 +171,9 @@
   function formatRetryDate(ms) {
     try {
       return new Date(ms).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-    } catch (e) { return ''; }
+    } catch (e) {
+        return '';
+    }
   }
   const openPositionsSection = document.getElementById('staffOpenPositionsSection');
   const bannedNotice = document.getElementById('staffBannedNotice');
@@ -152,7 +182,9 @@
     if (openPositionsSection) openPositionsSection.style.display = 'none';
     if (bannedNotice) bannedNotice.style.display = 'block';
     if (bannedReasonEl) bannedReasonEl.textContent = reason ? 'Reason: ' + reason : '';
-    document.querySelectorAll('.js-staff-apply-btn').forEach(function (btn) { btn.style.display = 'none'; });
+    document.querySelectorAll('.js-staff-apply-btn').forEach(function (btn) {
+        btn.style.display = 'none';
+    });
     closeModal();
   }
   // Returns a promise resolving to the application status ('none' if there isn't one, null on
@@ -162,7 +194,9 @@
     const token = loadToken();
     if (!token) return Promise.resolve(null);
     return fetch(STAFF_APPLY_STATUS_URL + '?token=' + encodeURIComponent(token), { cache: 'no-store' })
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+          return r.json();
+      })
       .then(function (data) {
         if (!data || !data.ok) return null;
         if (data.status === 'banned') {
@@ -182,13 +216,17 @@
             }
             setBoxState('applyBoxDenied');
           } else {
-            try { localStorage.removeItem(APPLIED_KEY); } catch (e) {}
+            try {
+                localStorage.removeItem(APPLIED_KEY);
+            } catch (e) {}
             setBoxState('applyBoxNormal');
           }
         }
         return data.status;
       })
-      .catch(function () { return null; });
+      .catch(function () {
+          return null;
+      });
   }
 
   function showErrorState(msg) {
@@ -241,25 +279,36 @@
   }
 
   function requiredInputs() {
-    return Array.from(fieldsWrap.querySelectorAll('.apply-input')).filter(function (el) { return el.dataset.key !== 'extra'; });
+    return Array.from(fieldsWrap.querySelectorAll('.apply-input')).filter(function (el) {
+        return el.dataset.key !== 'extra';
+    });
   }
   function updateSubmitEnabled() {
-    submitBtn.disabled = !requiredInputs().every(function (el) { return el.value.trim(); });
+    submitBtn.disabled = !requiredInputs().every(function (el) {
+        return el.value.trim();
+    });
   }
 
   submitBtn.addEventListener('click', function () {
     if (submitBtn.disabled || !currentRole) return;
     const token = loadToken();
-    if (!token) { showErrorState('Your session expired. Please click Apply again to sign in.'); return; }
+    if (!token) {
+        showErrorState('Your session expired. Please click Apply again to sign in.');
+        return;
+    }
     submitBtn.disabled = true;
     const answers = {};
-    fieldsWrap.querySelectorAll('.apply-input').forEach(function (el) { answers[el.dataset.key] = el.value.trim(); });
+    fieldsWrap.querySelectorAll('.apply-input').forEach(function (el) {
+        answers[el.dataset.key] = el.value.trim();
+    });
     fetch(STAFF_APPLY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ staffToken: token, role: currentRole, answers: answers })
     })
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+          return r.json();
+      })
       .then(function (data) {
         if (data && data.ok) {
           show('applyStateDone');
@@ -288,7 +337,10 @@
         submitBtn.disabled = false;
         showErrorState("Couldn't submit your application. Please try again.");
       })
-      .catch(function () { submitBtn.disabled = false; showErrorState('Network error. Please try again.'); });
+      .catch(function () {
+          submitBtn.disabled = false;
+          showErrorState('Network error. Please try again.');
+      });
   });
 
   const closedRoles = new Set();
@@ -317,14 +369,20 @@
   function applyRecruitmentConfig(data) {
     if (!data || !data.ok || !data.roles) return;
     const ids = Object.keys(data.roles);
-    ids.forEach(function (id) { if (!data.roles[id].open) markRoleClosed(id); });
-    if (ids.length > 0 && ids.every(function (id) { return !data.roles[id].open; })) {
+    ids.forEach(function (id) {
+        if (!data.roles[id].open) markRoleClosed(id);
+    });
+    if (ids.length > 0 && ids.every(function (id) {
+        return !data.roles[id].open;
+    })) {
       appsOpen = false;
       if (!hasApplied()) markClosed();
     }
   }
   fetch('https://bot.frostclient.eu/staff-apply-config', { cache: 'no-store' })
-    .then(function (r) { return r.json(); })
+    .then(function (r) {
+        return r.json();
+    })
     .then(applyRecruitmentConfig)
     .catch(function () {});
 
@@ -339,7 +397,9 @@
     show('applyStep0');
   });
 
-  document.getElementById('applyRetryBtn').addEventListener('click', function () { show('applyStep0'); });
+  document.getElementById('applyRetryBtn').addEventListener('click', function () {
+      show('applyStep0');
+  });
   document.getElementById('applyRetryAfterJoin').addEventListener('click', function () {
     startLogin();
   });
@@ -347,7 +407,9 @@
   const applyBtns = document.querySelectorAll('.js-staff-apply-btn');
   function applyAuthUi() {
     const loggedIn = !!loadToken();
-    applyBtns.forEach(function (btn) { btn.classList.toggle('is-logged-in', loggedIn); });
+    applyBtns.forEach(function (btn) {
+        btn.classList.toggle('is-logged-in', loggedIn);
+    });
     const intro = document.getElementById('applyBoxIntro');
     if (intro) intro.textContent = loggedIn ? intro.dataset.loggedIn : intro.dataset.loggedOut;
   }
@@ -359,7 +421,9 @@
 
   let appsOpen = true;
   fetch(LITE_API_URL + '?action=staffApplyConfig', { cache: 'no-store' })
-    .then(function (r) { return r.json(); })
+    .then(function (r) {
+        return r.json();
+    })
     .then(function (data) {
       if (data && data.ok && !data.open) {
         appsOpen = false;
@@ -373,7 +437,9 @@
     try {
       const buf = new Uint8Array(16);
       crypto.getRandomValues(buf);
-      csrfState = Array.from(buf).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+      csrfState = Array.from(buf).map(function (b) {
+          return b.toString(16).padStart(2, '0');
+      }).join('');
       sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
     } catch (e) {}
     const url = 'https://discord.com/oauth2/authorize'
@@ -387,7 +453,11 @@
 
   applyBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
-      if (!appsOpen) { openModal(); show('applyStateClosed'); return; }
+      if (!appsOpen) {
+          openModal();
+          show('applyStateClosed');
+          return;
+      }
       const token = loadToken();
       if (token) {
         show('applyStep0');
@@ -413,8 +483,12 @@
     const code = params.get('code');
     const returnedState = params.get('state') || '';
     let storedState = '';
-    try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
-    try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+    try {
+        storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || '';
+    } catch (e) {}
+    try {
+        sessionStorage.removeItem(OAUTH_STATE_KEY);
+    } catch (e) {}
 
     const cleanUrl = new URL(window.location.href);
     cleanUrl.searchParams.delete('code');
@@ -452,6 +526,8 @@
         }
         showErrorState('Something unexpected happened. Please try again.');
       })
-      .catch(function () { showErrorState('Network error while contacting the server. Please try again.'); });
+      .catch(function () {
+          showErrorState('Network error while contacting the server. Please try again.');
+      });
   })();
 })();

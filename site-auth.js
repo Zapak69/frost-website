@@ -21,15 +21,24 @@
       if (!localStorage.getItem(TOKEN_KEY)) {
         for (var i = 0; i < LEGACY_TOKEN_KEYS.length; i++) {
           var legacy = localStorage.getItem(LEGACY_TOKEN_KEYS[i]);
-          if (legacy) { localStorage.setItem(TOKEN_KEY, legacy); break; }
+          if (legacy) {
+              localStorage.setItem(TOKEN_KEY, legacy);
+              break;
+          }
         }
       }
-      LEGACY_TOKEN_KEYS.concat(LEGACY_DISCARD_KEYS).forEach(function (k) { localStorage.removeItem(k); });
+      LEGACY_TOKEN_KEYS.concat(LEGACY_DISCARD_KEYS).forEach(function (k) {
+          localStorage.removeItem(k);
+      });
     } catch (e) {}
   }
 
   function loadToken() {
-    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+    try {
+        return localStorage.getItem(TOKEN_KEY) || '';
+    } catch (e) {
+        return '';
+    }
   }
 
   function clearToken() {
@@ -37,26 +46,40 @@
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem('frostLiteAccess');
       localStorage.removeItem(USER_CACHE_KEY);
-      LEGACY_TOKEN_KEYS.concat(LEGACY_DISCARD_KEYS).forEach(function (k) { localStorage.removeItem(k); });
+      LEGACY_TOKEN_KEYS.concat(LEGACY_DISCARD_KEYS).forEach(function (k) {
+          localStorage.removeItem(k);
+      });
     } catch (e) {}
   }
 
   function loadUserCache() {
-    try { return JSON.parse(localStorage.getItem(USER_CACHE_KEY) || 'null'); } catch (e) { return null; }
+    try {
+        return JSON.parse(localStorage.getItem(USER_CACHE_KEY) || 'null');
+    } catch (e) {
+        return null;
+    }
   }
 
   function saveUserCache(user, liteActive) {
     if (!user || !user.id) return;
-    try { localStorage.setItem(USER_CACHE_KEY, JSON.stringify({ id: user.id, name: user.name || '', username: user.username || '', avatar: user.avatar || '', lite: liteActive === true })); } catch (e) {}
+    try {
+        localStorage.setItem(USER_CACHE_KEY, JSON.stringify({ id: user.id, name: user.name || '', username: user.username || '', avatar: user.avatar || '', lite: liteActive === true }));
+    } catch (e) {}
   }
 
   function fetchJsonWithRetry(url, options, retries) {
     return fetch(url, options)
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+          return r.json();
+      })
       .catch(function (err) {
         if (retries > 0) {
-          return new Promise(function (resolve) { setTimeout(resolve, 1200); })
-            .then(function () { return fetchJsonWithRetry(url, options, retries - 1); });
+          return new Promise(function (resolve) {
+              setTimeout(resolve, 1200);
+          })
+            .then(function () {
+                return fetchJsonWithRetry(url, options, retries - 1);
+            });
         }
         throw err;
       });
@@ -73,7 +96,9 @@
     try {
       var buf = new Uint8Array(16);
       crypto.getRandomValues(buf);
-      csrfState = Array.from(buf).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+      csrfState = Array.from(buf).map(function (b) {
+          return b.toString(16).padStart(2, '0');
+      }).join('');
       sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
     } catch (e) {}
     var url = 'https://discord.com/oauth2/authorize'
@@ -86,7 +111,11 @@
   }
 
   function hasLiteAccess() {
-    try { return localStorage.getItem('frostLiteAccess') === '1'; } catch (e) { return false; }
+    try {
+        return localStorage.getItem('frostLiteAccess') === '1';
+    } catch (e) {
+        return false;
+    }
   }
 
   function renderNavPill(btn, user) {
@@ -97,7 +126,9 @@
     btn.classList.toggle('is-lite', !!(user && user.lite) || hasLiteAccess());
     btn.innerHTML = '<img class="frost-nav-avatar" alt="" src="' + avatarUrl(user) + '"><span class="js-site-auth-text frost-nav-name"></span>' + ICON_CHEVRON;
     btn.querySelector('.frost-nav-name').textContent = name;
-    btn.querySelector('.frost-nav-avatar').addEventListener('error', function () { this.style.display = 'none'; });
+    btn.querySelector('.frost-nav-avatar').addEventListener('error', function () {
+        this.style.display = 'none';
+    });
     btn.setAttribute('aria-haspopup', 'true');
   }
 
@@ -136,7 +167,11 @@
       return 'https://cdn.discordapp.com/avatars/' + user.id + '/' + user.avatar + '.png?size=128';
     }
     var idx = 0;
-    try { idx = Number((BigInt((user && user.id) || '0') >> 22n) % 6n); } catch (e) { idx = 0; }
+    try {
+        idx = Number((BigInt((user && user.id) || '0') >> 22n) % 6n);
+    } catch (e) {
+        idx = 0;
+    }
     return 'https://cdn.discordapp.com/embed/avatars/' + idx + '.png';
   }
 
@@ -203,7 +238,9 @@
       closeNavMenu();
       openAccountModal();
     });
-    navMenu.querySelector('.frost-nav-capes').addEventListener('click', function () { closeNavMenu(); });
+    navMenu.querySelector('.frost-nav-capes').addEventListener('click', function () {
+        closeNavMenu();
+    });
     navMenu.querySelector('.frost-nav-signout').addEventListener('click', function () {
       closeNavMenu();
       clearToken();
@@ -217,7 +254,10 @@
   function closeNavMenu() {
     if (!navMenu) return;
     navMenu.classList.remove('open');
-    if (navMenuBtn) { navMenuBtn.classList.remove('open'); navMenuBtn.setAttribute('aria-expanded', 'false'); }
+    if (navMenuBtn) {
+        navMenuBtn.classList.remove('open');
+        navMenuBtn.setAttribute('aria-expanded', 'false');
+    }
   }
 
   function toggleNavMenu(btn) {
@@ -237,7 +277,9 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeNavMenu();
   });
-  window.addEventListener('resize', function () { if (navMenu && navMenu.classList.contains('open')) positionNavMenu(); });
+  window.addEventListener('resize', function () {
+      if (navMenu && navMenu.classList.contains('open')) positionNavMenu();
+  });
 
   function injectModalStyles() {
     if (document.getElementById('frostAccountStyles')) return;
@@ -435,7 +477,9 @@
       var done = function () {
         var original = modalEls.copyBtn.textContent;
         modalEls.copyBtn.textContent = '✓';
-        setTimeout(function () { modalEls.copyBtn.textContent = original; }, 1200);
+        setTimeout(function () {
+            modalEls.copyBtn.textContent = original;
+        }, 1200);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(real).then(done).catch(function () {});
@@ -529,7 +573,9 @@
         document.dispatchEvent(new CustomEvent('frostAccountLogout'));
       }
       return data;
-    }).catch(function () { return null; });
+    }).catch(function () {
+        return null;
+    });
   }
 
   function openAccountModal() {
@@ -568,7 +614,9 @@
     if (accountDataCache) {
 
       handleResult(accountDataCache, false);
-      fetchAccountInfo(token).then(function (data) { handleResult(data, true); }).catch(function () {});
+      fetchAccountInfo(token).then(function (data) {
+          handleResult(data, true);
+      }).catch(function () {});
       return;
     }
 
@@ -576,8 +624,12 @@
     els.error.style.display = 'none';
     els.content.style.display = 'none';
     (accountDataPromise || fetchAccountInfo(token))
-      .then(function (data) { handleResult(data, false); })
-      .catch(function () { showError('Network error while loading your account. Please try again.'); });
+      .then(function (data) {
+          handleResult(data, false);
+      })
+      .catch(function () {
+          showError('Network error while loading your account. Please try again.');
+      });
   }
 
   window.FrostAccount = { open: openAccountModal };
@@ -585,12 +637,23 @@
   function init() {
     migrateLegacyTokens();
     applyState();
-    document.addEventListener('frostAccountLogout', function () { accountDataCache = null; accountDataPromise = null; applyState(); });
-    document.addEventListener('frostAccountLogin', function () { accountDataCache = null; accountDataPromise = null; applyState(); prefetchAccountInfo(); });
+    document.addEventListener('frostAccountLogout', function () {
+        accountDataCache = null;
+        accountDataPromise = null;
+        applyState();
+    });
+    document.addEventListener('frostAccountLogin', function () {
+        accountDataCache = null;
+        accountDataPromise = null;
+        applyState();
+        prefetchAccountInfo();
+    });
     if (loadToken()) prefetchAccountInfo();
     if (window.location.hash === '#account') {
       if (loadToken()) {
-        try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (e) {}
+        try {
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+        } catch (e) {}
         openAccountModal();
       } else {
         startLogin();

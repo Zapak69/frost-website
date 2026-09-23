@@ -24,7 +24,10 @@
       ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
       ctx.fill();
       p.y += p.speed; p.x += p.drift;
-      if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+      if (p.y > H + 10) {
+          p.y = -10;
+          p.x = Math.random() * W;
+      }
       if (p.x > W + 10) p.x = -10;
       if (p.x < -10) p.x = W + 10;
     }
@@ -43,13 +46,17 @@
   const DISCORD_REDIRECT_URI_STATISTICS = 'https://frostclient.eu/statistics';
   const BRIDGE_URL = 'https://bot.frostclient.eu/statistics-data';
   function saveCache(data) {
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) {}
+    try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    } catch (e) {}
   }
   function loadCache() {
     try {
       const raw = localStorage.getItem(CACHE_KEY);
       return raw ? JSON.parse(raw) : null;
-    } catch (e) { return null; }
+    } catch (e) {
+        return null;
+    }
   }
 
   const states = ['stateLoading', 'stateLogin', 'stateWorking', 'stateDenied', 'stateError', 'stateData'];
@@ -59,7 +66,9 @@
   }
 
   function saveToken(t) {
-    try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    try {
+        localStorage.setItem(TOKEN_KEY, t);
+    } catch (e) {}
     document.dispatchEvent(new CustomEvent('frostAccountLogin'));
   }
   function loadToken() {
@@ -69,10 +78,16 @@
       localStorage.removeItem(LEGACY_OWNER_TOKEN_KEY);
       localStorage.removeItem(LEGACY_TOKEN_KEY);
       return localStorage.getItem(TOKEN_KEY) || '';
-    } catch (e) { return ''; }
+    } catch (e) {
+        return '';
+    }
   }
   function clearToken() {
-    try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(CACHE_KEY); localStorage.removeItem('frostLiteAccess'); } catch (e) {}
+    try {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(CACHE_KEY);
+        localStorage.removeItem('frostLiteAccess');
+    } catch (e) {}
     document.dispatchEvent(new CustomEvent('frostAccountLogout'));
   }
 
@@ -170,16 +185,27 @@
     }
     const daily = lastData.historyDaily || [];
     const byDate = {};
-    daily.forEach(d => { byDate[d.date] = d.avgOnline; });
+    daily.forEach(d => {
+        byDate[d.date] = d.avgOnline;
+    });
     const DAY = 24 * 60 * 60 * 1000;
     const now = Date.now();
     const nd = new Date(now);
     const todayStart = Date.UTC(nd.getUTCFullYear(), nd.getUTCMonth(), nd.getUTCDate());
     const dayEnd = todayStart + DAY;
     let bucketMs, startTime;
-    if (range === 'week') { bucketMs = DAY; startTime = todayStart - 6 * DAY; }
-    else if (range === 'month') { bucketMs = DAY; startTime = todayStart - 29 * DAY; }
-    else if (range === 'year') { bucketMs = 30 * DAY; startTime = todayStart - 364 * DAY; }
+    if (range === 'week') {
+        bucketMs = DAY;
+        startTime = todayStart - 6 * DAY;
+    }
+    else if (range === 'month') {
+        bucketMs = DAY;
+        startTime = todayStart - 29 * DAY;
+    }
+    else if (range === 'year') {
+        bucketMs = 30 * DAY;
+        startTime = todayStart - 364 * DAY;
+    }
     else {
       const sortedDates = daily.map(d => d.date).sort();
       const earliest = sortedDates.length ? new Date(sortedDates[0] + 'T00:00:00Z').getTime() : todayStart;
@@ -194,7 +220,10 @@
       let sum = 0, count = 0;
       for (let t = bucketStart; t < bucketEnd; t += DAY) {
         const dateKey = new Date(t).toISOString().slice(0, 10);
-        if (byDate[dateKey] != null) { sum += byDate[dateKey]; count++; }
+        if (byDate[dateKey] != null) {
+            sum += byDate[dateKey];
+            count++;
+        }
       }
       const t = bucketStart + bucketMs / 2;
       points.push({ t, value: count ? sum / count : 0, tooltip: formatDateShort(t) });
@@ -226,8 +255,12 @@
     const xMin = Math.min.apply(null, xs), xMax = Math.max.apply(null, xs);
     const yMax = niceCeil(Math.max.apply(null, points.map(p => p.value)) || 1);
 
-    function xPix(t) { return PAD_L + (xMax === xMin ? plotW / 2 : (t - xMin) / (xMax - xMin) * plotW); }
-    function yPix(v) { return PAD_T + plotH - (v / yMax) * plotH; }
+    function xPix(t) {
+        return PAD_L + (xMax === xMin ? plotW / 2 : (t - xMin) / (xMax - xMin) * plotW);
+    }
+    function yPix(v) {
+        return PAD_T + plotH - (v / yMax) * plotH;
+    }
 
     const GRID_STEPS = 4;
     for (let i = 0; i <= GRID_STEPS; i++) {
@@ -284,7 +317,10 @@
       let nearest = points[0], nearestDist = Infinity;
       for (const p of points) {
         const dist = Math.abs(xPix(p.t) - mouseX);
-        if (dist < nearestDist) { nearest = p; nearestDist = dist; }
+        if (dist < nearestDist) {
+            nearest = p;
+            nearestDist = dist;
+        }
       }
       const px = xPix(nearest.t), py = yPix(nearest.value);
       crosshair.setAttribute('x1', px); crosshair.setAttribute('x2', px); crosshair.setAttribute('opacity', 1);
@@ -368,7 +404,9 @@
     }
   });
   const POLL_ICONS = { CRYSTAL: 'icons/crystal.png', MACE: 'icons/mace.png', SMP: 'icons/smp.png', UHC: 'icons/uhc.png' };
-  function pollIcon(label) { return POLL_ICONS[String(label || '').toUpperCase()] || null; }
+  function pollIcon(label) {
+      return POLL_ICONS[String(label || '').toUpperCase()] || null;
+  }
   function renderBarChart(svgId, emptyId, items, iconFn) {
     const svg = document.getElementById(svgId);
     const emptyEl = document.getElementById(emptyId);
@@ -427,10 +465,17 @@
   let refreshTimer = null;
   const AUTO_REFRESH_KEY = 'frostStatisticsAutoRefresh';
   function loadAutoRefreshPref() {
-    try { const v = localStorage.getItem(AUTO_REFRESH_KEY); return v === null ? true : v === '1'; } catch (e) { return true; }
+    try {
+        const v = localStorage.getItem(AUTO_REFRESH_KEY);
+        return v === null ? true : v === '1';
+    } catch (e) {
+        return true;
+    }
   }
   function saveAutoRefreshPref(on) {
-    try { localStorage.setItem(AUTO_REFRESH_KEY, on ? '1' : '0'); } catch (e) {}
+    try {
+        localStorage.setItem(AUTO_REFRESH_KEY, on ? '1' : '0');
+    } catch (e) {}
   }
   let autoRefreshEnabled = loadAutoRefreshPref();
 
@@ -444,7 +489,13 @@
     refreshTimer = null;
     if (!autoRefreshEnabled) return;
     refreshTimer = setInterval(function () {
-      fetchStatistics().then(d => { if (d && d.ok) { renderStats(d); renderSessions(d.sessions || []); saveCache(d); } });
+      fetchStatistics().then(d => {
+          if (d && d.ok) {
+              renderStats(d);
+              renderSessions(d.sessions || []);
+              saveCache(d);
+          }
+      });
     }, 30000);
   }
 
@@ -454,7 +505,13 @@
     saveAutoRefreshPref(autoRefreshEnabled);
     updateAutoRefreshUI();
     if (autoRefreshEnabled) {
-      fetchStatistics().then(d => { if (d && d.ok) { renderStats(d); renderSessions(d.sessions || []); saveCache(d); } });
+      fetchStatistics().then(d => {
+          if (d && d.ok) {
+              renderStats(d);
+              renderSessions(d.sessions || []);
+              saveCache(d);
+          }
+      });
     }
     startAutoRefresh();
   });
@@ -475,7 +532,10 @@
     const el = document.getElementById(id);
     const fromValue = typeof statAnimState[id] === 'number' ? statAnimState[id] : 0;
     statAnimState[id] = toValue;
-    if (fromValue === toValue) { el.textContent = formatFn(toValue); return; }
+    if (fromValue === toValue) {
+        el.textContent = formatFn(toValue);
+        return;
+    }
 
     const start = performance.now();
     function tick(now) {
@@ -533,7 +593,9 @@
 
   function serverCounts(sessions) {
     const counts = {};
-    sessions.forEach(s => { counts[s.server] = (counts[s.server] || 0) + 1; });
+    sessions.forEach(s => {
+        counts[s.server] = (counts[s.server] || 0) + 1;
+    });
     return counts;
   }
   function serverPopValue(s) {
@@ -559,7 +621,10 @@
     allChip.type = 'button';
     allChip.className = 'server-chip' + (serverFilter === null ? ' active' : '');
     allChip.innerHTML = 'All <span class="count">' + sessions.length + '</span>';
-    allChip.addEventListener('click', () => { serverFilter = null; renderSessions(lastSessions); });
+    allChip.addEventListener('click', () => {
+        serverFilter = null;
+        renderSessions(lastSessions);
+    });
     el.appendChild(allChip);
 
     shared.forEach(([server, count]) => {
@@ -568,7 +633,10 @@
       chip.className = 'server-chip' + (serverFilter === server ? ' active' : '');
       chip.title = server;
       chip.innerHTML = escapeHtml(server) + ' <span class="count">' + count + '</span>';
-      chip.addEventListener('click', () => { serverFilter = server; renderSessions(lastSessions); });
+      chip.addEventListener('click', () => {
+          serverFilter = server;
+          renderSessions(lastSessions);
+      });
       el.appendChild(chip);
     });
 
@@ -578,7 +646,10 @@
       chip.className = 'server-chip' + (serverFilter === SOLO_FILTER ? ' active' : '');
       chip.title = 'Players each on a different server';
       chip.innerHTML = 'Other <span class="count">' + soloCount + '</span>';
-      chip.addEventListener('click', () => { serverFilter = SOLO_FILTER; renderSessions(lastSessions); });
+      chip.addEventListener('click', () => {
+          serverFilter = SOLO_FILTER;
+          renderSessions(lastSessions);
+      });
       el.appendChild(chip);
     }
   }
@@ -747,7 +818,10 @@
       const original = btn.textContent;
       btn.textContent = '✓';
       btn.classList.add('copied');
-      setTimeout(function () { btn.textContent = original; btn.classList.remove('copied'); }, 1200);
+      setTimeout(function () {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+      }, 1200);
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(done).catch(function () {});
@@ -757,7 +831,9 @@
   function applyData(data) {
     if (!data || data.ok !== true) {
       if (data && data.error === 'forbidden') {
-        try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
+        try {
+            localStorage.removeItem(CACHE_KEY);
+        } catch (e) {}
         show(loadToken() ? 'stateDenied' : 'stateLogin');
         return;
       }
@@ -779,7 +855,9 @@
   }
 
   function startLogin() {
-    try { fetch(LITE_API_URL + '?action=statisticsConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
+    try {
+        fetch(LITE_API_URL + '?action=statisticsConfig', { cache: 'no-store', keepalive: true });
+    } catch (e) {}
     let csrfState = '';
     try {
       const buf = new Uint8Array(16);
@@ -796,8 +874,13 @@
     window.location.href = url;
   }
   document.getElementById('loginBtn').addEventListener('click', startLogin);
-  document.getElementById('switchAccountBtn').addEventListener('click', () => { clearToken(); show('stateLogin'); });
-  document.getElementById('retryBtn').addEventListener('click', () => { show('stateLogin'); });
+  document.getElementById('switchAccountBtn').addEventListener('click', () => {
+      clearToken();
+      show('stateLogin');
+  });
+  document.getElementById('retryBtn').addEventListener('click', () => {
+      show('stateLogin');
+  });
   document.getElementById('navLogoutBtn').addEventListener('click', () => {
     if (refreshTimer) clearInterval(refreshTimer);
     clearToken();
@@ -812,8 +895,12 @@
       const code = params.get('code');
       const returnedState = params.get('state') || '';
       let storedState = '';
-      try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
-      try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+      try {
+          storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || '';
+      } catch (e) {}
+      try {
+          sessionStorage.removeItem(OAUTH_STATE_KEY);
+      } catch (e) {}
 
       const cleanUrl = new URL(window.location.href);
       cleanUrl.searchParams.delete('code');
@@ -841,7 +928,10 @@
       return;
     }
 
-    if (!loadToken()) { show('stateLogin'); return; }
+    if (!loadToken()) {
+        show('stateLogin');
+        return;
+    }
 
     const cached = loadCache();
     if (cached) {
@@ -853,6 +943,8 @@
     }
     fetchStatistics()
       .then(applyData)
-      .catch(() => { if (!cached) showError('Network error while contacting the server. Please try again.'); });
+      .catch(() => {
+          if (!cached) showError('Network error while contacting the server. Please try again.');
+      });
   })();
 })();

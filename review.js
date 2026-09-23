@@ -24,7 +24,10 @@
       ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
       ctx.fill();
       p.y += p.speed; p.x += p.drift;
-      if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+      if (p.y > H + 10) {
+          p.y = -10;
+          p.x = Math.random() * W;
+      }
       if (p.x > W + 10) p.x = -10;
       if (p.x < -10) p.x = W + 10;
     }
@@ -38,7 +41,9 @@
     const isInteractive = under && under.closest('a, button, nav, [class*="btn"]');
     cursorGlow.style.opacity = isInteractive ? '0' : '1';
   });
-  document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+  document.addEventListener('mouseleave', () => {
+      cursorGlow.style.opacity = '0';
+  });
 })();
 
 (function () {
@@ -57,17 +62,25 @@
   function saveToken(t) {
     if (!t) return;
     let changed = false;
-    try { changed = localStorage.getItem(TOKEN_KEY) !== t; localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    try {
+        changed = localStorage.getItem(TOKEN_KEY) !== t;
+        localStorage.setItem(TOKEN_KEY, t);
+    } catch (e) {}
     if (changed) document.dispatchEvent(new CustomEvent('frostAccountLogin'));
   }
   function loadToken() {
     try {
       localStorage.removeItem(LEGACY_TOKEN_KEY);
       return localStorage.getItem(TOKEN_KEY) || '';
-    } catch (e) { return ''; }
+    } catch (e) {
+        return '';
+    }
   }
   function clearToken() {
-    try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem('frostLiteAccess'); } catch (e) {}
+    try {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem('frostLiteAccess');
+    } catch (e) {}
     document.dispatchEvent(new CustomEvent('frostAccountLogout'));
   }
 
@@ -108,8 +121,12 @@
   fpsKnownCheck.addEventListener('change', () => {
     fpsSliders.classList.toggle('show', fpsKnownCheck.checked);
   });
-  fpsBeforeSlider.addEventListener('input', () => { fpsBeforeValue.textContent = fpsBeforeSlider.value; });
-  fpsAfterSlider.addEventListener('input', () => { fpsAfterValue.textContent = fpsAfterSlider.value; });
+  fpsBeforeSlider.addEventListener('input', () => {
+      fpsBeforeValue.textContent = fpsBeforeSlider.value;
+  });
+  fpsAfterSlider.addEventListener('input', () => {
+      fpsAfterValue.textContent = fpsAfterSlider.value;
+  });
 
   function showForm(user, review) {
     currentUser = user;
@@ -158,7 +175,10 @@
       return;
     }
     const token = loadToken();
-    if (!token) { show('stateLogin'); return; }
+    if (!token) {
+        show('stateLogin');
+        return;
+    }
 
     show('stateSubmitting');
     fetch(LITE_API_URL + '?action=submitReview', {
@@ -175,7 +195,11 @@
     })
       .then(r => r.json())
       .then(data => {
-        if (data.error === 'token_expired') { clearToken(); show('stateLogin'); return; }
+        if (data.error === 'token_expired') {
+            clearToken();
+            show('stateLogin');
+            return;
+        }
         if (!data.ok) {
           show('stateForm');
           formError('Could not send your review. Please try again.');
@@ -206,7 +230,9 @@
   document.getElementById('retryBtn').addEventListener('click', () => show('stateLogin'));
 
   function startLogin() {
-    try { fetch(LITE_API_URL + '?action=identifyConfig', { cache: 'no-store', keepalive: true }); } catch (e) {}
+    try {
+        fetch(LITE_API_URL + '?action=identifyConfig', { cache: 'no-store', keepalive: true });
+    } catch (e) {}
     let csrfState = '';
     try {
       const buf = new Uint8Array(16);
@@ -243,8 +269,12 @@
       const code = params.get('code');
       const returnedState = params.get('state') || '';
       let storedState = '';
-      try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
-      try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+      try {
+          storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || '';
+      } catch (e) {}
+      try {
+          sessionStorage.removeItem(OAUTH_STATE_KEY);
+      } catch (e) {}
 
       const cleanUrl = new URL(window.location.href);
       cleanUrl.searchParams.delete('code');
@@ -273,7 +303,10 @@
     }
 
     const token = loadToken();
-    if (!token) { show('stateLogin'); return; }
+    if (!token) {
+        show('stateLogin');
+        return;
+    }
     show('stateLoading');
     fetch(LITE_API_URL + '?action=identifyCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
       .then(r => r.json())

@@ -31,7 +31,10 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     particleCtx.fill();
     if (!reduceMotion) {
       p.y += p.speed; p.x += p.drift;
-      if (p.y > particleH + 10) { p.y = -10; p.x = Math.random() * particleW; }
+      if (p.y > particleH + 10) {
+        p.y = -10;
+        p.x = Math.random() * particleW;
+      }
       if (p.x > particleW + 10) p.x = -10;
       if (p.x < -10) p.x = particleW + 10;
     }

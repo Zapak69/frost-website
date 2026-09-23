@@ -7,7 +7,10 @@
       const original = copyBtn.textContent;
       copyBtn.textContent = 'Copied!';
       copyBtn.classList.add('copied');
-      setTimeout(() => { copyBtn.textContent = original; copyBtn.classList.remove('copied'); }, 1500);
+      setTimeout(() => {
+        copyBtn.textContent = original;
+        copyBtn.classList.remove('copied');
+      }, 1500);
     });
   });
 
@@ -15,7 +18,10 @@
   let target = null;
   for (const key of params.keys()) {
     const el = document.getElementById(key);
-    if (el) { target = el; break; }
+    if (el) {
+      target = el;
+      break;
+    }
   }
   if (!target) return;
   target.classList.add('faq-highlight');

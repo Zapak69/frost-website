@@ -24,7 +24,10 @@
       ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
       ctx.fill();
       p.y += p.speed; p.x += p.drift;
-      if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+      if (p.y > H + 10) {
+          p.y = -10;
+          p.x = Math.random() * W;
+      }
       if (p.x > W + 10) p.x = -10;
       if (p.x < -10) p.x = W + 10;
     }
@@ -38,7 +41,9 @@
     const isInteractive = under && under.closest('a, button, nav, [class*="btn"]');
     cursorGlow.style.opacity = isInteractive ? '0' : '1';
   });
-  document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+  document.addEventListener('mouseleave', () => {
+      cursorGlow.style.opacity = '0';
+  });
 })();
 
 (function () {

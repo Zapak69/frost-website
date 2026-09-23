@@ -83,14 +83,22 @@
     selectRenderer(initialRenderer || 'vulkan');
     modal.classList.add('active');
   }
-  function closeModal() { modal.classList.remove('active'); }
+  function closeModal() {
+      modal.classList.remove('active');
+  }
 
   const downloadChoiceModal = document.getElementById('downloadChoiceModal');
   const downloadChoiceCloseBtn = document.getElementById('downloadChoiceCloseBtn');
-  function openDownloadChoice() { downloadChoiceModal.classList.add('active'); }
-  function closeDownloadChoice() { downloadChoiceModal.classList.remove('active'); }
+  function openDownloadChoice() {
+      downloadChoiceModal.classList.add('active');
+  }
+  function closeDownloadChoice() {
+      downloadChoiceModal.classList.remove('active');
+  }
   downloadChoiceCloseBtn.addEventListener('click', closeDownloadChoice);
-  downloadChoiceModal.addEventListener('click', (e) => { if (e.target === downloadChoiceModal) closeDownloadChoice(); });
+  downloadChoiceModal.addEventListener('click', (e) => {
+      if (e.target === downloadChoiceModal) closeDownloadChoice();
+  });
 
   (function setupLauncherTile() {
     const PUBLIC_DL_BASE = 'https://bot.frostclient.eu/public_dl/';
@@ -147,7 +155,9 @@
     openModal();
   });
   closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+  });
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (downloadChoiceModal.classList.contains('active')) closeDownloadChoice();
@@ -161,9 +171,15 @@
     updateFinalButton();
   });
   finalBtn.addEventListener('click', (e) => {
-    if (!finalBtn.classList.contains('unlocked')) { e.preventDefault(); return; }
+    if (!finalBtn.classList.contains('unlocked')) {
+        e.preventDefault();
+        return;
+    }
     finalBtn.classList.add('clicked');
-    setTimeout(() => { closeModal(); finalBtn.classList.remove('clicked'); }, 420);
+    setTimeout(() => {
+        closeModal();
+        finalBtn.classList.remove('clicked');
+    }, 420);
   });
 
   (function openFromUrl() {
@@ -211,7 +227,10 @@ for (let i = 0; i < 100; i++) particles.push({
     ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
     ctx.fill();
     p.y += p.speed; p.x += p.drift;
-    if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+    if (p.y > H + 10) {
+        p.y = -10;
+        p.x = Math.random() * W;
+    }
     if (p.x > W + 10) p.x = -10;
     if (p.x < -10) p.x = W + 10;
   }
@@ -235,10 +254,16 @@ for (let i = 0; i < 100; i++) particles.push({
 })();
 function frostQueueToastShow(el, otherIds) {
   const isMobile = window.matchMedia('(max-width: 600px)').matches;
-  if (!isMobile) { el.classList.add('show'); return; }
+  if (!isMobile) {
+      el.classList.add('show');
+      return;
+  }
   const others = otherIds.map(id => document.getElementById(id)).filter(Boolean);
   (function tryShow() {
-    if (others.some(o => o.classList.contains('show'))) { setTimeout(tryShow, 400); return; }
+    if (others.some(o => o.classList.contains('show'))) {
+        setTimeout(tryShow, 400);
+        return;
+    }
     el.classList.add('show');
   })();
 }
@@ -248,12 +273,16 @@ function frostQueueToastShow(el, otherIds) {
   const closeBtn = document.getElementById('promoToastClose');
   if (!toast || !closeBtn) return;
   let dismissed = false;
-  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  try {
+      dismissed = localStorage.getItem(KEY) === '1';
+  } catch (e) {}
   if (dismissed) return;
   setTimeout(() => frostQueueToastShow(toast, ['pollToast']), 1200);
   closeBtn.addEventListener('click', () => {
     toast.classList.remove('show');
-    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+    try {
+        localStorage.setItem(KEY, '1');
+    } catch (e) {}
   });
 })();
 (function () {
@@ -276,11 +305,15 @@ function frostQueueToastShow(el, otherIds) {
   const noteEl = document.getElementById('pollNote');
   if (!toast || !modal || !optionsWrap || !submitBtn || !thanksEl) return;
   let toastDismissed = false;
-  try { toastDismissed = localStorage.getItem(TOAST_DISMISS_KEY) === '1'; } catch (e) {}
+  try {
+      toastDismissed = localStorage.getItem(TOAST_DISMISS_KEY) === '1';
+  } catch (e) {}
   if (toastCloseBtn) {
     toastCloseBtn.addEventListener('click', () => {
       toast.classList.remove('show');
-      try { localStorage.setItem(TOAST_DISMISS_KEY, '1'); } catch (e) {}
+      try {
+          localStorage.setItem(TOAST_DISMISS_KEY, '1');
+      } catch (e) {}
     });
   }
   const promoToast = document.getElementById('promoToast');
@@ -295,7 +328,9 @@ function frostQueueToastShow(el, otherIds) {
   if (promoCloseBtn) promoCloseBtn.addEventListener('click', repositionToast);
 
   let votedAnswer = null;
-  try { votedAnswer = localStorage.getItem(VOTED_KEY); } catch (e) {}
+  try {
+      votedAnswer = localStorage.getItem(VOTED_KEY);
+  } catch (e) {}
   function updateToastContent() {
     if (!toastText || !toastCta) return;
     if (votedAnswer) {
@@ -308,7 +343,9 @@ function frostQueueToastShow(el, otherIds) {
   }
   updateToastContent();
   let openedViaVoteParam = false;
-  try { openedViaVoteParam = new URLSearchParams(location.search).has('vote'); } catch (e) {}
+  try {
+      openedViaVoteParam = new URLSearchParams(location.search).has('vote');
+  } catch (e) {}
   if (openedViaVoteParam) {
     try {
       const url = new URL(location.href);
@@ -316,13 +353,19 @@ function frostQueueToastShow(el, otherIds) {
       history.replaceState(null, '', url.pathname + url.search + url.hash);
     } catch (e) {}
   } else if (!toastDismissed) {
-    setTimeout(() => { repositionToast(); frostQueueToastShow(toast, ['promoToast']); }, 1200);
+    setTimeout(() => {
+        repositionToast();
+        frostQueueToastShow(toast, ['promoToast']);
+    }, 1200);
   }
 
   function animatePct(el, toVal) {
     const fromVal = parseInt(el.dataset.pct || '0', 10) || 0;
     el.dataset.pct = toVal;
-    if (fromVal === toVal) { el.textContent = toVal + '%'; return; }
+    if (fromVal === toVal) {
+        el.textContent = toVal + '%';
+        return;
+    }
     const start = performance.now();
     const DUR = 700;
     function tick(now) {
@@ -340,7 +383,10 @@ function frostQueueToastShow(el, otherIds) {
     let maxCount = -1, winner = null;
     ANSWERS.forEach(a => {
       const c = votes[a] || 0;
-      if (c > maxCount) { maxCount = c; winner = a; }
+      if (c > maxCount) {
+          maxCount = c;
+          winner = a;
+      }
     });
     options.forEach(opt => {
       const answer = opt.dataset.answer;
@@ -350,7 +396,10 @@ function frostQueueToastShow(el, otherIds) {
       opt.classList.toggle('winner', answer === winner && maxCount > 0);
       opt.classList.toggle('selected', answer === votedAnswer);
       const pctEl = opt.querySelector('.poll-option-pct');
-      if (pctEl) { pctEl.style.display = 'block'; animatePct(pctEl, pct); }
+      if (pctEl) {
+          pctEl.style.display = 'block';
+          animatePct(pctEl, pct);
+      }
       const fill = opt.querySelector('.poll-option-bar-fill');
       if (fill) fill.style.width = pct + '%';
     });
@@ -375,19 +424,26 @@ function frostQueueToastShow(el, otherIds) {
     if (votedAnswer) {
       fetch(POLL_RESULTS_URL, { cache: 'no-store' })
         .then(r => r.json())
-        .then(data => { if (data && data.ok) renderResults(data.votes); })
+        .then(data => {
+            if (data && data.ok) renderResults(data.votes);
+        })
         .catch(() => {});
     }
   }
   function closeModal() {
     modal.classList.remove('active');
     updateToastContent();
-    setTimeout(() => { repositionToast(); toast.classList.add('show'); }, 400);
+    setTimeout(() => {
+        repositionToast();
+        toast.classList.add('show');
+    }, 400);
   }
 
   if (toastCta) toastCta.addEventListener('click', openModal);
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+  });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
   });
@@ -418,12 +474,19 @@ function frostQueueToastShow(el, otherIds) {
       })
         .then(r => r.json())
         .then(data => {
-          if (!data || !data.ok) { submitBtn.disabled = false; return; }
+          if (!data || !data.ok) {
+              submitBtn.disabled = false;
+              return;
+          }
           votedAnswer = selected;
-          try { localStorage.setItem(VOTED_KEY, selected); } catch (e) {}
+          try {
+              localStorage.setItem(VOTED_KEY, selected);
+          } catch (e) {}
           renderResults(data.votes);
         })
-        .catch(() => { submitBtn.disabled = false; });
+        .catch(() => {
+            submitBtn.disabled = false;
+        });
     });
   }
 
@@ -519,7 +582,9 @@ document.addEventListener('mousemove', (e) => {
   );
   cursorGlow.style.opacity = isInteractive ? '0' : '1';
 });
-document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+document.addEventListener('mouseleave', () => {
+    cursorGlow.style.opacity = '0';
+});
 document.querySelectorAll('.btn-primary').forEach(btn => {
   btn.addEventListener('mousemove', (e) => {
     const r = btn.getBoundingClientRect();
@@ -726,7 +791,17 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     prevBtn.hidden = index === 0;
     nextBtn.hidden = index === slides.length - 1;
   }
-  nextBtn.addEventListener('click', () => { if (index < slides.length - 1) { index++; render(); } });
-  prevBtn.addEventListener('click', () => { if (index > 0) { index--; render(); } });
+  nextBtn.addEventListener('click', () => {
+      if (index < slides.length - 1) {
+          index++;
+          render();
+      }
+  });
+  prevBtn.addEventListener('click', () => {
+      if (index > 0) {
+          index--;
+          render();
+      }
+  });
   render();
 })();

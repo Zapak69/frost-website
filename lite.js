@@ -24,7 +24,10 @@
       ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
       ctx.fill();
       p.y += p.speed; p.x += p.drift;
-      if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+      if (p.y > H + 10) {
+          p.y = -10;
+          p.x = Math.random() * W;
+      }
       if (p.x > W + 10) p.x = -10;
       if (p.x < -10) p.x = W + 10;
     }
@@ -38,7 +41,9 @@
     const isInteractive = under && under.closest('a, button, nav, [class*="btn"]');
     cursorGlow.style.opacity = isInteractive ? '0' : '1';
   });
-  document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+  document.addEventListener('mouseleave', () => {
+      cursorGlow.style.opacity = '0';
+  });
 })();
 
 (function () {
@@ -115,10 +120,14 @@
     const trialLabelEl = card.querySelector('.js-trial-label');
     const annualPerkEl = card.querySelector('.plan-annual-perk');
     moveToggleIndicator(toggle);
-    window.addEventListener('resize', function () { moveToggleIndicator(toggle); });
+    window.addEventListener('resize', function () {
+        moveToggleIndicator(toggle);
+    });
 
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function () { moveToggleIndicator(toggle); });
+      document.fonts.ready.then(function () {
+          moveToggleIndicator(toggle);
+      });
     }
     toggle.querySelectorAll('.billing-toggle-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -150,7 +159,9 @@
         }
         fadeSwap(thenEl, billing === 'annual' ? '' : 'then ');
         fadeSwap(periodEl, plan.period);
-        if (periodEl) setTimeout(function () { periodEl.style.width = plan.periodWidth; }, 180);
+        if (periodEl) setTimeout(function () {
+            periodEl.style.width = plan.periodWidth;
+        }, 180);
         fadeSwap(perDayEl, plan.perDay);
         if (annualPerkEl) annualPerkEl.hidden = billing !== 'annual';
         if (link) link.href = billing === 'annual' ? link.dataset.annualHref : link.dataset.monthlyHref;
@@ -167,10 +178,18 @@
   const GAME_SESSION_KEY = 'frostLiteGameSession';
   const GAME_PORT_KEY = 'frostLiteGamePort';
   function gameSession() {
-    try { return sessionStorage.getItem(GAME_SESSION_KEY) || ''; } catch (e) { return ''; }
+    try {
+        return sessionStorage.getItem(GAME_SESSION_KEY) || '';
+    } catch (e) {
+        return '';
+    }
   }
   function gamePort() {
-    try { return sessionStorage.getItem(GAME_PORT_KEY) || ''; } catch (e) { return ''; }
+    try {
+        return sessionStorage.getItem(GAME_PORT_KEY) || '';
+    } catch (e) {
+        return '';
+    }
   }
   let lastGameNotify = null;
   function notifyGame(status, extra) {
@@ -215,13 +234,20 @@
       return 'https://cdn.discordapp.com/avatars/' + user.id + '/' + user.avatar + '.png?size=128';
     }
     let idx = 0;
-    try { idx = Number((BigInt(user.id) >> 22n) % 6n); } catch (e) { idx = 0; }
+    try {
+        idx = Number((BigInt(user.id) >> 22n) % 6n);
+    } catch (e) {
+        idx = 0;
+    }
     return 'https://cdn.discordapp.com/embed/avatars/' + idx + '.png';
   }
 
   function fillChip(chipId, user, tag) {
     const chip = document.getElementById(chipId);
-    if (!user) { chip.style.display = 'none'; return; }
+    if (!user) {
+        chip.style.display = 'none';
+        return;
+    }
     chip.innerHTML =
       '<img class="user-avatar" src="' + avatarUrl(user) + '" alt=""/>' +
       '<div class="user-meta"><div class="user-name"></div><div class="user-tag"></div></div>';
@@ -229,23 +255,37 @@
     chip.querySelector('.user-tag').textContent = tag || ('@' + (user.username || ''));
   }
   function saveToken(t) {
-    try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    try {
+        localStorage.setItem(TOKEN_KEY, t);
+    } catch (e) {}
     document.dispatchEvent(new CustomEvent('frostAccountLogin'));
   }
   function loadToken() {
-    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+    try {
+        return localStorage.getItem(TOKEN_KEY) || '';
+    } catch (e) {
+        return '';
+    }
   }
   function clearToken() {
-    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    try {
+        localStorage.removeItem(TOKEN_KEY);
+    } catch (e) {}
     setAccessFlag(false);
   }
   function fetchJsonWithRetry(url, options, retries) {
     return fetch(url, options)
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+          return r.json();
+      })
       .catch(function (err) {
         if (retries > 0) {
-          return new Promise(function (resolve) { setTimeout(resolve, 1200); })
-            .then(function () { return fetchJsonWithRetry(url, options, retries - 1); });
+          return new Promise(function (resolve) {
+              setTimeout(resolve, 1200);
+          })
+            .then(function () {
+                return fetchJsonWithRetry(url, options, retries - 1);
+            });
         }
         throw err;
       });
@@ -266,7 +306,11 @@
     } catch (e) {}
   }
   function hasLiteAccess() {
-    try { return localStorage.getItem('frostLiteAccess') === '1'; } catch (e) { return false; }
+    try {
+        return localStorage.getItem('frostLiteAccess') === '1';
+    } catch (e) {
+        return false;
+    }
   }
 
   const navAuthBtn = document.getElementById('navAuthBtn');
@@ -317,7 +361,12 @@
   }
 
   function render(data) {
-    if (!data || !data.ok) { setAuthPhase('loggedOut'); showError(); afterResult('error', data); return; }
+    if (!data || !data.ok) {
+        setAuthPhase('loggedOut');
+        showError();
+        afterResult('error', data);
+        return;
+    }
 
     if (data.status === 'not_member') {
       setAccessFlag(false);
@@ -339,8 +388,16 @@
       setAccessFlag(true);
       afterResult('eligible', data);
       let dl = '';
-      try { dl = atob(data.dl || ''); } catch (e) { dl = ''; }
-      if (!dl || dl.indexOf('?update') !== -1) { setAuthPhase('noAccess'); show('stateUpdating'); return; }
+      try {
+          dl = atob(data.dl || '');
+      } catch (e) {
+          dl = '';
+      }
+      if (!dl || dl.indexOf('?update') !== -1) {
+          setAuthPhase('noAccess');
+          show('stateUpdating');
+          return;
+      }
       window.location.replace('https://frostclient.eu/lite/download');
       return;
     }
@@ -387,7 +444,10 @@
         }
         render(data);
       })
-      .catch(() => { setAuthPhase('loggedOut'); showError('Network error while contacting the server. Please try again.'); });
+      .catch(() => {
+          setAuthPhase('loggedOut');
+          showError('Network error while contacting the server. Please try again.');
+      });
   }
   function recheck(token) {
     show('stateLoading');
@@ -397,14 +457,20 @@
         if (!data.ok) {
           clearToken();
           setAuthPhase('loggedOut');
-          if (data.error === 'token_expired') { show('stateLogin'); return; }
+          if (data.error === 'token_expired') {
+              show('stateLogin');
+              return;
+          }
           showError("Discord didn't respond correctly. Please try again.", data.detail);
           return;
         }
         if (data.token) saveToken(data.token);
         render(data);
       })
-      .catch(() => { setAuthPhase('loggedOut'); showError('Network error while contacting the server. Please try again.'); });
+      .catch(() => {
+          setAuthPhase('loggedOut');
+          showError('Network error while contacting the server. Please try again.');
+      });
   }
   document.querySelectorAll('.js-lite-login').forEach(loginBtn => {
     loginBtn.addEventListener('click', () => {
@@ -474,8 +540,12 @@
       const code = params.get('code');
       const returnedState = params.get('state') || '';
       let storedState = '';
-      try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
-      try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+      try {
+          storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || '';
+      } catch (e) {}
+      try {
+          sessionStorage.removeItem(OAUTH_STATE_KEY);
+      } catch (e) {}
       const gIdx = returnedState.indexOf('.g.');
       const csrfState = gIdx === -1 ? returnedState : returnedState.slice(0, gIdx);
       if (gIdx !== -1 && !gameSession()) {
@@ -554,7 +624,9 @@
       .map(a => ({ link: a.link, rect: a.section.getBoundingClientRect(), early: a.early }))
       .sort((a, b) => a.rect.top - b.rect.top);
     let activeIndex = -1;
-    withRects.forEach((a, i) => { if (a.rect.top <= refY + a.early) activeIndex = i; });
+    withRects.forEach((a, i) => {
+        if (a.rect.top <= refY + a.early) activeIndex = i;
+    });
     const doc = document.documentElement;
     const distanceFromBottom = doc.scrollHeight - (window.innerHeight + window.scrollY);
     const bottomProgress = Math.max(0, Math.min(1, (GLOW_RAMP_PX - distanceFromBottom) / GLOW_RAMP_PX));
@@ -617,10 +689,16 @@
 
 function frostQueueToastShow(el, otherIds) {
   const isMobile = window.matchMedia('(max-width: 600px)').matches;
-  if (!isMobile) { el.classList.add('show'); return; }
+  if (!isMobile) {
+      el.classList.add('show');
+      return;
+  }
   const others = otherIds.map(id => document.getElementById(id)).filter(Boolean);
   (function tryShow() {
-    if (others.some(o => o.classList.contains('show'))) { setTimeout(tryShow, 400); return; }
+    if (others.some(o => o.classList.contains('show'))) {
+        setTimeout(tryShow, 400);
+        return;
+    }
     el.classList.add('show');
   })();
 }
@@ -631,11 +709,17 @@ function frostQueueToastShow(el, otherIds) {
   window.hidePromoToast = function (persist) {
     if (!toast) return;
     toast.classList.remove('show');
-    if (persist) { try { localStorage.setItem(KEY, '1'); } catch (e) {} }
+    if (persist) {
+        try {
+            localStorage.setItem(KEY, '1');
+        } catch (e) {}
+    }
   };
   if (!toast || !closeBtn) return;
   let dismissed = false;
-  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  try {
+      dismissed = localStorage.getItem(KEY) === '1';
+  } catch (e) {}
   if (dismissed) return;
   setTimeout(() => frostQueueToastShow(toast, []), 1200);
   closeBtn.addEventListener('click', () => hidePromoToast(true));

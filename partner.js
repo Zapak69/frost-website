@@ -66,30 +66,52 @@
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
   }
-  function openModal() { modal.classList.add('active'); }
-  function closeModal() { modal.classList.remove('active'); }
+  function openModal() {
+      modal.classList.add('active');
+  }
+  function closeModal() {
+      modal.classList.remove('active');
+  }
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
+  modal.addEventListener('click', function (e) {
+      if (e.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+  });
 
   function loadToken() {
-    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+    try {
+        return localStorage.getItem(TOKEN_KEY) || '';
+    } catch (e) {
+        return '';
+    }
   }
   function saveToken(t) {
-    try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    try {
+        localStorage.setItem(TOKEN_KEY, t);
+    } catch (e) {}
     document.dispatchEvent(new CustomEvent('frostAccountLogin'));
   }
   function clearToken() {
-    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    try {
+        localStorage.removeItem(TOKEN_KEY);
+    } catch (e) {}
   }
   function fetchJsonWithRetry(url, options, retries) {
     return fetch(url, options)
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+          return r.json();
+      })
       .catch(function (err) {
         if (retries > 0) {
-          return new Promise(function (resolve) { setTimeout(resolve, 1200); })
-            .then(function () { return fetchJsonWithRetry(url, options, retries - 1); });
+          return new Promise(function (resolve) {
+              setTimeout(resolve, 1200);
+          })
+            .then(function () {
+                return fetchJsonWithRetry(url, options, retries - 1);
+            });
         }
         throw err;
       });
@@ -108,7 +130,9 @@
   }
   function applyAuthUi() {
     const loggedIn = !!loadToken();
-    document.querySelectorAll('.js-apply-btn, .js-server-apply-btn').forEach(function (btn) { btn.classList.toggle('is-logged-in', loggedIn); });
+    document.querySelectorAll('.js-apply-btn, .js-server-apply-btn').forEach(function (btn) {
+        btn.classList.toggle('is-logged-in', loggedIn);
+    });
     [document.getElementById('applyBoxIntro'), document.getElementById('serverBoxIntro')].forEach(function (intro) {
       if (intro) intro.textContent = loggedIn ? intro.dataset.loggedIn : intro.dataset.loggedOut;
     });
@@ -117,7 +141,9 @@
     const token = loadToken();
     if (!token) return;
     fetch(PARTNER_STATUS_URL + '?token=' + encodeURIComponent(token), { cache: 'no-store' })
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+          return r.json();
+      })
       .then(function (data) {
         if (data && data.ok && data.isPartner) markAlreadyPartner();
       })
@@ -155,17 +181,25 @@
     if (server) server.style.display = tab === 'server' ? '' : 'none';
   }
   document.querySelectorAll('#applySwitch .apply-switch-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () { setApplyTab(btn.dataset.applyTab); });
+    btn.addEventListener('click', function () {
+        setApplyTab(btn.dataset.applyTab);
+    });
   });
   if (window.location.hash === '#server') setApplyTab('server');
   function formatRetryDate(ms) {
-    try { return new Date(ms).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) { return ''; }
+    try {
+        return new Date(ms).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch (e) {
+        return '';
+    }
   }
   function checkServerStatus() {
     const token = loadToken();
     if (!token) return;
     fetch(STAFF_APPLY_STATUS_URL + '?token=' + encodeURIComponent(token), { cache: 'no-store' })
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+          return r.json();
+      })
       .then(function (data) {
         if (!data || !data.ok || data.role !== SERVER_ROLE) return;
         if (data.status === 'pending') {
@@ -186,17 +220,24 @@
       .catch(function () {});
   }
   fetch(STAFF_APPLY_CONFIG_URL, { cache: 'no-store' })
-    .then(function (r) { return r.json(); })
+    .then(function (r) {
+        return r.json();
+    })
     .then(function (data) {
       const role = data && data.ok && data.roles && data.roles[SERVER_ROLE];
-      if (role && !role.open) { serverClosed = true; applyServerClosed(); }
+      if (role && !role.open) {
+          serverClosed = true;
+          applyServerClosed();
+      }
     })
     .catch(function () {});
   const serverFieldsWrap = document.getElementById('serverFields');
   const serverSubmitBtn = document.getElementById('serverSubmitBtn');
   const serverStepError = document.getElementById('serverStepError');
   function updateServerSubmitEnabled() {
-    serverSubmitBtn.disabled = !Array.from(serverFieldsWrap.querySelectorAll('.apply-input')).every(function (el) { return el.dataset.key === 'extra' || el.value.trim(); });
+    serverSubmitBtn.disabled = !Array.from(serverFieldsWrap.querySelectorAll('.apply-input')).every(function (el) {
+        return el.dataset.key === 'extra' || el.value.trim();
+    });
   }
   function buildServerForm() {
     serverFieldsWrap.innerHTML = '';
@@ -237,18 +278,25 @@
   serverSubmitBtn.addEventListener('click', function () {
     if (serverSubmitBtn.disabled) return;
     const token = loadToken();
-    if (!token) { showErrorState('Your session expired. Please click Apply now again to sign in.'); return; }
+    if (!token) {
+        showErrorState('Your session expired. Please click Apply now again to sign in.');
+        return;
+    }
     serverSubmitBtn.disabled = true;
     serverSubmitBtn.classList.add('is-loading');
     serverStepError.style.display = 'none';
     const answers = {};
-    serverFieldsWrap.querySelectorAll('.apply-input').forEach(function (el) { answers[el.dataset.key] = el.value.trim(); });
+    serverFieldsWrap.querySelectorAll('.apply-input').forEach(function (el) {
+        answers[el.dataset.key] = el.value.trim();
+    });
     fetch(STAFF_APPLY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ staffToken: token, role: SERVER_ROLE, answers: answers })
     })
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+          return r.json();
+      })
       .then(function (data) {
         if (data && data.ok) {
           show('applyStateServerDone');
@@ -257,7 +305,10 @@
         }
         serverSubmitBtn.disabled = false;
         serverSubmitBtn.classList.remove('is-loading');
-        if (data && data.error === 'not_member') { show('applyStateNotMember'); return; }
+        if (data && data.error === 'not_member') {
+            show('applyStateNotMember');
+            return;
+        }
         if (data && data.error === 'token_expired') {
           clearToken();
           showErrorState('Your session expired. Please click Apply now again to sign in.');
@@ -269,8 +320,14 @@
           showServerError('Server applications are closed right now. Please check back later.');
           return;
         }
-        if (data && data.error === 'cooldown') { showServerError('Your previous application was not accepted — you can apply again from ' + formatRetryDate(data.retryAt) + '.'); return; }
-        if (data && data.error === 'missing_fields') { showServerError('Please fill in every required field.'); return; }
+        if (data && data.error === 'cooldown') {
+            showServerError('Your previous application was not accepted — you can apply again from ' + formatRetryDate(data.retryAt) + '.');
+            return;
+        }
+        if (data && data.error === 'missing_fields') {
+            showServerError('Please fill in every required field.');
+            return;
+        }
         showServerError("Couldn't send your application. Please try again.");
       })
       .catch(function () {
@@ -284,7 +341,10 @@
     btn.addEventListener('click', function () {
       if (serverClosed) return;
       currentFlow = 'server';
-      if (loadToken()) { openServerForm(); return; }
+      if (loadToken()) {
+          openServerForm();
+          return;
+      }
       startLogin();
     });
   });
@@ -302,19 +362,40 @@
   function setCodeStatus(state, text) {
     codeInput.classList.remove('is-available', 'is-taken');
     codeStatus.className = 'code-status';
-    if (!state) { codeStatus.classList.remove('show'); return; }
+    if (!state) {
+        codeStatus.classList.remove('show');
+        return;
+    }
     codeStatus.classList.add('show', state);
-    if (state === 'available') { codeInput.classList.add('is-available'); codeStatus.innerHTML = '✓ ' + text; }
-    else if (state === 'taken') { codeInput.classList.add('is-taken'); codeStatus.innerHTML = '✕ ' + text; }
-    else { codeStatus.innerHTML = '<span class="code-status-spinner"></span>' + text; }
+    if (state === 'available') {
+        codeInput.classList.add('is-available');
+        codeStatus.innerHTML = '✓ ' + text;
+    }
+    else if (state === 'taken') {
+        codeInput.classList.add('is-taken');
+        codeStatus.innerHTML = '✕ ' + text;
+    }
+    else {
+        codeStatus.innerHTML = '<span class="code-status-spinner"></span>' + text;
+    }
   }
   let codeCheckTimer = null, codeCheckSeq = 0;
   function checkCodeAvailability() {
     const raw = codeInput.value.trim();
     clearTimeout(codeCheckTimer);
     const mySeq = ++codeCheckSeq;
-    if (!raw) { codeAvailable = null; setCodeStatus(null); updateSubmitEnabled(); return; }
-    if (raw.length < 3) { codeAvailable = false; setCodeStatus('taken', 'At least 3 characters.'); updateSubmitEnabled(); return; }
+    if (!raw) {
+        codeAvailable = null;
+        setCodeStatus(null);
+        updateSubmitEnabled();
+        return;
+    }
+    if (raw.length < 3) {
+        codeAvailable = false;
+        setCodeStatus('taken', 'At least 3 characters.');
+        updateSubmitEnabled();
+        return;
+    }
     codeAvailable = null;
     setCodeStatus('checking', 'Checking…');
     updateSubmitEnabled();
@@ -322,7 +403,9 @@
       const token = loadToken();
       if (!token) return;
       fetch(LITE_API_URL + '?action=mediaCodeCheck&token=' + encodeURIComponent(token) + '&code=' + encodeURIComponent(raw), { cache: 'no-store' })
-        .then(function (r) { return r.json(); })
+        .then(function (r) {
+            return r.json();
+        })
         .then(function (data) {
           if (mySeq !== codeCheckSeq) return;
           if (data && data.ok && data.available) {
@@ -361,7 +444,10 @@
   submitBtn.addEventListener('click', function () {
     if (submitBtn.disabled) return;
     const token = loadToken();
-    if (!token) { showErrorState('Your session expired. Please click Get Started again to sign in.'); return; }
+    if (!token) {
+        showErrorState('Your session expired. Please click Get Started again to sign in.');
+        return;
+    }
     submitBtn.disabled = true;
     submitBtn.classList.add('is-loading');
     step1Error.style.display = 'none';
@@ -372,7 +458,9 @@
         partnerToken: token, code: codeInput.value.trim(), socialLink: linkInput.value.trim()
       })
     })
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+          return r.json();
+      })
       .then(function (data) {
         if (data && data.ok) {
           resetForm();
@@ -416,7 +504,9 @@
       });
   });
 
-  document.getElementById('applyRetryBtn').addEventListener('click', function () { show(currentFlow === 'server' ? 'applyStepServer' : 'applyStep1'); });
+  document.getElementById('applyRetryBtn').addEventListener('click', function () {
+      show(currentFlow === 'server' ? 'applyStepServer' : 'applyStep1');
+  });
   document.getElementById('applyRetryAfterJoin').addEventListener('click', function () {
     startLogin();
   });
@@ -447,7 +537,9 @@
     try {
       const buf = new Uint8Array(16);
       crypto.getRandomValues(buf);
-      csrfState = Array.from(buf).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+      csrfState = Array.from(buf).map(function (b) {
+          return b.toString(16).padStart(2, '0');
+      }).join('');
       sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
       sessionStorage.setItem(INTENT_KEY, currentFlow);
     } catch (e) {}
@@ -493,11 +585,21 @@
     const code = params.get('code');
     const returnedState = params.get('state') || '';
     let storedState = '';
-    try { storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || ''; } catch (e) {}
-    try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
+    try {
+        storedState = sessionStorage.getItem(OAUTH_STATE_KEY) || '';
+    } catch (e) {}
+    try {
+        sessionStorage.removeItem(OAUTH_STATE_KEY);
+    } catch (e) {}
     let intent = '';
-    try { intent = sessionStorage.getItem(INTENT_KEY) || ''; sessionStorage.removeItem(INTENT_KEY); } catch (e) {}
-    if (intent === 'server') { currentFlow = 'server'; setApplyTab('server'); }
+    try {
+        intent = sessionStorage.getItem(INTENT_KEY) || '';
+        sessionStorage.removeItem(INTENT_KEY);
+    } catch (e) {}
+    if (intent === 'server') {
+        currentFlow = 'server';
+        setApplyTab('server');
+    }
 
     const cleanUrl = new URL(window.location.href);
     cleanUrl.searchParams.delete('code');
@@ -518,7 +620,9 @@
       body: JSON.stringify({ code: code }),
       cache: 'no-store'
     })
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+          return r.json();
+      })
       .then(function (data) {
         if (!data.ok) {
           showErrorState('Discord sign-in failed. Please try again.');
@@ -531,20 +635,28 @@
         if (data.status === 'already_partner') {
           if (data.partnerToken) saveToken(data.partnerToken);
           markAlreadyPartner();
-          if (intent === 'server' && data.partnerToken) { openServerForm(); return; }
+          if (intent === 'server' && data.partnerToken) {
+              openServerForm();
+              return;
+          }
           closeModal();
           return;
         }
         if (data.status === 'eligible' && data.partnerToken) {
           saveToken(data.partnerToken);
-          if (intent === 'server') { openServerForm(); return; }
+          if (intent === 'server') {
+              openServerForm();
+              return;
+          }
           resetForm();
           show('applyStep1');
           return;
         }
         showErrorState('Something unexpected happened. Please try again.');
       })
-      .catch(function () { showErrorState('Network error while contacting the server. Please try again.'); });
+      .catch(function () {
+          showErrorState('Network error while contacting the server. Please try again.');
+      });
   })();
 })();
 
@@ -552,7 +664,9 @@
   const el = document.getElementById('modrinthDownloads');
   if (!el) return;
   fetch('https://api.modrinth.com/v2/project/frost-client', { cache: 'no-store' })
-    .then(function (r) { return r.json(); })
+    .then(function (r) {
+        return r.json();
+    })
     .then(function (data) {
       if (typeof data.downloads !== 'number') return;
       el.textContent = data.downloads.toLocaleString('en-US');
