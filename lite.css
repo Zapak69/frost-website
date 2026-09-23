@@ -194,15 +194,15 @@
       display: none;
     }
   }
-  .nav-discord-btn {
+  .nav-signin-btn {
     display: inline-flex; align-items: center;
     font-family: inherit; font-size: 13.5px; font-weight: 600;
     color: var(--muted); background: rgba(255,255,255,0.05);
     border: 1px solid var(--border); border-radius: 980px; cursor: pointer;
-    padding: 8px 16px;
+    padding: 8px 16px; text-decoration: none;
     transition: color 0.2s, border-color 0.2s, background 0.2s;
   }
-  .nav-discord-btn img {
+  .nav-signin-btn img {
     display: none;
   }
   .btn-icon {
@@ -211,21 +211,12 @@
     display: block;
     border-radius: 22%;
   }
-  .nav-discord-btn:hover {
+  .nav-signin-btn:hover {
     color: var(--text);
     border-color: rgba(255,255,255,0.24);
     background: rgba(255,255,255,0.09);
   }
-  .nav-discord-btn.is-logout {
-    color: var(--red);
-    border-color: rgba(255,105,97,0.4);
-    background: rgba(255,105,97,0.08);
-  }
-  .nav-discord-btn.is-logout:hover {
-    background: rgba(255,105,97,0.16);
-    border-color: rgba(255,105,97,0.6);
-  }
-  .nav-discord-btn.is-checking {
+  .nav-signin-btn.is-checking {
     opacity: 0.6;
     cursor: default;
     pointer-events: none;
@@ -1345,4 +1336,54 @@
       bottom: 16px;
       max-width: none;
     }
+  }
+
+  .plan-active-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-family: var(--font-bold);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    color: var(--frost-blue);
+  }
+  .plan-active-line::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green, #32d74b);
+    box-shadow: 0 0 10px rgba(50,215,75,0.7);
+  }
+  .btn-lite-cancel {
+    display: block;
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,105,97,0.45);
+    background: rgba(255,105,97,0.12);
+    color: #ff6961;
+    font-family: var(--font-bold);
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+  .btn-lite-cancel:hover {
+    background: rgba(255,105,97,0.2);
+    border-color: #ff6961;
+    color: #ff8b85;
+  }
+  .billing-toggle[hidden],
+  .plan-trial-line[hidden],
+  .plan-price-block[hidden],
+  .plan-perks[hidden],
+  .plan-active-line[hidden],
+  .btn-lite-cancel[hidden],
+  .btn-lite-download[hidden] {
+    display: none;
   }

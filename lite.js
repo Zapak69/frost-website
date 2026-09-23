@@ -223,7 +223,26 @@
     if (note) note.style.display = 'block';
   }
 
-  const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateError', 'stateUpdating'];
+  const states = ['stateLoading', 'stateLogin', 'stateNotMember', 'stateNotBooster', 'stateSubscriber', 'stateError', 'stateUpdating'];
+
+  function setSubscriptionActive(active) {
+    const card = document.getElementById('plans');
+    if (!card) return;
+    card.classList.toggle('is-subscribed', active);
+    const activeLine = document.getElementById('planActiveLine');
+    const cancelBtn = document.getElementById('cancelSubscriptionBtn');
+    const hide = ['.billing-toggle', '.plan-trial-line', '.plan-price-block', '.plan-perks'];
+    hide.forEach(function (sel) {
+      const el = card.querySelector(sel);
+      if (el) el.hidden = active;
+    });
+    const annualPerk = card.querySelector('.plan-annual-perk');
+    if (annualPerk && active) annualPerk.hidden = true;
+    const subscribeBtn = card.querySelector('.js-whop-subscribe');
+    if (subscribeBtn) subscribeBtn.hidden = active;
+    if (activeLine) activeLine.hidden = !active;
+    if (cancelBtn) cancelBtn.hidden = !active;
+  }
 
   function show(id) {
     states.forEach(s => document.getElementById(s).classList.toggle('active', s === id));
@@ -314,10 +333,14 @@
   }
 
   const navAuthBtn = document.getElementById('navAuthBtn');
-  const navAuthBtnText = document.getElementById('navAuthBtnText');
-  const navAuthBtnIcon = document.getElementById('navAuthBtnIcon');
   const navMobileAuthBtn = document.getElementById('navMobileAuthBtn');
-  if (navMobileAuthBtn) navMobileAuthBtn.addEventListener('click', () => navAuthBtn.click());
+  if (navMobileAuthBtn) navMobileAuthBtn.addEventListener('click', () => {
+    if (navAuthBtn.dataset.mode === 'logout' && window.FrostAccount) {
+      window.FrostAccount.open();
+      return;
+    }
+    navAuthBtn.click();
+  });
   const compareNavLink = document.getElementById('compareNavLink');
   const reviewsNavLink = document.getElementById('reviewsNavLink');
   const belowSplit = document.querySelector('.below-split');
@@ -332,24 +355,29 @@
     }
   }
   function setAuthPhase(phase) {
+    const pill = navAuthBtn.classList.contains('frost-nav-pill');
+    const icon = navAuthBtn.querySelector('#navAuthBtnIcon');
+    const label = navAuthBtn.querySelector('.js-site-auth-text');
     navAuthBtn.classList.remove('is-logout', 'is-checking');
-    navAuthBtnIcon.style.display = phase === 'loggedOut' ? '' : 'none';
+    if (icon) icon.style.display = phase === 'loggedOut' ? '' : 'none';
+    let mobileText = 'Sign in';
     if (phase === 'checking') {
       navAuthBtn.dataset.mode = 'checking';
       navAuthBtn.classList.add('is-checking');
-      navAuthBtnText.textContent = 'Loading...';
+      mobileText = 'Loading...';
+      if (!pill && label) label.textContent = mobileText;
       setCompareVisible(false, false);
-    } else if (phase === 'noAccess') {
+    } else if (phase === 'noAccess' || phase === 'hasAccess') {
       navAuthBtn.dataset.mode = 'logout';
-      navAuthBtn.classList.add('is-logout');
-      navAuthBtnText.textContent = 'Manage';
+      mobileText = 'Manage';
+      if (!pill && label) label.textContent = mobileText;
       setCompareVisible(true, true);
     } else {
       navAuthBtn.dataset.mode = 'login';
-      navAuthBtnText.textContent = 'Sign in';
+      if (!pill && label) label.textContent = mobileText;
       setCompareVisible(true, false);
     }
-    if (navMobileAuthBtn) navMobileAuthBtn.textContent = navAuthBtnText.textContent;
+    if (navMobileAuthBtn) navMobileAuthBtn.textContent = mobileText;
   }
 
   function showError(msg, detail) {
@@ -386,19 +414,11 @@
     }
     if (data.status === 'eligible') {
       setAccessFlag(true);
+      setSubscriptionActive(true);
+      setAuthPhase('hasAccess');
+      fillChip('chipSubscriber', data.user);
       afterResult('eligible', data);
-      let dl = '';
-      try {
-          dl = atob(data.dl || '');
-      } catch (e) {
-          dl = '';
-      }
-      if (!dl || dl.indexOf('?update') !== -1) {
-          setAuthPhase('noAccess');
-          show('stateUpdating');
-          return;
-      }
-      window.location.replace('https://frostclient.eu/lite/download');
+      show('stateSubscriber');
       return;
     }
     setAuthPhase('loggedOut');
@@ -475,7 +495,7 @@
   document.querySelectorAll('.js-lite-login').forEach(loginBtn => {
     loginBtn.addEventListener('click', () => {
       if (loginBtn.dataset.mode === 'logout') {
-        if (window.FrostAccount) window.FrostAccount.open();
+        if (window.FrostAccount) window.FrostAccount.toggleMenu(loginBtn);
         return;
       }
       let csrfState = '';
@@ -591,10 +611,6 @@
     const token = loadToken();
     if (token) {
 
-      if (hasLiteAccess() && !gameSession()) {
-        window.location.replace('https://frostclient.eu/lite/download');
-        return;
-      }
       recheck(token);
       return;
     }

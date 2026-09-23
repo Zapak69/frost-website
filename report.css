@@ -704,6 +704,9 @@
     color: var(--muted);
     word-break: break-word;
   }
+  .report-file-chosen:empty {
+    display: none;
+  }
   .report-dropzone {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
     width: 100%; padding: 26px 20px;
@@ -718,6 +721,9 @@
   .report-dropzone.dragover {
     border-color: var(--frost-blue, #4fc8f8);
     background: rgba(79,200,248,0.08);
+  }
+  .report-dropzone[hidden] {
+    display: none;
   }
   .report-dropzone svg {
     width: 22px;
@@ -734,61 +740,90 @@
   }
   .report-media-grid {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 10px;
     margin-top: 12px;
   }
   .report-media-grid:empty {
     display: none;
   }
-  .report-media-item {
-    position: relative;
-    width: 92px;
-    height: 92px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid var(--border);
+  .report-file-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
     background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
   }
-  .report-media-item img, .report-media-item video {
-    width: 100%;
-    height: 100%;
+  .report-file-banner-icon {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid rgba(79,200,248,0.28);
+    background: rgba(79,200,248,0.12);
+    color: var(--frost-blue);
+  }
+  .report-file-banner-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  .report-file-banner-thumb {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
     object-fit: cover;
     display: block;
   }
-  .report-media-name {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 3px 5px;
-    font-size: 9.5px;
-    color: #fff;
-    background: rgba(0,0,0,0.62);
+  .report-file-banner-info {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .report-file-banner-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .report-media-remove {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(0,0,0,0.65);
-    color: #fff;
-    font-size: 13px;
-    line-height: 1;
-    cursor: pointer;
+  .report-file-banner-meta {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .report-file-banner-remove {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
   }
-  .report-media-remove:hover {
-    background: rgba(212,18,18,0.85);
+  .report-file-banner-remove svg {
+    width: 15px;
+    height: 15px;
+  }
+  .report-file-banner-remove:hover {
+    border-color: rgba(255,105,97,0.5);
+    background: rgba(255,105,97,0.12);
+    color: var(--danger);
   }
 
   .report-error {

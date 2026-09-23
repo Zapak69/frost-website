@@ -2006,3 +2006,36 @@
     padding: 4px 0 2px;
     animation: pollThanksIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
   }
+
+  .dl-lite-row[hidden] {
+    display: none;
+  }
+
+  .dl-choice-tile.is-lite-active {
+    border-color: var(--lite, #bf5af2);
+    box-shadow: 0 0 0 1px rgba(191, 90, 242, 0.35), 0 12px 32px rgba(191, 90, 242, 0.18);
+  }
+
+  .dl-choice-tile.is-lite-active:hover {
+    border-color: var(--lite, #bf5af2);
+    background: rgba(191, 90, 242, 0.08);
+  }
+
+  .dl-lite-pill {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 3px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(191, 90, 242, 0.55);
+    background: rgba(191, 90, 242, 0.16);
+    color: var(--lite, #bf5af2);
+    font-family: var(--font-bold);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+  }

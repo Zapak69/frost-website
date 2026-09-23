@@ -15,6 +15,7 @@
   var ACCOUNT_URL = 'https://frostclient.eu/lite';
   var DISCORD_CLIENT_ID = '1512834635640475898';
   var DISCORD_REDIRECT_URI = 'https://frostclient.eu/lite';
+  var AUTH_BTN_SELECTOR = '.js-site-auth-btn, .js-site-auth-nav';
 
   function migrateLegacyTokens() {
     try {
@@ -142,20 +143,21 @@
   function applyState() {
     var loggedIn = !!loadToken();
     var user = loggedIn ? loadUserCache() : null;
-    document.querySelectorAll('.js-site-auth-btn').forEach(function (btn) {
+    document.querySelectorAll(AUTH_BTN_SELECTOR).forEach(function (btn) {
       btn.classList.toggle('is-logged-in', loggedIn);
       if (btn.classList.contains('nav-signin-btn')) {
         if (loggedIn) renderNavPill(btn, user);
         else restoreNavBtn(btn);
       }
+      if (btn.classList.contains('frost-nav-pill')) return;
+      if (btn.classList.contains('js-site-auth-nav') && btn.dataset.mode === 'checking') return;
       var textEl = btn.querySelector('.js-site-auth-text') || btn;
-      if (!btn.classList.contains('frost-nav-pill')) textEl.textContent = loggedIn ? 'Manage' : 'Sign in';
+      textEl.textContent = loggedIn ? 'Manage' : 'Sign in';
     });
     if (!loggedIn) closeNavMenu();
-    var showDownloadLink = loggedIn && hasLiteAccess();
     document.querySelectorAll('.js-lite-access-link').forEach(function (a) {
       if (a.dataset.defaultHref === undefined) a.dataset.defaultHref = a.getAttribute('href');
-      a.href = showDownloadLink ? 'https://frostclient.eu/lite/download' : a.dataset.defaultHref;
+      a.href = a.dataset.defaultHref;
     });
   }
 
@@ -399,7 +401,7 @@
       '    </div>',
       '    <div class="frost-account-actions">',
       '      <a class="frost-account-btn frost-account-btn-partner-dash" href="https://partner.frostclient.eu" style="display:none">Partner Dashboard →</a>',
-      '      <a class="frost-account-btn frost-account-btn-download" href="https://frostclient.eu/lite/download">Download Lite</a>',
+      '      <a class="frost-account-btn frost-account-btn-download" href="https://frostclient.eu/?openDownload">Open the launcher</a>',
       '      <a class="frost-account-btn frost-account-btn-subscribe" href="https://frostclient.eu/lite" style="display:none">Subscribe</a>',
       '      <div class="frost-account-actions-row">',
       '        <a class="frost-account-btn frost-account-btn-cancel" href="https://frostclient.eu/lite/cancel">',
@@ -632,7 +634,13 @@
       });
   }
 
-  window.FrostAccount = { open: openAccountModal };
+  window.FrostAccount = {
+    open: openAccountModal,
+    toggleMenu: function (btn) {
+      if (btn && btn.classList.contains('frost-nav-pill')) toggleNavMenu(btn);
+      else openAccountModal();
+    }
+  };
 
   function init() {
     migrateLegacyTokens();

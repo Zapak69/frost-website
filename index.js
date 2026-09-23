@@ -90,6 +90,7 @@
   const downloadChoiceModal = document.getElementById('downloadChoiceModal');
   const downloadChoiceCloseBtn = document.getElementById('downloadChoiceCloseBtn');
   function openDownloadChoice() {
+      applyLiteDownloadState();
       downloadChoiceModal.classList.add('active');
   }
   function closeDownloadChoice() {
@@ -99,6 +100,45 @@
   downloadChoiceModal.addEventListener('click', (e) => {
       if (e.target === downloadChoiceModal) closeDownloadChoice();
   });
+
+  function frostSignedIn() {
+    try {
+      return !!localStorage.getItem('frostToken');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function frostLiteActive() {
+    try {
+      if (localStorage.getItem('frostLiteAccess') === '1') return true;
+      const cached = JSON.parse(localStorage.getItem('frostAccountUser') || 'null');
+      return !!(cached && cached.lite);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function applyLiteDownloadState() {
+    const active = frostSignedIn() && frostLiteActive();
+    const liteRow = document.getElementById('dlLiteRow');
+    const tile = document.getElementById('dlLauncherTile');
+    if (liteRow) liteRow.hidden = active;
+    if (tile) {
+      tile.classList.toggle('is-lite-active', active);
+      let pill = tile.querySelector('.dl-lite-pill');
+      if (active && !pill) {
+        pill = document.createElement('span');
+        pill.className = 'dl-lite-pill';
+        pill.textContent = 'Lite Active';
+        tile.insertBefore(pill, tile.firstChild);
+      } else if (!active && pill) {
+        pill.remove();
+      }
+    }
+  }
+
+  document.addEventListener('frostAccountLogout', applyLiteDownloadState);
 
   (function setupLauncherTile() {
     const PUBLIC_DL_BASE = 'https://bot.frostclient.eu/public_dl/';

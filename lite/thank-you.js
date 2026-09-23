@@ -85,7 +85,7 @@
         }
         try { localStorage.setItem(TOKEN_KEY, data.gameToken); } catch (e) {}
         document.dispatchEvent(new CustomEvent('frostAccountLogin'));
-        window.location.href = 'https://frostclient.eu/lite/download';
+        show('stateGranted');
       })
       .catch(() => showError('Network error while contacting the server. Please try again.'));
   }

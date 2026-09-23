@@ -156,19 +156,67 @@
 
   const buglogInput = document.getElementById('buglogInput');
   const buglogDropzone = document.getElementById('buglogDropzone');
+
+  function fileBannerIcon() {
+    const icon = document.createElement('div');
+    icon.className = 'report-file-banner-icon';
+    icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
+    return icon;
+  }
+
+  function buildFileBanner(f, thumb, metaText, onRemove) {
+    const banner = document.createElement('div');
+    banner.className = 'report-file-banner';
+    banner.appendChild(thumb);
+    const info = document.createElement('div');
+    info.className = 'report-file-banner-info';
+    const name = document.createElement('div');
+    name.className = 'report-file-banner-name';
+    name.textContent = f.name;
+    const meta = document.createElement('div');
+    meta.className = 'report-file-banner-meta';
+    meta.textContent = metaText;
+    info.appendChild(name);
+    info.appendChild(meta);
+    banner.appendChild(info);
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'report-file-banner-remove';
+    remove.title = 'Remove file';
+    remove.setAttribute('aria-label', 'Remove ' + f.name);
+    remove.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>';
+    remove.addEventListener('click', onRemove);
+    banner.appendChild(remove);
+    return banner;
+  }
+
+  function renderBuglogBanner(f) {
+    const box = document.getElementById('buglogChosen');
+    box.innerHTML = '';
+    buglogDropzone.hidden = !!f;
+    if (!f) return;
+    box.appendChild(buildFileBanner(f, fileBannerIcon(), 'Bug log · ' + formatBytes(f.size), () => {
+      buglogInput.value = '';
+      buglogFile = null;
+      setFormError('');
+      renderBuglogBanner(null);
+      updateSubmitEnabled();
+    }));
+  }
+
   function acceptBuglogFile(f) {
     setFormError('');
     if (!f) {
-        buglogFile = null;
-        document.getElementById('buglogChosen').textContent = '';
-        updateSubmitEnabled();
-        return;
+      buglogFile = null;
+      renderBuglogBanner(null);
+      updateSubmitEnabled();
+      return;
     }
     if (!f.name.toLowerCase().endsWith('.buglog')) {
       setFormError('Please choose a .buglog file.');
       buglogInput.value = '';
       buglogFile = null;
-      document.getElementById('buglogChosen').textContent = '';
+      renderBuglogBanner(null);
       updateSubmitEnabled();
       return;
     }
@@ -176,12 +224,12 @@
       setFormError('That bug log file is too large (max 15 MB).');
       buglogInput.value = '';
       buglogFile = null;
-      document.getElementById('buglogChosen').textContent = '';
+      renderBuglogBanner(null);
       updateSubmitEnabled();
       return;
     }
     buglogFile = f;
-    document.getElementById('buglogChosen').textContent = f.name + ' (' + formatBytes(f.size) + ')';
+    renderBuglogBanner(f);
     updateSubmitEnabled();
   }
   buglogDropzone.addEventListener('click', () => buglogInput.click());
@@ -209,38 +257,27 @@
     mediaPreviewUrls = [];
     mediaGrid.innerHTML = '';
     mediaFiles.forEach((f, idx) => {
-      const item = document.createElement('div');
-      item.className = 'report-media-item';
       const url = URL.createObjectURL(f);
       mediaPreviewUrls.push(url);
-      let media;
-      if (f.type.startsWith('video/')) {
-        media = document.createElement('video');
-        media.muted = true;
-        media.playsInline = true;
-        media.preload = 'metadata';
+      const isVideo = f.type.startsWith('video/');
+      let thumb;
+      if (isVideo) {
+        thumb = document.createElement('video');
+        thumb.muted = true;
+        thumb.playsInline = true;
+        thumb.preload = 'metadata';
       } else {
-        media = document.createElement('img');
-        media.alt = '';
+        thumb = document.createElement('img');
+        thumb.alt = '';
       }
-      media.src = url;
-      item.appendChild(media);
-      const name = document.createElement('div');
-      name.className = 'report-media-name';
-      name.textContent = f.name;
-      item.appendChild(name);
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'report-media-remove';
-      remove.setAttribute('aria-label', 'Remove ' + f.name);
-      remove.textContent = '×';
-      remove.addEventListener('click', () => {
+      thumb.className = 'report-file-banner-thumb';
+      thumb.src = url;
+      const meta = (isVideo ? 'Video' : 'Image') + ' · ' + formatBytes(f.size);
+      mediaGrid.appendChild(buildFileBanner(f, thumb, meta, () => {
         mediaFiles.splice(idx, 1);
         setFormError('');
         renderMediaGrid();
-      });
-      item.appendChild(remove);
-      mediaGrid.appendChild(item);
+      }));
     });
   }
 

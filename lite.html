@@ -52,7 +52,7 @@
   <div class="nav-right">
     <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
     <a class="nav-cancel-btn" href="https://frostclient.eu/lite/cancel">Cancel Subscription</a>
-    <button type="button" class="nav-discord-btn js-lite-login" id="navAuthBtn" data-mode="login"><img id="navAuthBtnIcon" src="icons/discord.webp" alt=""/><span id="navAuthBtnText">Sign in</span></button>
+    <button type="button" class="nav-signin-btn js-site-auth-nav js-lite-login" id="navAuthBtn" data-mode="login"><img id="navAuthBtnIcon" src="icons/discord.webp" alt=""/><span class="js-site-auth-text" id="navAuthBtnText">Sign in</span></button>
   </div>
 </div>
 <button class="nav-hamburger" id="navHamburger" type="button" aria-label="Menu" aria-expanded="false">
@@ -91,6 +91,7 @@
         <button type="button" class="billing-toggle-btn active" data-billing="monthly">Monthly</button>
         <button type="button" class="billing-toggle-btn" data-billing="annual">Annual <span class="billing-save-badge">2 months free</span></button>
       </div>
+      <div class="plan-active-line" id="planActiveLine" hidden>Subscription Active</div>
       <div class="plan-trial-line"><span class="plan-trial-days js-trial-days">1</span><span class="plan-trial-label js-trial-label">day free</span></div>
       <div class="plan-price-block">
         <div class="plan-title"><span class="plan-then">then </span>€<span class="plan-amount">2.90</span><span class="plan-period">&nbsp;/ month</span></div>
@@ -101,6 +102,7 @@
         <span class="plan-annual-perk-text">Annual plan includes the <strong>Lite Year</strong> cape — a cosmetic no other plan gets.</span>
       </div>
       <a class="btn-lite-download plan-blue js-whop-subscribe" id="whopSubscribeBtnHero" href="#"><span class="js-sub-cta-text">Start 1 day trial</span></a>
+      <a class="btn-lite-cancel" id="cancelSubscriptionBtn" href="https://frostclient.eu/lite/cancel" hidden>Cancel Subscription</a>
       <div class="plan-perks">
         <span class="plan-perk">Cancel anytime</span>
         <span class="plan-perk">No hidden fees</span>
@@ -182,6 +184,13 @@
       <a class="btn-lite-download plan-blue" href="#plans">Choose your plan ↑</a>
       <br/><button type="button" class="signout js-signout">Sign out</button>
     </div>
+    <div class="state" id="stateSubscriber">
+      <div class="user-chip" id="chipSubscriber"></div>
+      <div class="state-title">Your subscription is active</div>
+      <p class="state-text">FrostClient Lite is unlocked on this Discord account. <strong style="color:var(--frost-blue);">It activates inside the Frost Launcher</strong> — sign in there with the same account and pick a Lite instance.</p>
+      <a class="btn-lite-download plan-blue" href="https://frostclient.eu/?openDownload">Open the launcher</a>
+      <br/><button type="button" class="signout js-signout">Sign out</button>
+    </div>
     <div class="state" id="stateError">
       <div class="state-title">Something went wrong</div>
       <p class="state-text" id="errorText">We couldn't verify your Discord account. Please try again.</p>
@@ -213,8 +222,6 @@
     <div class="footer-col">
       <h4>Product</h4>
       <a href="https://frostclient.eu/?openDownload">Download</a>
-      <a href="https://frostclient.eu/vulkan">Vulkan Setup</a>
-      <a href="https://frostclient.eu/settings">Transferring Settings</a>
       <a href="https://frostclient.eu/reviews">Reviews</a>
       <a href="https://frostclient.eu/partner">Creator Program</a>
       <a href="https://store.frostclient.eu">Store</a>
@@ -223,7 +230,6 @@
       <h4>Account</h4>
       <button type="button" class="footer-link-btn js-site-auth-btn"><span class="js-site-auth-text">Sign in</span></button>
       <a href="https://frostclient.eu/lite">Frost Lite</a>
-      <a href="https://frostclient.eu/lite/download" class="js-lite-access-link">Download Lite</a>
     </div>
     <div class="footer-col">
       <h4>Creator</h4>
