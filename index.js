@@ -161,30 +161,46 @@
     const sub = document.getElementById('dlLauncherTileSub');
     if (tile) tile.href = PUBLIC_DL_BASE + primary.file;
     if (sub) sub.textContent = primary.label;
+    const altTile = document.getElementById('dlLauncherTileAlt');
+    if (altTile) {
+      altTile.innerHTML = '';
+      Object.keys(LAUNCHER_FILES).forEach(key => {
+        if (key === os) return;
+        if (altTile.childNodes.length > 0) altTile.appendChild(document.createTextNode(', '));
+        const link = document.createElement('span');
+        link.className = 'dl-tile-alt-link';
+        link.textContent = LAUNCHER_FILES[key].label;
+        link.dataset.file = LAUNCHER_FILES[key].file;
+        link.setAttribute('role', 'link');
+        link.tabIndex = 0;
+        altTile.appendChild(link);
+      });
+    }
+    if (tile) {
+      const openAlt = (target) => {
+        const link = target.closest ? target.closest('.dl-tile-alt-link') : null;
+        if (!link) return false;
+        window.location.href = PUBLIC_DL_BASE + link.dataset.file;
+        return true;
+      };
+      tile.addEventListener('click', (e) => {
+        if (openAlt(e.target)) e.preventDefault();
+      });
+      tile.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        if (openAlt(e.target)) e.preventDefault();
+      });
+    }
     const altEl = document.getElementById('dlLauncherAltLinks');
     if (altEl) {
       altEl.innerHTML = '';
-      const row1 = document.createElement('div');
-      row1.className = 'dl-alt-links-row';
-      const label = document.createElement('span');
-      label.textContent = 'Launcher for other systems:';
-      row1.appendChild(label);
-      Object.keys(LAUNCHER_FILES).forEach(key => {
-        if (key === os) return;
-        const a = document.createElement('a');
-        a.href = PUBLIC_DL_BASE + LAUNCHER_FILES[key].file;
-        a.textContent = LAUNCHER_FILES[key].label;
-        a.rel = 'noopener';
-        row1.appendChild(a);
-      });
-      altEl.appendChild(row1);
-      const row2 = document.createElement('div');
-      row2.className = 'dl-alt-links-row';
+      const row = document.createElement('div');
+      row.className = 'dl-alt-links-row';
       const secA = document.createElement('a');
       secA.href = 'https://frostclient.eu/security';
       secA.textContent = 'Safety & Security';
-      row2.appendChild(secA);
-      altEl.appendChild(row2);
+      row.appendChild(secA);
+      altEl.appendChild(row);
     }
   })();
 
