@@ -2114,3 +2114,112 @@
     color: #fff;
     box-shadow: 0 2px 8px rgba(191, 90, 242, 0.45);
   }
+  .capes-showcase {
+    padding: 90px clamp(36px, 6vw, 110px) 60px;
+    max-width: 1380px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .capes-showcase[hidden] {
+    display: none;
+  }
+  .capes-showcase-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .capes-showcase-header .section-desc {
+    margin: 0 auto;
+  }
+  .capes-showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .capes-showcase-card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text);
+    text-decoration: none;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+  .capes-showcase-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(79,200,248,0.4);
+  }
+  .capes-showcase-card:focus-visible {
+    outline: 2px solid var(--frost-blue);
+    outline-offset: 3px;
+  }
+  .capes-showcase-preview {
+    position: relative;
+    aspect-ratio: 300 / 392;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: radial-gradient(circle at 50% 40%, rgba(79,200,248,0.12), transparent 70%);
+    overflow: hidden;
+  }
+  .capes-showcase-flat {
+    width: 46%;
+    aspect-ratio: 10 / 16;
+    background-size: 640% 200%;
+    background-position: 1.852% 6.25%;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    border-radius: 2px;
+  }
+  .capes-showcase-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    animation: capes-showcase-in 0.35s ease;
+  }
+  @keyframes capes-showcase-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .capes-showcase-meta {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+  }
+  .capes-showcase-name {
+    font-size: 14px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .capes-showcase-cta {
+    text-align: center;
+  }
+  @media (max-width: 1100px) {
+    .capes-showcase-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 600px) {
+    .capes-showcase {
+      padding: 70px 16px 40px;
+    }
+    .capes-showcase-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .capes-showcase-card, .capes-showcase-img {
+      transition: none;
+      animation: none;
+    }
+  }
