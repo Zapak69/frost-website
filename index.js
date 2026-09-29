@@ -553,8 +553,8 @@ const fpsFills   = document.querySelectorAll('.fps-fill');
 const perfSect   = document.getElementById('performance');
 const liteSect   = document.getElementById('lite');
 const navLiteBtn = document.querySelector('.nav-cta--lite');
-const navSpyLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')]
-  .map(a => ({ link: a, section: document.getElementById(a.getAttribute('href').slice(1)) }))
+const navSpyLinks = [...document.querySelectorAll('.nav-links a[href^="#"], .nav-links a[data-spy]')]
+  .map(a => ({ link: a, section: document.getElementById(a.dataset.spy || a.getAttribute('href').slice(1)) }))
   .filter(x => x.section);
 function updateNavSpy() {
   const refY = window.innerHeight * 0.5;
