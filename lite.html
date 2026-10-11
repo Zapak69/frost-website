@@ -1,7 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8"/>
+<script>
+(function () {
+  var q = new URLSearchParams(window.location.search);
+  if (q.has('code') || q.has('state') || q.has('error')) return;
+  var target = 'https://store.frostclient.eu/lite';
+  if (q.get('billing') === 'annual') target += '#plans';
+  window.location.replace(target);
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Lite | Frost</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
