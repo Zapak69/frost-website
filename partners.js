@@ -86,13 +86,19 @@
       ip.type = 'button';
       ip.className = 'partner-ip';
       ip.setAttribute('aria-label', 'Copy server address ' + p.serverIp);
+      const info = document.createElement('span');
+      info.className = 'partner-ip-info';
+      const label = document.createElement('span');
+      label.className = 'partner-ip-label';
+      label.textContent = 'Server IP';
       const value = document.createElement('span');
       value.className = 'partner-ip-value';
       value.textContent = p.serverIp;
+      info.append(label, value);
       const action = document.createElement('span');
       action.className = 'partner-ip-action';
       action.innerHTML = ICON_COPY + 'Copy IP';
-      ip.append(value, action);
+      ip.append(info, action);
       ip.addEventListener('click', () => {
         const done = () => toast('Copied ' + p.serverIp);
         if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(p.serverIp).then(done, () => toast('Copy failed, select the address manually'));

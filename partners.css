@@ -331,6 +331,19 @@
     outline: 2px solid var(--frost-blue);
     outline-offset: 2px;
   }
+  .partner-ip-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .partner-ip-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+  }
   .partner-ip-value {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 14px;
