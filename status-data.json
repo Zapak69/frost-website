@@ -1,14 +1,14 @@
 {
-  "updatedAt": "2026-09-09T17:53:00Z",
+  "updatedAt": "2026-13-10T06:17:00Z",
   "services": [
     { "name": "Website", "status": "operational", "note": "" },
-    { "name": "Store", "status": "operational", "note": "" },
-    { "name": "Launcher", "status": "maintenance", "note": "" },
-    { "name": "Partner Dashboard", "status": "operational", "note": "" },
-    { "name": "FrostClient Lite", "status": "maintenance", "note": "" },
-    { "name": "FrostClient", "status": "maintenance", "note": "" },
-    { "name": "Servers", "status": "operational", "note": "" },
+    { "name": "Store", "status": "maintenance", "note": "" },
+    { "name": "Launcher", "status": "outage", "note": "" },
+    { "name": "Partner Dashboard", "status": "outage", "note": "" },
+    { "name": "FrostClient Lite", "status": "outage", "note": "" },
+    { "name": "FrostClient", "status": "outage", "note": "" },
+    { "name": "Servers", "status": "maintenance", "note": "" },
     { "name": "Payments", "status": "operational", "note": "" },
-    { "name": "Support", "status": "operational", "note": "" }
+    { "name": "Support", "status": "outage", "note": "" }
   ]
 }

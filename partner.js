@@ -35,7 +35,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
   const PARTNER_STATUS_URL = 'https://bot.frostclient.eu/partner-status';
   const TOKEN_KEY = 'frostToken';
   const OAUTH_STATE_KEY = 'frostPartnerOauthState';

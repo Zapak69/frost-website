@@ -47,7 +47,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
   const GAME_SESSION_KEY = 'frostReviewGameSession';
   const GAME_PORT_KEY = 'frostReviewGamePort';
   const OAUTH_STATE_KEY = 'frostReviewOauthState';

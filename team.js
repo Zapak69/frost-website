@@ -16,7 +16,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
   const STAFF_APPLY_URL = 'https://bot.frostclient.eu/staff-apply';
   const STAFF_APPLY_STATUS_URL = 'https://bot.frostclient.eu/staff-apply-status';
   const TOKEN_KEY = 'frostToken';

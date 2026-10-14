@@ -16,7 +16,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
   const BUG_REPORT_URL = 'https://bot.frostclient.eu/bug-report';
   const TOKEN_KEY = 'frostToken';
   const LEGACY_TOKEN_KEY = 'frostReportToken';

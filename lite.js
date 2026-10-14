@@ -47,7 +47,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://script.google.com/macros/s/AKfycbxF57u1UNBsonktp5_2EseJtFkBZR0-CCxyazOGVUmEBrcwjU1-t6Us41gcrRqCsGcR/exec';
+  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI = 'https://frostclient.eu/lite';
   const WHOP_CHECKOUT_URL = 'https://whop.com/checkout/plan_oKGeLuyTvJb5u';
