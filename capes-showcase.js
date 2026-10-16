@@ -30,6 +30,46 @@
   }
 
   const previews = [];
+  const animated = [];
+  const CSS_CAPE_FACES = [
+    ['front', 1, 1],
+    ['back', 12, 1],
+    ['left', 0, 1],
+    ['right', 11, 1],
+    ['top', 1, 0],
+    ['bottom', 11, 0]
+  ];
+
+  function buildAnimated(wrap, cape) {
+    const stage = document.createElement('div');
+    stage.className = 'capes-3d';
+    const body = document.createElement('div');
+    body.className = 'capes-3d-body';
+    const imgs = [];
+    CSS_CAPE_FACES.forEach(function (f) {
+      const face = document.createElement('div');
+      face.className = 'capes-3d-face capes-3d-' + f[0];
+      const img = document.createElement('img');
+      img.alt = '';
+      img.decoding = 'async';
+      img.style.left = 'calc(var(--u) * ' + (-f[1]) + ')';
+      img.style.top = 'calc(var(--u) * ' + (-f[2]) + ')';
+      face.appendChild(img);
+      body.appendChild(face);
+      imgs.push(img);
+    });
+    stage.appendChild(body);
+    wrap.appendChild(stage);
+    animated.push({ imgs: imgs, url: fileUrl(String(cape.animated)) });
+  }
+
+  function startAnimated() {
+    animated.forEach(function (item) {
+      item.imgs.forEach(function (img) {
+        img.src = item.url;
+      });
+    });
+  }
 
   function buildCard(cape) {
     const card = document.createElement('a');
@@ -38,11 +78,16 @@
     card.rel = 'noopener';
     const wrap = document.createElement('div');
     wrap.className = 'capes-showcase-preview';
-    const flat = document.createElement('div');
-    flat.className = 'capes-showcase-flat';
-    flat.style.backgroundImage = 'url("' + fileUrl(cape.file) + '")';
-    wrap.appendChild(flat);
     card.appendChild(wrap);
+    if (cape.animated) {
+      buildAnimated(wrap, cape);
+    } else {
+      const flat = document.createElement('div');
+      flat.className = 'capes-showcase-flat';
+      flat.style.backgroundImage = 'url("' + fileUrl(cape.file) + '")';
+      wrap.appendChild(flat);
+      previews.push({ cape: cape, wrap: wrap, flat: flat });
+    }
     const meta = document.createElement('div');
     meta.className = 'capes-showcase-meta';
     const name = document.createElement('span');
@@ -50,7 +95,6 @@
     name.textContent = cape.name || cape.id;
     meta.appendChild(name);
     card.appendChild(meta);
-    previews.push({ cape: cape, wrap: wrap, flat: flat });
     return card;
   }
 
@@ -101,6 +145,10 @@
   }
 
   function loadViewerScript() {
+    startAnimated();
+    if (!previews.length) {
+      return;
+    }
     if (typeof skinview3d !== 'undefined') {
       render3d();
       return;
