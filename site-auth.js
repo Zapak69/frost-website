@@ -16,17 +16,8 @@
   var DISCORD_CLIENT_ID = '1512834635640475898';
   var DISCORD_REDIRECT_URI = 'https://frostclient.eu/lite';
   var AUTH_BTN_SELECTOR = '.js-site-auth-btn, .js-site-auth-nav';
-  var PRIVACY_URL = 'https://bot.frostclient.eu/site/privacy';
   var PLAYERS_URL = 'https://player.frostclient.eu';
   var ICON_GEAR = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>';
-  var ICON_BACK = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
-  var PRIVACY_OPTIONS = [
-    { key: 'showPlaytime', label: 'Share playtime', hint: 'Show your total FrostClient playtime on your public profile.' },
-    { key: 'showOnline', label: 'Show online status', hint: 'Show when you are playing FrostClient right now.' },
-    { key: 'showDiscord', label: 'Show linked Discord account', hint: 'Show your Discord name on your profile and let people find you by your Discord ID.' },
-    { key: 'privateProfile', label: 'Private profile', hint: 'Hide your profile. People who look you up only see that the profile is private.', lite: true }
-  ];
-
   function migrateLegacyTokens() {
     try {
       if (!localStorage.getItem(TOKEN_KEY)) {
@@ -312,31 +303,7 @@
       '.frost-account-settings-btn{position:absolute;top:16px;right:54px;width:30px;height:30px;border-radius:8px;border:1px solid var(--border,rgba(79,200,248,0.15));',
       'background:rgba(255,255,255,0.04);color:var(--muted,#6b8fa8);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:color 0.2s,background 0.2s;}',
       '.frost-account-settings-btn:hover,.frost-account-settings-btn.is-active{color:var(--text,#e8f4fc);background:rgba(255,255,255,0.08);}',
-      '.frost-account-close:focus-visible,.frost-account-settings-btn:focus-visible,.frost-privacy-back:focus-visible{outline:2px solid #4fc8f8;outline-offset:2px;}',
-      '.frost-privacy-head{display:flex;align-items:center;gap:8px;margin:0 90px 6px 0;}',
-      '.frost-privacy-back{width:30px;height:30px;border-radius:8px;border:1px solid var(--border,rgba(79,200,248,0.15));background:rgba(255,255,255,0.04);color:var(--muted,#6b8fa8);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}',
-      '.frost-privacy-back:hover{color:var(--text,#e8f4fc);background:rgba(255,255,255,0.08);}',
-      '.frost-privacy-title{font-weight:700;font-size:16.5px;}',
-      '.frost-privacy-intro{font-size:12.5px;line-height:1.55;color:var(--muted,#6b8fa8);margin:0 0 14px;}',
-      '.frost-privacy-list{border-top:1px solid var(--border,rgba(79,200,248,0.15));margin-bottom:16px;}',
-      '.frost-privacy-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid var(--border,rgba(79,200,248,0.15));cursor:pointer;}',
-      '.frost-privacy-row.is-locked{cursor:default;}',
-      '.frost-privacy-label{font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:8px;}',
-      '.frost-privacy-hint{font-size:12px;line-height:1.5;color:var(--muted,#6b8fa8);margin-top:3px;}',
-      '.frost-privacy-lite{font-family:"Space Mono",monospace;font-size:9.5px;font-weight:700;letter-spacing:0.5px;padding:2px 7px;border-radius:5px;background:linear-gradient(90deg,var(--boost,#ff73fa),var(--boost-deep,#b845ff));color:#1a0a1f;}',
-      '.frost-privacy-switch{position:relative;flex-shrink:0;width:38px;height:22px;margin-top:2px;}',
-      '.frost-privacy-switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;}',
-      '.frost-privacy-track{position:absolute;inset:0;border-radius:999px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.16);transition:background 0.2s,border-color 0.2s;pointer-events:none;}',
-      '.frost-privacy-track::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#6b8fa8;transition:transform 0.2s,background 0.2s;}',
-      '.frost-privacy-switch input:checked+.frost-privacy-track{background:rgba(79,200,248,0.25);border-color:#4fc8f8;}',
-      '.frost-privacy-switch input:checked+.frost-privacy-track::after{transform:translateX(16px);background:#4fc8f8;}',
-      '.frost-privacy-switch input:focus-visible+.frost-privacy-track{outline:2px solid #4fc8f8;outline-offset:2px;}',
-      '.frost-privacy-switch input:disabled+.frost-privacy-track{opacity:0.45;}',
-      '.frost-privacy-foot{font-size:12.5px;line-height:1.55;color:var(--muted,#6b8fa8);}',
-      '.frost-privacy-foot a{color:var(--frost-blue,#4fc8f8);text-decoration:underline;text-underline-offset:2px;}',
-      '.frost-privacy-status{min-height:18px;font-size:12px;margin-bottom:8px;color:var(--muted,#6b8fa8);}',
-      '.frost-privacy-status.is-error{color:#ff8a8a;}',
-      '.frost-privacy-status.is-ok{color:#32d74b;}',
+      '.frost-account-close:focus-visible,.frost-account-settings-btn:focus-visible{outline:2px solid #4fc8f8;outline-offset:2px;}',
       '.frost-account-loading,.frost-account-error{font-size:13.5px;color:var(--muted,#6b8fa8);text-align:center;padding:30px 6px;}',
       '.frost-account-error{color:#ff8a8a;}',
       '.frost-account-head{display:flex;align-items:center;gap:14px;margin-bottom:20px;}',
@@ -401,15 +368,8 @@
     overlay.className = 'frost-account-overlay';
     overlay.innerHTML = [
       '<div class="frost-account-modal" role="dialog" aria-modal="true" aria-label="Account">',
-      '  <button type="button" class="frost-account-settings-btn" aria-label="Privacy settings" title="Privacy settings">' + ICON_GEAR + '</button>',
+      '  <button type="button" class="frost-account-settings-btn" aria-label="Player profile settings" title="Player profile settings">' + ICON_GEAR + '</button>',
       '  <button type="button" class="frost-account-close" aria-label="Close">×</button>',
-      '  <div class="frost-privacy" style="display:none">',
-      '    <div class="frost-privacy-head"><button type="button" class="frost-privacy-back" aria-label="Back to account">' + ICON_BACK + '</button><span class="frost-privacy-title">Privacy settings</span></div>',
-      '    <p class="frost-privacy-intro">Choose what other people see on your public FrostClient player profile.</p>',
-      '    <div class="frost-privacy-status" role="status" aria-live="polite"></div>',
-      '    <div class="frost-privacy-list"></div>',
-      '    <div class="frost-privacy-foot"></div>',
-      '  </div>',
       '  <div class="frost-account-loading">Loading account…</div>',
       '  <div class="frost-account-error" style="display:none"></div>',
       '  <div class="frost-account-content" style="display:none">',
@@ -501,24 +461,14 @@
       manageWhopLink: overlay.querySelector('.frost-account-actions a[href*="whop.com"]'),
       logoutBtn: overlay.querySelector('.frost-account-logout-btn'),
       closeBtn: overlay.querySelector('.frost-account-close'),
-      settingsBtn: overlay.querySelector('.frost-account-settings-btn'),
-      privacy: overlay.querySelector('.frost-privacy'),
-      privacyBack: overlay.querySelector('.frost-privacy-back'),
-      privacyList: overlay.querySelector('.frost-privacy-list'),
-      privacyFoot: overlay.querySelector('.frost-privacy-foot'),
-      privacyStatus: overlay.querySelector('.frost-privacy-status')
+      settingsBtn: overlay.querySelector('.frost-account-settings-btn')
     };
     modalEls.settingsBtn.addEventListener('click', function () {
-      if (modalEls.privacy.style.display === 'none') openPrivacy(modalEls);
-      else closePrivacy(modalEls);
-    });
-    modalEls.privacyBack.addEventListener('click', function () {
-        closePrivacy(modalEls);
+        handOffToPlayers('/settings');
     });
 
     function close() {
       overlay.classList.remove('open');
-      closePrivacy(modalEls);
     }
     modalEls.closeBtn.addEventListener('click', close);
     overlay.addEventListener('click', function (e) {
@@ -552,134 +502,14 @@
     return modalEls;
   }
 
-  var privacyViewWas = null;
-  var privacyState = null;
-
-  function postPrivacy(body) {
-    return fetch(PRIVACY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      cache: 'no-store'
-    }).then(function (r) {
-        return r.json();
-    });
-  }
-
-  function setPrivacyStatus(els, text, kind) {
-    els.privacyStatus.textContent = text || '';
-    els.privacyStatus.className = 'frost-privacy-status' + (kind ? ' is-' + kind : '');
-  }
-
-  function renderPrivacy(els, data) {
-    privacyState = data;
-    els.privacyList.innerHTML = '';
-    PRIVACY_OPTIONS.forEach(function (opt) {
-      var locked = opt.lite && !data.lite;
-      var row = document.createElement('label');
-      row.className = 'frost-privacy-row' + (locked ? ' is-locked' : '');
-      var text = document.createElement('div');
-      var label = document.createElement('div');
-      label.className = 'frost-privacy-label';
-      label.textContent = opt.label;
-      if (opt.lite) {
-        var badge = document.createElement('span');
-        badge.className = 'frost-privacy-lite';
-        badge.textContent = 'LITE';
-        label.appendChild(badge);
-      }
-      var hint = document.createElement('div');
-      hint.className = 'frost-privacy-hint';
-      hint.textContent = locked ? opt.hint + ' Requires FrostClient Lite.' : opt.hint;
-      text.appendChild(label);
-      text.appendChild(hint);
-      var sw = document.createElement('span');
-      sw.className = 'frost-privacy-switch';
-      var input = document.createElement('input');
-      input.type = 'checkbox';
-      input.checked = !!data.settings[opt.key] && !locked;
-      input.disabled = locked;
-      input.setAttribute('aria-label', opt.label);
-      var track = document.createElement('span');
-      track.className = 'frost-privacy-track';
-      sw.appendChild(input);
-      sw.appendChild(track);
-      row.appendChild(text);
-      row.appendChild(sw);
-      input.addEventListener('change', function () {
-        var token = loadToken();
-        if (!token) return;
-        var patch = {};
-        patch[opt.key] = input.checked;
-        setPrivacyStatus(els, 'Saving…', '');
-        postPrivacy({ token: token, settings: patch }).then(function (res) {
-          if (!res || !res.ok) throw new Error((res && res.error) || 'failed');
-          renderPrivacy(els, res);
-          setPrivacyStatus(els, 'Saved', 'ok');
-        }).catch(function () {
-          input.checked = !input.checked;
-          setPrivacyStatus(els, "Couldn't save. Check your connection and try again.", 'error');
-        });
-      });
-      els.privacyList.appendChild(row);
-    });
-    els.privacyFoot.innerHTML = '';
-    var accounts = data.accounts || [];
-    if (accounts.length) {
-      els.privacyFoot.appendChild(document.createTextNode('Your public profile: '));
-      var link = document.createElement('a');
-      link.href = PLAYERS_URL + '/player?nick=' + encodeURIComponent(accounts[0]);
-      link.target = '_blank';
-      link.rel = 'noopener';
-      link.textContent = 'player.frostclient.eu/player?nick=' + accounts[0];
-      els.privacyFoot.appendChild(link);
-    } else {
-      els.privacyFoot.textContent = 'No Minecraft account is linked yet. Sign in to the FrostClient launcher with this Discord account to link one.';
-    }
-  }
-
-  function openPrivacy(els) {
+  function handOffToPlayers(path) {
+    var target = /^\/[A-Za-z0-9_\/?=&%.-]*$/.test(path || '') && !/^\/\//.test(path) ? path : '/settings';
     var token = loadToken();
-    if (!token) return;
-    privacyViewWas = {
-      loading: els.loading.style.display,
-      error: els.error.style.display,
-      content: els.content.style.display
-    };
-    els.loading.style.display = 'none';
-    els.error.style.display = 'none';
-    els.content.style.display = 'none';
-    els.privacy.style.display = '';
-    els.settingsBtn.classList.add('is-active');
-    els.settingsBtn.setAttribute('aria-pressed', 'true');
-    if (privacyState) renderPrivacy(els, privacyState);
-    else els.privacyList.innerHTML = '<div class="frost-account-loading">Loading settings…</div>';
-    setPrivacyStatus(els, '', '');
-    postPrivacy({ token: token }).then(function (res) {
-      if (res && res.error === 'token_expired') {
-        clearToken();
-        document.dispatchEvent(new CustomEvent('frostAccountLogout'));
-        els.overlay.classList.remove('open');
-        return;
-      }
-      if (!res || !res.ok) throw new Error('failed');
-      renderPrivacy(els, res);
-    }).catch(function () {
-      if (!privacyState) els.privacyList.innerHTML = '';
-      setPrivacyStatus(els, "Couldn't load your privacy settings. Please try again.", 'error');
-    });
-  }
-
-  function closePrivacy(els) {
-    if (!els || els.privacy.style.display === 'none') return;
-    els.privacy.style.display = 'none';
-    els.settingsBtn.classList.remove('is-active');
-    els.settingsBtn.setAttribute('aria-pressed', 'false');
-    if (privacyViewWas) {
-      els.loading.style.display = privacyViewWas.loading;
-      els.error.style.display = privacyViewWas.error;
-      els.content.style.display = privacyViewWas.content;
+    if (!token) {
+      startLogin();
+      return;
     }
+    window.location.href = PLAYERS_URL + '/#login=' + encodeURIComponent(token) + '&r=' + encodeURIComponent(target);
   }
 
   function fetchAccountInfo(token) {
@@ -798,10 +628,6 @@
       saveUserCache(data.user, data.liteActive);
       applyState();
       populateModal(els, data);
-      if (els.privacy.style.display !== 'none') {
-        privacyViewWas = { loading: 'none', error: 'none', content: '' };
-        return;
-      }
       els.loading.style.display = 'none';
       els.error.style.display = 'none';
       els.content.style.display = '';
@@ -840,7 +666,6 @@
     migrateLegacyTokens();
     applyState();
     document.addEventListener('frostAccountLogout', function () {
-        privacyState = null;
         accountDataCache = null;
         accountDataPromise = null;
         applyState();
@@ -852,6 +677,18 @@
         prefetchAccountInfo();
     });
     if (loadToken()) prefetchAccountInfo();
+    var playersLogin = null;
+    try {
+        playersLogin = new URLSearchParams(window.location.search).get('players_login');
+    } catch (e) {}
+    if (playersLogin !== null) {
+      if (loadToken()) {
+        handOffToPlayers(playersLogin || '/settings');
+        return;
+      }
+      startLogin();
+      return;
+    }
     if (window.location.hash === '#account') {
       if (loadToken()) {
         try {
