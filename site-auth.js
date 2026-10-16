@@ -10,7 +10,7 @@
   var ICON_USER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
   var ICON_LOGOUT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>';
   var ICON_CAPE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>';
-  var STORE_CAPES_URL = 'https://store.frostclient.eu/my-capes';
+  var STORE_CAPES_URL = 'https://store.frostclient.eu/my-cloaks';
   var ICON_CHEVRON = '<svg class="frost-nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
   var ACCOUNT_URL = 'https://frostclient.eu/lite';
   var DISCORD_CLIENT_ID = '1512834635640475898';
@@ -235,7 +235,7 @@
     navMenu.setAttribute('role', 'menu');
     navMenu.innerHTML =
       '<button type="button" class="frost-nav-menu-item frost-nav-manage" role="menuitem">' + ICON_USER + 'Manage</button>' +
-      '<a class="frost-nav-menu-item frost-nav-capes" role="menuitem" href="' + STORE_CAPES_URL + '">' + ICON_CAPE + 'My Capes</a>' +
+      '<a class="frost-nav-menu-item frost-nav-capes" role="menuitem" href="' + STORE_CAPES_URL + '">' + ICON_CAPE + 'My Cloaks</a>' +
       '<button type="button" class="frost-nav-menu-item is-danger frost-nav-signout" role="menuitem">' + ICON_LOGOUT + 'Sign Out</button>';
     navMenu.querySelector('.frost-nav-manage').addEventListener('click', function () {
       closeNavMenu();

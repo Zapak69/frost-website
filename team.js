@@ -67,18 +67,18 @@
       ])
     },
     cape_designer: {
-      label: 'Cape Designer',
+      label: 'Cloak Designer',
       fields: COMMON_FIELDS.concat([
-        ['experience', 'Previous texture / pixel-art / cape design experience', 'What you created, tools you use...', true],
-        ['portfolio', 'Show us your work', 'Links to cape designs, textures, art...', true],
+        ['experience', 'Previous texture / pixel-art / cloak design experience', 'What you created, tools you use...', true],
+        ['portfolio', 'Show us your work', 'Links to cloak designs, textures, art...', true],
         WHY_FIELD
       ])
     },
     cape_animator: {
-      label: 'Cape Animator',
+      label: 'Cloak Animator',
       fields: COMMON_FIELDS.concat([
         ['experience', 'Previous animation experience', 'GIF / sprite / frame animation you made...', true],
-        ['portfolio', 'Show us your work', 'Links to animated capes, animations...', true],
+        ['portfolio', 'Show us your work', 'Links to animated cloaks, animations...', true],
         WHY_FIELD
       ])
     }

@@ -34,7 +34,7 @@
   function buildCard(cape) {
     const card = document.createElement('a');
     card.className = 'capes-showcase-card';
-    card.href = STORE_URL + 'cape?id=' + encodeURIComponent(cape.id);
+    card.href = STORE_URL + 'cloak?id=' + encodeURIComponent(cape.id);
     card.rel = 'noopener';
     const wrap = document.createElement('div');
     wrap.className = 'capes-showcase-preview';
