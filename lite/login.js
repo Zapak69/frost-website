@@ -51,30 +51,75 @@
   const DISCORD_REDIRECT_URI_GAME = 'https://frostclient.eu/lite/login';
   const GAME_SESSION_KEY = 'frostLiteGameSession';
   const GAME_PORT_KEY = 'frostLiteGamePort';
+  const GAME_RELAY_KEY = 'frostLiteGameRelay';
+  const GAME_RELAY_URL = 'https://bot.frostclient.eu/launcher/game-login-relay';
   function gameSession() {
     try { return sessionStorage.getItem(GAME_SESSION_KEY) || ''; } catch (e) { return ''; }
   }
   function gamePort() {
     try { return sessionStorage.getItem(GAME_PORT_KEY) || ''; } catch (e) { return ''; }
   }
+  function gameRelay() {
+    try { return sessionStorage.getItem(GAME_RELAY_KEY) === '1'; } catch (e) { return false; }
+  }
+  function storeGame(session, port, relay) {
+    if (!/^[A-Za-z0-9_-]{16,128}$/.test(session || '') || !/^\d{2,5}$/.test(port || '')) return;
+    try {
+      sessionStorage.setItem(GAME_SESSION_KEY, session);
+      sessionStorage.setItem(GAME_PORT_KEY, port);
+      sessionStorage.setItem(GAME_RELAY_KEY, relay ? '1' : '0');
+    } catch (e) {}
+  }
+  function storeGameFromState(returnedState) {
+    const gIdx = returnedState.indexOf('.g.');
+    if (gIdx === -1) return;
+    const gameParts = returnedState.slice(gIdx + 3).split('.');
+    if ((gameParts.length === 2 || (gameParts.length === 3 && gameParts[2] === 'r')) && gameParts[0] && gameParts[1]) {
+      storeGame(gameParts[0], gameParts[1], gameParts.length === 3);
+    }
+  }
   let lastGameNotify = null;
-  function notifyGame(status, extra) {
-    const session = gameSession();
-    const port = gamePort();
-    if (!session || !port) return;
-    lastGameNotify = { status: status, extra: extra };
-    let url = 'http://127.0.0.1:' + port + '/result?session=' + encodeURIComponent(session) + '&status=' + encodeURIComponent(status);
+  function gameResultUrl(status, extra) {
+    let url = 'http://127.0.0.1:' + gamePort() + '/result?session=' + encodeURIComponent(gameSession()) + '&status=' + encodeURIComponent(status);
     if (extra) {
       Object.keys(extra).forEach(function (k) {
-        if (extra[k] !== undefined && extra[k] !== null) url += '&' + k + '=' + encodeURIComponent(extra[k]);
+        if (extra[k] !== undefined && extra[k] !== null && extra[k] !== '') url += '&' + k + '=' + encodeURIComponent(extra[k]);
       });
     }
+    return url;
+  }
+  function relayToGame(status, extra) {
+    const token = extra && (extra.gameToken || extra.token);
+    const body = token ? { session: gameSession(), token: token } : (status === 'error' ? { session: gameSession(), status: 'error', detail: (extra && extra.detail) || '' } : null);
+    if (!body) return Promise.resolve(false);
+    return fetch(GAME_RELAY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: JSON.stringify(body),
+      cache: 'no-store'
+    }).then(function (r) { return r.ok; }).catch(function () { return false; });
+  }
+  function localNotify(url) {
     fetch(url, { mode: 'no-cors', cache: 'no-store' }).catch(function () {});
   }
-  function retryNotifyGame() {
-    if (lastGameNotify) notifyGame(lastGameNotify.status, lastGameNotify.extra);
+  function notifyGame(status, extra) {
+    if (!gameSession() || !gamePort()) return;
+    lastGameNotify = { status: status, extra: extra };
+    const url = gameResultUrl(status, extra);
+    if (!gameRelay()) { localNotify(url); return; }
+    relayToGame(status, extra).then(function (ok) { if (!ok) localNotify(url); });
   }
-  function afterResult(status, data, daysLeft) {
+  function retryNotifyGame() {
+    if (!lastGameNotify || !gameSession() || !gamePort()) return;
+    const url = gameResultUrl(lastGameNotify.status, lastGameNotify.extra);
+    const go = function () { window.location.assign(url); };
+    if (!gameRelay()) { go(); return; }
+    let done = false;
+    const once = function () { if (!done) { done = true; go(); } };
+    relayToGame(lastGameNotify.status, lastGameNotify.extra).then(once, once);
+    setTimeout(once, 1500);
+  }
+  function afterResult(status, data, daysLeft, detail) {
     if (!gameSession()) return;
     const user = data && data.user;
     notifyGame(status, {
@@ -84,6 +129,7 @@
       uid: user && user.id,
       avatar: user && user.avatar,
       name: user && (user.name || user.username),
+      detail: detail || (data && (data.error || data.detail)) || undefined,
     });
     const note = document.getElementById('gameReturnNote');
     if (note) note.style.display = 'block';
@@ -199,31 +245,39 @@
     })
       .then(r => r.json())
       .then(data => {
-        if (!data.ok) {
-          showError(data.error === 'auth_failed'
+        if (!data || !data.ok) {
+          showError(data && data.error === 'auth_failed'
             ? 'Discord sign-in failed. Please try again.'
-            : "Discord didn't respond correctly. Please try again.", data.detail);
+            : "Discord didn't respond correctly. Please try again.", data && data.detail);
+          afterResult('error', null, undefined, (data && data.error) || 'login_failed');
           return;
         }
         if (data.gameToken) { saveToken(data.gameToken); document.dispatchEvent(new CustomEvent('frostAccountLogin')); }
         render(mapBotLoginStatus(data));
       })
-      .catch(() => showError('Network error while contacting the server. Please try again.'));
+      .catch(() => {
+        showError('Network error while contacting the server. Please try again.');
+        afterResult('error', null, undefined, 'network_error');
+      });
   }
   function recheck(token) {
     show('stateLoading');
     fetch(LITE_API_URL + '?action=siteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
-        if (!data.ok) {
-          if (data.error === 'token_expired') { clearToken(); show('stateLogin'); return; }
-          showError("Discord didn't respond correctly. Please try again.", data.detail);
+        if (!data || !data.ok) {
+          if (data && (data.error === 'token_expired' || data.error === 'invalid_token')) { clearToken(); show('stateLogin'); return; }
+          showError("Discord didn't respond correctly. Please try again.", data && data.detail);
+          afterResult('error', null, undefined, (data && data.error) || 'check_failed');
           return;
         }
         if (!data.gameToken) data.gameToken = token;
         render(data);
       })
-      .catch(() => showError('Network error while contacting the server. Please try again.'));
+      .catch(() => {
+        showError('Network error while contacting the server. Please try again.');
+        afterResult('error', null, undefined, 'network_error');
+      });
   }
   document.querySelectorAll('.js-lite-login').forEach(loginBtn => {
     loginBtn.addEventListener('click', () => {
@@ -235,7 +289,7 @@
         sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
       } catch (e) {}
       const gs = gameSession(), gp = gamePort();
-      const state = csrfState + (gs && gp ? '.g.' + gs + '.' + gp : '');
+      const state = csrfState + (gs && gp ? '.g.' + gs + '.' + gp + (gameRelay() ? '.r' : '') : '');
       const url = 'https://discord.com/oauth2/authorize'
         + '?client_id=' + encodeURIComponent(DISCORD_CLIENT_ID)
         + '&response_type=code'
@@ -266,27 +320,15 @@
     const params = new URLSearchParams(window.location.search);
 
     if (params.has('game') && params.has('session')) {
-      try {
-        sessionStorage.setItem(GAME_SESSION_KEY, params.get('session'));
-        sessionStorage.setItem(GAME_PORT_KEY, params.get('port') || '41421');
-      } catch (e) {}
+      storeGame(params.get('session'), params.get('port') || '41421', params.get('relay') === '1');
       const cleanUrl = new URL(window.location.href);
       cleanUrl.searchParams.delete('game');
       cleanUrl.searchParams.delete('session');
       cleanUrl.searchParams.delete('port');
+      cleanUrl.searchParams.delete('relay');
       window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
     } else if (params.has('code') && !gameSession()) {
-      const returnedState = params.get('state') || '';
-      const gIdx = returnedState.indexOf('.g.');
-      if (gIdx !== -1) {
-        const gameParts = returnedState.slice(gIdx + 3).split('.');
-        if (gameParts.length === 2 && gameParts[0] && gameParts[1]) {
-          try {
-            sessionStorage.setItem(GAME_SESSION_KEY, gameParts[0]);
-            sessionStorage.setItem(GAME_PORT_KEY, gameParts[1]);
-          } catch (e) {}
-        }
-      }
+      storeGameFromState(params.get('state') || '');
     }
     if (!gameSession() || !gamePort()) {
       showNoGame();
@@ -309,15 +351,7 @@
       try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) {}
       const gIdx = returnedState.indexOf('.g.');
       const csrfState = gIdx === -1 ? returnedState : returnedState.slice(0, gIdx);
-      if (gIdx !== -1 && !gameSession()) {
-        const gameParts = returnedState.slice(gIdx + 3).split('.');
-        if (gameParts.length === 2 && gameParts[0] && gameParts[1]) {
-          try {
-            sessionStorage.setItem(GAME_SESSION_KEY, gameParts[0]);
-            sessionStorage.setItem(GAME_PORT_KEY, gameParts[1]);
-          } catch (e) {}
-        }
-      }
+      if (gIdx !== -1 && !gameSession()) storeGameFromState(returnedState);
 
       const cleanUrl = new URL(window.location.href);
       cleanUrl.searchParams.delete('code');
@@ -326,6 +360,7 @@
 
       if (storedState && csrfState !== storedState) {
         showError('Sign-in session mismatch. Please try again.');
+        afterResult('error', null, undefined, 'state_mismatch');
         return;
       }
       exchange(code);

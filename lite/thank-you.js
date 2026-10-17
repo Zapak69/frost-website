@@ -66,21 +66,31 @@
     show('stateError');
   }
 
-  function claim(code, paymentId) {
+  function claim(code, paymentId, attempt) {
+    attempt = attempt || 0;
     show('stateClaiming');
     fetch(LITE_API_URL + '?action=whopClaim&code=' + encodeURIComponent(code) + '&payment_id=' + encodeURIComponent(paymentId), { cache: 'no-store' })
-      .then(r => r.json())
-      .then(data => {
-        if (!data.ok) {
+      .then(r => r.json().then(data => ({ status: r.status, data: data })))
+      .then(({ status, data }) => {
+        if (!data || !data.ok) {
+          if (((status === 503 && data && data.error === 'busy') || status === 429) && attempt < 3) {
+            setTimeout(() => claim(code, paymentId, attempt + 1), 2000 * (attempt + 1));
+            return;
+          }
           const messages = {
             already_claimed_by_other: 'This purchase was already claimed by a different Discord account.',
             payment_not_found: "We couldn't find that purchase. Please try again or contact support.",
             payment_not_paid: 'This purchase is not marked as paid yet.',
             no_whop_user: "We couldn't find an account tied to this purchase.",
             role_grant_failed: "Discord wouldn't let us grant the role. Please contact support.",
-            discord_auth_failed: 'Discord sign-in failed. Please try again.'
+            discord_auth_failed: 'Discord sign-in failed. Please try again.',
+            not_lite_purchase: "This payment isn't a Frost Lite purchase, so it can't unlock Lite. If you bought a cloak, it unlocks on the store instead.",
+            subscription_inactive: "Your Lite subscription isn't active right now. If you just paid, wait a minute and try again, or contact support.",
+            busy: 'Our server is busy right now. Please wait a minute, then press Try again and sign in once more.'
           };
-          showError(messages[data.error] || "Something went wrong verifying your purchase.", data.detail);
+          const error = data && data.error;
+          const trialUsed = error === 'subscription_inactive' && /trial_already_used/.test(String(data.detail || ''));
+          showError(trialUsed ? 'A free trial was already used on this Discord account, so this purchase can\'t start another one. Contact support if you think this is a mistake.' : (messages[error] || "Something went wrong verifying your purchase."), trialUsed || error === 'busy' ? '' : data && data.detail);
           return;
         }
         try { localStorage.setItem(TOKEN_KEY, data.gameToken); } catch (e) {}
@@ -141,6 +151,7 @@
         return;
       }
       if (!paymentId) { show('stateNoPayment'); return; }
+      try { sessionStorage.setItem(PAYMENT_ID_KEY, paymentId); } catch (e) {}
       claim(code, paymentId);
       return;
     }

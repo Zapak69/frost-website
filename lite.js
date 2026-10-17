@@ -474,14 +474,14 @@
     setAuthPhase('checking');
     fetchJsonWithRetry(LITE_API_URL + '?action=siteCheck&token=' + encodeURIComponent(token), { cache: 'no-store' }, 2)
       .then(data => {
-        if (!data.ok) {
-          clearToken();
+        if (!data || !data.ok) {
           setAuthPhase('loggedOut');
-          if (data.error === 'token_expired') {
+          if (data && (data.error === 'token_expired' || data.error === 'invalid_token')) {
+              clearToken();
               show('stateLogin');
               return;
           }
-          showError("Discord didn't respond correctly. Please try again.", data.detail);
+          showError("Discord didn't respond correctly. Please try again.", data && (data.detail || data.error));
           return;
         }
         if (data.token) saveToken(data.token);
