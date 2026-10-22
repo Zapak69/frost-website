@@ -269,21 +269,26 @@ window.addEventListener('resize', resizeCanvas);
 for (let i = 0; i < 100; i++) particles.push({
   x: Math.random() * window.innerWidth,
   y: Math.random() * window.innerHeight,
-  r: Math.random() * 1.5 + 0.5,
-  speed: Math.random() * 0.4 + 0.1,
-  drift: (Math.random() - 0.5) * 0.3,
-  opacity: Math.random() * 0.4 + 0.1
+  r: Math.random() * 1.6 + 0.5,
+  speed: Math.random() * 0.45 + 0.12,
+  drift: (Math.random() - 0.5) * 0.45,
+  opacity: Math.random() * 0.45 + 0.12,
+  warm: Math.random() < 0.78
 });
 (function animateParticles() {
   ctx.clearRect(0, 0, W, H);
   for (const p of particles) {
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
+    // embers, so they rise and glow instead of settling like snow
+    ctx.fillStyle = p.warm ? `rgba(255,138,46,${p.opacity})` : `rgba(168,85,247,${p.opacity})`;
+    ctx.shadowBlur = 6;
+    ctx.shadowColor = p.warm ? 'rgba(255,122,26,0.85)' : 'rgba(168,85,247,0.8)';
     ctx.fill();
-    p.y += p.speed; p.x += p.drift;
-    if (p.y > H + 10) {
-        p.y = -10;
+    ctx.shadowBlur = 0;
+    p.y -= p.speed; p.x += p.drift;
+    if (p.y < -10) {
+        p.y = H + 10;
         p.x = Math.random() * W;
     }
     if (p.x > W + 10) p.x = -10;

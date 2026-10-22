@@ -27,7 +27,7 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
   for (const p of particles) {
     particleCtx.beginPath();
     particleCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    particleCtx.fillStyle = `rgba(168,230,248,${p.opacity})`;
+    particleCtx.fillStyle = `rgba(255,192,138,${p.opacity})`;
     particleCtx.fill();
     if (!reduceMotion) {
       p.y += p.speed; p.x += p.drift;

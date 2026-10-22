@@ -1,8 +1,8 @@
   :root {
-    --bg: #000000; --surface: #1c1c1e; --surface2: #2c2c2e;
-    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #0a84ff;
+    --bg: #0a0510; --surface: #17101f; --surface2: #221829;
+    --frost-blue: #ff7a1a; --frost-deep: #c2410c; --frost-glow: #a855f7;
     --green: #32d74b; --amber: #ffd60a; --danger: #ff6961; --gold: #ffd60a; --purple: #bf5af2;
-    --text: #f5f5f7; --muted: #86868b; --border: rgba(255,255,255,0.1);
+    --text: #f5f5f7; --muted: #9a8fa6; --border: rgba(255,255,255,0.1);
   }
   *, *::before, *::after {
     box-sizing: border-box;
@@ -93,7 +93,7 @@
   .nav-apply-btn {
     display: inline-flex; align-items: center; gap: 7px;
     font-family: inherit; font-size: 13.5px; font-weight: 600;
-    color: #06121c; background: var(--frost-blue);
+    color: #1a0a05; background: var(--frost-blue);
     border: none; border-radius: 980px; cursor: pointer;
     padding: 9px 18px; text-decoration: none;
     transition: filter 0.2s, transform 0.2s, opacity 0.2s;
@@ -142,7 +142,7 @@
   }
   .nav-mobile-menu {
     display: none; position: fixed; top: 68px; left: 0; right: 0; z-index: 100;
-    background: rgba(10,10,12,0.98); border-bottom: 1px solid var(--border);
+    background: rgba(12,6,18,0.98); border-bottom: 1px solid var(--border);
     flex-direction: column; padding: 8px 24px 16px;
     max-height: calc(100vh - 68px); overflow-y: auto;
   }
@@ -575,7 +575,7 @@
   .partner-already-badge {
     display: inline-flex; align-items: center; gap: 7px; margin-bottom: 14px;
     padding: 6px 14px; border-radius: 980px; font-size: 12.5px; font-weight: 600;
-    color: var(--frost-blue); background: rgba(79,200,248,0.1); border: 1px solid rgba(79,200,248,0.3);
+    color: var(--frost-blue); background: rgba(255,122,26,0.1); border: 1px solid rgba(255,122,26,0.3);
   }
   .partner-already-badge svg {
     width: 14px;
@@ -698,7 +698,7 @@
     transition: background 0.15s, color 0.15s;
   }
   .modal-close:hover {
-    background: var(--bg-hover, #3a3a3c);
+    background: var(--bg-hover, #2e2136);
     color: var(--text);
   }
 
@@ -834,7 +834,7 @@
   }
   .apply-pill.selected {
     border-color: var(--frost-blue);
-    background: rgba(79,200,248,0.12);
+    background: rgba(255,122,26,0.12);
     color: var(--text);
   }
   .apply-input {

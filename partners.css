@@ -1,8 +1,8 @@
   :root {
-    --bg: #000000; --surface: #1c1c1e; --surface2: #2c2c2e;
-    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #0a84ff;
+    --bg: #0a0510; --surface: #17101f; --surface2: #221829;
+    --frost-blue: #ff7a1a; --frost-deep: #c2410c; --frost-glow: #a855f7;
     --green: #32d74b; --amber: #ffd60a; --red: #ff6961;
-    --text: #f5f5f7; --muted: #86868b; --border: rgba(255,255,255,0.1);
+    --text: #f5f5f7; --muted: #9a8fa6; --border: rgba(255,255,255,0.1);
   }
   *, *::before, *::after {
     box-sizing: border-box;
@@ -126,7 +126,7 @@
   }
   .nav-mobile-menu {
     display: none; position: fixed; top: 68px; left: 0; right: 0; z-index: 100;
-    background: rgba(10,10,12,0.98); border-bottom: 1px solid var(--border);
+    background: rgba(12,6,18,0.98); border-bottom: 1px solid var(--border);
     flex-direction: column; padding: 8px 24px 16px;
     max-height: calc(100vh - 68px); overflow-y: auto;
   }
@@ -242,7 +242,7 @@
     transition: border-color 0.25s ease, transform 0.25s ease;
   }
   .partner-card:hover {
-    border-color: rgba(79,200,248,0.35);
+    border-color: rgba(255,122,26,0.35);
     transform: translateY(-2px);
   }
   .partner-card[hidden] {
@@ -315,8 +315,8 @@
     gap: 10px;
     padding: 10px 12px 10px 14px;
     border-radius: 12px;
-    background: rgba(79,200,248,0.08);
-    border: 1px solid rgba(79,200,248,0.2);
+    background: rgba(255,122,26,0.08);
+    border: 1px solid rgba(255,122,26,0.2);
     color: var(--text);
     font: inherit;
     cursor: pointer;
@@ -325,7 +325,7 @@
     transition: background 0.2s;
   }
   .partner-ip:hover {
-    background: rgba(79,200,248,0.14);
+    background: rgba(255,122,26,0.14);
   }
   .partner-ip:focus-visible {
     outline: 2px solid var(--frost-blue);
@@ -389,7 +389,7 @@
     color: var(--muted);
   }
   .partner-link:hover {
-    background: rgba(79,200,248,0.16);
+    background: rgba(255,122,26,0.16);
     color: var(--frost-blue);
   }
   .partner-link:focus-visible {

@@ -1,7 +1,7 @@
   :root {
-    --bg: #000000; --surface: #1c1c1e; --surface2: #2c2c2e;
-    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #0a84ff;
-    --text: #f5f5f7; --muted: #86868b; --border: rgba(255,255,255,0.1);
+    --bg: #0a0510; --surface: #17101f; --surface2: #221829;
+    --frost-blue: #ff7a1a; --frost-deep: #c2410c; --frost-glow: #a855f7;
+    --text: #f5f5f7; --muted: #9a8fa6; --border: rgba(255,255,255,0.1);
   }
   *, *::before, *::after {
     box-sizing: border-box;
@@ -129,7 +129,7 @@
   }
   .btn-primary {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    background: var(--frost-blue); color: #06121c;
+    background: var(--frost-blue); color: #1a0a05;
     text-decoration: none; font-weight: 600; font-size: 14.5px;
     padding: 13px 26px; border-radius: 980px;
     transition: filter 0.2s, transform 0.2s;

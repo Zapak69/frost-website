@@ -21,7 +21,7 @@
     for (const p of particles) {
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(168,230,248,${p.opacity})`;
+      ctx.fillStyle = `rgba(255,192,138,${p.opacity})`;
       ctx.fill();
       p.y += p.speed; p.x += p.drift;
       if (p.y > H + 10) {
@@ -118,9 +118,9 @@
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
-  const CHART_ACCENT = '#4fc8f8';
-  const CHART_MUTED = '#6b8fa8';
-  const CHART_BORDER = 'rgba(79,200,248,0.15)';
+  const CHART_ACCENT = '#ff7a1a';
+  const CHART_MUTED = '#9a8fa6';
+  const CHART_BORDER = 'rgba(255,122,26,0.15)';
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
   function svgEl(tag, attrs) {

@@ -1,8 +1,8 @@
   :root {
-    --bg: #000000; --surface: #1c1c1e; --surface2: #2c2c2e;
-    --frost-blue: #4fc8f8; --frost-deep: #1a7fc4; --frost-glow: #0a84ff;
+    --bg: #0a0510; --surface: #17101f; --surface2: #221829;
+    --frost-blue: #ff7a1a; --frost-deep: #c2410c; --frost-glow: #a855f7;
     --green: #32d74b; --amber: #ffd60a; --red: #ff6961;
-    --text: #f5f5f7; --muted: #86868b; --border: rgba(255,255,255,0.1);
+    --text: #f5f5f7; --muted: #9a8fa6; --border: rgba(255,255,255,0.1);
   }
   *, *::before, *::after {
     box-sizing: border-box;
@@ -126,7 +126,7 @@
   }
   .nav-mobile-menu {
     display: none; position: fixed; top: 68px; left: 0; right: 0; z-index: 100;
-    background: rgba(10,10,12,0.98); border-bottom: 1px solid var(--border);
+    background: rgba(12,6,18,0.98); border-bottom: 1px solid var(--border);
     flex-direction: column; padding: 8px 24px 16px;
     max-height: calc(100vh - 68px); overflow-y: auto;
   }
@@ -211,12 +211,12 @@
     box-shadow: 0 0 0 4px rgba(255,105,97,0.18);
   }
   .status-banner-frost-deep {
-    background: rgba(26,127,196,0.08);
-    border-color: rgba(26,127,196,0.32);
+    background: rgba(194,65,12,0.08);
+    border-color: rgba(194,65,12,0.32);
   }
   .status-banner-frost-deep .status-banner-dot {
     background: var(--frost-deep);
-    box-shadow: 0 0 0 4px rgba(26,127,196,0.18);
+    box-shadow: 0 0 0 4px rgba(194,65,12,0.18);
   }
 
   .status-list {
@@ -263,7 +263,7 @@
   }
   .status-frost-deep {
     background: var(--frost-deep);
-    box-shadow: 0 0 0 3px rgba(26,127,196,0.18);
+    box-shadow: 0 0 0 3px rgba(194,65,12,0.18);
   }
   .status-pill {
     font-size: 12px;
@@ -286,7 +286,7 @@
   }
   .status-pill-frost-deep {
     color: var(--frost-deep);
-    background: rgba(26,127,196,0.12);
+    background: rgba(194,65,12,0.12);
   }
   .status-note {
     font-size: 13px;
