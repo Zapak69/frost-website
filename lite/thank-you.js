@@ -48,7 +48,7 @@
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI_THANKYOU = 'https://frostclient.eu/lite/thank-you';
 
-  const states = ['stateLogin', 'stateClaiming', 'stateNoPayment', 'stateError'];
+  const states = ['stateLogin', 'stateClaiming', 'stateGranted', 'stateNoPayment', 'stateError'];
   const TOKEN_KEY = 'frostToken';
   const liteHero = document.getElementById('liteHero');
   const litePageEl = document.querySelector('.lite-page');
