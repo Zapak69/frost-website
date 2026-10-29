@@ -28,6 +28,7 @@
   const MAX_MEDIA_FILE_BYTES = 8 * 1024 * 1024;
   const MAX_MEDIA_TOTAL_BYTES = 24 * 1024 * 1024;
   const MAX_MEDIA_FILES = 5;
+  const MAX_JAR_BYTES = 40 * 1024 * 1024;
 
   const states = ['stateLoading', 'stateLogin', 'stateForm', 'stateSubmitting', 'stateDone', 'stateError'];
   function show(id) {
@@ -78,6 +79,7 @@
       crypto.getRandomValues(buf);
       csrfState = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
       sessionStorage.setItem(OAUTH_STATE_KEY, csrfState);
+      sessionStorage.setItem('frostReportKind', kind);
     } catch (e) {}
     const url = 'https://discord.com/oauth2/authorize'
       + '?client_id=' + encodeURIComponent(DISCORD_CLIENT_ID)
@@ -99,6 +101,9 @@
   });
 
   // --- Form state ---
+  let kind = 'bug';
+  let cheatType = null;
+  let jarFile = null;
   let category = null;
   let moddedChoice = null;
   let buglogFile = null;
@@ -122,10 +127,35 @@
   }
 
   function updateSubmitEnabled() {
+    if (kind === 'cheat') {
+      submitBtn.disabled = !(cheatType && jarFile);
+      return;
+    }
     let ok = !!category && !!moddedChoice && !!buglogFile && descriptionInput.value.trim().length > 0;
     if (moddedChoice === 'modded' && !modListInput.value.trim()) ok = false;
     submitBtn.disabled = !ok;
   }
+
+  function setKind(value) {
+    kind = value === 'cheat' ? 'cheat' : 'bug';
+    document.querySelectorAll('#kindToggle .pill-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.value === kind));
+    document.getElementById('cheatFields').hidden = kind !== 'cheat';
+    document.getElementById('bugFields').hidden = kind === 'cheat';
+    setFormError('');
+    updateSubmitEnabled();
+  }
+  document.querySelectorAll('#kindToggle .pill-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => setKind(btn.dataset.value));
+  });
+
+  document.querySelectorAll('#cheatTypeToggle .pill-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#cheatTypeToggle .pill-toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      cheatType = btn.dataset.value;
+      updateSubmitEnabled();
+    });
+  });
 
   document.querySelectorAll('#categoryToggle .pill-toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -247,6 +277,52 @@
     if (f) acceptBuglogFile(f);
   });
 
+  const jarInput = document.getElementById('jarInput');
+  const jarDropzone = document.getElementById('jarDropzone');
+
+  function renderJarBanner(f) {
+    const box = document.getElementById('jarChosen');
+    box.innerHTML = '';
+    jarDropzone.hidden = !!f;
+    if (!f) return;
+    box.appendChild(buildFileBanner(f, fileBannerIcon(), 'Mod file · ' + formatBytes(f.size), () => {
+      jarInput.value = '';
+      jarFile = null;
+      setFormError('');
+      renderJarBanner(null);
+      updateSubmitEnabled();
+    }));
+  }
+
+  function acceptJarFile(f) {
+    setFormError('');
+    jarFile = null;
+    if (f && !f.name.toLowerCase().endsWith('.jar')) {
+      setFormError('Please choose a .jar file.');
+    } else if (f && f.size > MAX_JAR_BYTES) {
+      setFormError('That file is too large (max 40 MB).');
+    } else if (f) {
+      jarFile = f;
+    }
+    if (!jarFile) jarInput.value = '';
+    renderJarBanner(jarFile);
+    updateSubmitEnabled();
+  }
+  jarDropzone.addEventListener('click', () => jarInput.click());
+  jarInput.addEventListener('change', () => acceptJarFile(jarInput.files[0]));
+  ['dragenter', 'dragover'].forEach(evt => jarDropzone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    jarDropzone.classList.add('dragover');
+  }));
+  ['dragleave', 'drop'].forEach(evt => jarDropzone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    jarDropzone.classList.remove('dragover');
+  }));
+  jarDropzone.addEventListener('drop', (e) => {
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) acceptJarFile(f);
+  });
+
   const mediaInput = document.getElementById('mediaInput');
   const mediaDropzone = document.getElementById('mediaDropzone');
   const mediaGrid = document.getElementById('mediaGrid');
@@ -354,6 +430,38 @@
     setFormError('');
     show('stateSubmitting');
     try {
+      if (kind === 'cheat') {
+        const cheatRes = await fetch(BUG_REPORT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token,
+            kind: 'cheat',
+            cheatType,
+            cheatName: document.getElementById('cheatNameInput').value.trim(),
+            notes: document.getElementById('cheatNotesInput').value.trim(),
+            jar: { fileName: jarFile.name, content: await readFileAsBase64(jarFile) }
+          })
+        });
+        const cheatData = await cheatRes.json().catch(() => null);
+        if (cheatData && cheatData.ok) {
+          document.getElementById('doneText').textContent = 'Thanks! The team will look at it and add detection to Frost.';
+          show('stateDone');
+          return;
+        }
+        if (cheatData && cheatData.error === 'invalid_token') {
+          clearToken();
+          showErrorState('Your session expired. Please sign in again.');
+          return;
+        }
+        const messages = {
+          rate_limited: 'You sent a lot of reports in the last hour. Please try again later.',
+          not_a_jar: "That file isn't a valid .jar mod file.",
+          jar_too_large: 'That file is too large (max 40 MB).'
+        };
+        showErrorState((cheatData && messages[cheatData.error]) || (cheatRes.status === 413 ? messages.jar_too_large : "Couldn't send your report. Please try again."));
+        return;
+      }
       const buglogContent = await readFileAsBase64(buglogFile);
       const attachments = [];
       for (const f of mediaFiles) {
@@ -430,12 +538,19 @@
             return;
           }
           saveToken(data.reportToken);
+          let storedKind = '';
+          try {
+            storedKind = sessionStorage.getItem('frostReportKind') || '';
+            sessionStorage.removeItem('frostReportKind');
+          } catch (e) {}
+          if (storedKind === 'cheat') setKind('cheat');
           show('stateForm');
         })
         .catch(() => showErrorState('Network error while contacting the server. Please try again.'));
       return;
     }
 
+    if (params.get('type') === 'cheat') setKind('cheat');
     show(loadToken() ? 'stateForm' : 'stateLogin');
   })();
 })();

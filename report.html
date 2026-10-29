@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Report a Bug | Frost</title>
+<title>Report a Bug or Cheat | Frost</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -45,8 +45,8 @@
 
 <div class="legal-page report-page">
   <div class="legal-eyebrow">FrostClient</div>
-  <h1>Report a Bug</h1>
-  <p class="section-intro">Ran into a bug? Every report helps us fix things faster. Sign in with Discord and fill out the form below with as much detail as you can.</p>
+  <h1>Report a Bug or Cheat</h1>
+  <p class="section-intro">Ran into a bug, or found a cheat client that Frost does not catch? Every report helps. Sign in with Discord and fill out the form below.</p>
 
   <div class="report-card" id="reportCard">
     <div class="report-state active" id="stateLoading">
@@ -61,6 +61,47 @@
     </div>
 
     <div class="report-state" id="stateForm">
+      <div class="report-field">
+        <label>What do you want to report? <span class="required-star">*</span></label>
+        <div class="pill-toggle" id="kindToggle">
+          <button type="button" class="pill-toggle-btn active" data-value="bug">A bug</button>
+          <button type="button" class="pill-toggle-btn" data-value="cheat">An undetected cheat client</button>
+        </div>
+      </div>
+      <div id="cheatFields" hidden>
+        <div class="apply-title">Cheat details</div>
+        <div class="report-field">
+          <label>What is it? <span class="required-star">*</span></label>
+          <div class="pill-toggle" id="cheatTypeToggle">
+            <button type="button" class="pill-toggle-btn" data-value="client">Full cheat client</button>
+            <button type="button" class="pill-toggle-btn" data-value="addon">Addon for a cheat client</button>
+            <button type="button" class="pill-toggle-btn" data-value="module">Single cheat mod</button>
+            <button type="button" class="pill-toggle-btn" data-value="other">Not sure</button>
+          </div>
+        </div>
+        <div class="report-field">
+          <label>Cheat .jar file <span class="required-star">*</span></label>
+          <div class="report-howto">
+            <p>Upload the mod file exactly as you found it. The team only inspects it to add detection.</p>
+          </div>
+          <input type="file" id="jarInput" accept=".jar" hidden>
+          <button type="button" class="report-dropzone" id="jarDropzone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span class="report-dropzone-title">Choose a .jar file…</span>
+            <span class="report-dropzone-sub">or drag &amp; drop it here, max 40 MB</span>
+          </button>
+          <div class="report-file-chosen" id="jarChosen"></div>
+        </div>
+        <div class="report-field">
+          <label>Name of the cheat <span class="optional-tag">(optional)</span></label>
+          <input type="text" class="apply-input" id="cheatNameInput" maxlength="100" placeholder="e.g. Wurst">
+        </div>
+        <div class="report-field">
+          <label>Anything else we should know? <span class="optional-tag">(optional)</span></label>
+          <textarea class="apply-input" id="cheatNotesInput" maxlength="1500" placeholder="Where you found it, which version, what it does..."></textarea>
+        </div>
+      </div>
+      <div id="bugFields">
       <div class="apply-title">Bug details</div>
 
       <div class="report-field">
@@ -119,6 +160,7 @@
         <label>Or link to images/video <span class="optional-tag">(optional)</span></label>
         <input type="text" class="apply-input" id="linkInput" placeholder="https://...">
       </div>
+      </div>
 
       <p class="report-error" id="formError" hidden></p>
       <button type="button" class="apply-btn" id="reportSubmitBtn" disabled>Submit Report</button>
@@ -135,7 +177,7 @@
         <path class="success-check-mark" d="M14 27l7 7 16-16"/>
       </svg>
       <div class="apply-title" style="text-align:center;">Report sent</div>
-      <p class="apply-text" style="margin-bottom:0;text-align:center;">Thanks for helping us squash bugs — the team will take a look.</p>
+      <p class="apply-text" style="margin-bottom:0;text-align:center;" id="doneText">Thanks for helping us squash bugs — the team will take a look.</p>
     </div>
 
     <div class="report-state" id="stateError">
