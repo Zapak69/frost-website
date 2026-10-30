@@ -177,16 +177,23 @@
   const RETURN_TO_KEY = 'frostAuthReturnTo';
   const GAME_SESSION_KEY = 'frostLiteGameSession';
   const GAME_PORT_KEY = 'frostLiteGamePort';
+  function validGameSession(v) {
+    return /^(?:[A-Za-z0-9_-]{32}|[A-Za-z0-9_-]{43})$/.test(v || '') ? v : '';
+  }
+  function validGamePort(v) {
+    const n = /^\d{4,5}$/.test(v || '') ? Number(v) : 0;
+    return n >= 1024 && n <= 65535 ? String(n) : '';
+  }
   function gameSession() {
     try {
-        return sessionStorage.getItem(GAME_SESSION_KEY) || '';
+        return validGameSession(sessionStorage.getItem(GAME_SESSION_KEY));
     } catch (e) {
         return '';
     }
   }
   function gamePort() {
     try {
-        return sessionStorage.getItem(GAME_PORT_KEY) || '';
+        return validGamePort(sessionStorage.getItem(GAME_PORT_KEY));
     } catch (e) {
         return '';
     }
@@ -583,7 +590,7 @@
       cleanUrl.searchParams.delete('state');
       window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
 
-      if (storedState && csrfState !== storedState) {
+      if (!storedState || csrfState !== storedState) {
         takeReturnTo();
         showError('Sign-in session mismatch. Please try again.');
         return;

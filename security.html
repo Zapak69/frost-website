@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://bot.frostclient.eu https://api.modrinth.com http://127.0.0.1:*; media-src 'self' blob: https://bot.frostclient.eu; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Security | Frost</title>
 <meta name="description" content="Frost Client Launcher is scanned with VirusTotal and published with a verifiable file hash. See the latest results and learn how to check your download yourself."/>
@@ -56,11 +57,11 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
         </div>
         <div>
-          <div class="scan-result-ratio"><span id="scanFlagged">0</span> / <span id="scanTotal">59</span></div>
+          <div class="scan-result-ratio"><span id="scanFlagged">0</span> / <span id="scanTotal">66</span></div>
           <div class="scan-result-label">security vendors flagged this file</div>
         </div>
       </div>
-      <a class="scan-vt-link" id="scanVtLink" href="https://www.virustotal.com/gui/file/000dc58d5b919ac71aa90d4d975648c1bd61b5968b1ca8e4f30f6a85d2ee5dc5" target="_blank" rel="noopener">
+      <a class="scan-vt-link" id="scanVtLink" href="https://www.virustotal.com/gui/file/1fbb5c4a888d02ce1baf4e6a86b61c1de9d34a5e765264647abab8fe5018b20d" target="_blank" rel="noopener">
         View live report on VirusTotal
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
       </a>
@@ -72,11 +73,11 @@
       </div>
       <div class="scan-detail">
         <span class="scan-detail-label">Scanned</span>
-        <span class="scan-detail-value" id="scanDate">October 28, 2026, 19:35 UTC</span>
+        <span class="scan-detail-value" id="scanDate">October 30, 2026, 14:20 UTC</span>
       </div>
       <div class="scan-detail">
         <span class="scan-detail-label">SHA-256</span>
-        <span class="scan-detail-value mono hash-value" id="scanHash">000dc58d5b919ac71aa90d4d975648c1bd61b5968b1ca8e4f30f6a85d2ee5dc5</span>
+        <span class="scan-detail-value mono hash-value" id="scanHash">1fbb5c4a888d02ce1baf4e6a86b61c1de9d34a5e765264647abab8fe5018b20d</span>
       </div>
     </div>
     <p class="scan-card-footnote">This is the Windows installer, distributed from this site and our updater as <code>Frost-Launcher-win.exe</code> — same bytes, same hash, just renamed for the download. We re-scan and update this page with every release.</p>
@@ -93,15 +94,15 @@
     </div>
     <div class="checksum-row">
       <div class="checksum-meta"><span class="checksum-os">Windows</span><span class="checksum-file mono">Frost-Launcher-win.exe</span></div>
-      <span class="checksum-hash mono hash-value" id="hashWin" data-file="Frost-Launcher-win.exe">000dc58d5b919ac71aa90d4d975648c1bd61b5968b1ca8e4f30f6a85d2ee5dc5</span>
+      <span class="checksum-hash mono hash-value" id="hashWin" data-file="Frost-Launcher-win.exe">1fbb5c4a888d02ce1baf4e6a86b61c1de9d34a5e765264647abab8fe5018b20d</span>
     </div>
     <div class="checksum-row">
       <div class="checksum-meta"><span class="checksum-os">macOS</span><span class="checksum-file mono">Frost-Launcher-mac.dmg</span></div>
-      <span class="checksum-hash mono hash-value" id="hashMac" data-file="Frost-Launcher-mac.dmg">313b86f98e2321d084cf2847f8a355daf983bc05226aa2a27cb795601ce95d74</span>
+      <span class="checksum-hash mono hash-value" id="hashMac" data-file="Frost-Launcher-mac.dmg">be7deaaec0bc78dc1e0347e42406b1e60ff7839a1b83616ea5a112af0be9dcc9</span>
     </div>
     <div class="checksum-row">
       <div class="checksum-meta"><span class="checksum-os">Linux</span><span class="checksum-file mono">Frost-Launcher-linux.AppImage</span></div>
-      <span class="checksum-hash mono hash-value" id="hashLinux" data-file="Frost-Launcher-linux.AppImage">111f57cc5500abaebdadf5b0ecc9e9ec85d7b75bd0abb4fa44dac9ff2b0881e0</span>
+      <span class="checksum-hash mono hash-value" id="hashLinux" data-file="Frost-Launcher-linux.AppImage">a89fe8f438412a1509be60c50d6d729c7a856741baf6d6af789f37fdaf7bf2c1</span>
     </div>
     <p class="checksum-status" id="checksumStatus">Showing the hashes from our latest release.</p>
   </div>
@@ -136,7 +137,7 @@
   </ul>
 
   <h2>Report a security concern</h2>
-  <p>Found something that looks off, or want to report a real vulnerability? Reach out on <a href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord</a> and ping a staff member directly rather than posting it publicly, so we can look into it before anyone else can act on it.</p>
+  <p>Found something that looks off, or want to report a real vulnerability? Reach out on <a href="https://discord.gg/Kn8ydsABU8" target="_blank" rel="noopener noreferrer">Discord</a> and ping a staff member directly rather than posting it publicly, so we can look into it before anyone else can act on it.</p>
 </div>
 
 <footer>
@@ -176,9 +177,9 @@
       <h4>Community</h4>
       <a href="https://frostclient.eu/team">Join FrostClient</a>
       <div class="footer-social-icons">
-        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
-        <a href="https://www.youtube.com/@frost-client" target="_blank" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
-        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
+        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" rel="noopener noreferrer" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
+        <a href="https://www.youtube.com/@frost-client" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
+        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
       </div>
     </div>
   </div>

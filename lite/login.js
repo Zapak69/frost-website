@@ -53,17 +53,24 @@
   const GAME_PORT_KEY = 'frostLiteGamePort';
   const GAME_RELAY_KEY = 'frostLiteGameRelay';
   const GAME_RELAY_URL = 'https://bot.frostclient.eu/launcher/game-login-relay';
+  function validGameSession(v) {
+    return /^(?:[A-Za-z0-9_-]{32}|[A-Za-z0-9_-]{43})$/.test(v || '') ? v : '';
+  }
+  function validGamePort(v) {
+    const n = /^\d{4,5}$/.test(v || '') ? Number(v) : 0;
+    return n >= 1024 && n <= 65535 ? String(n) : '';
+  }
   function gameSession() {
-    try { return sessionStorage.getItem(GAME_SESSION_KEY) || ''; } catch (e) { return ''; }
+    try { return validGameSession(sessionStorage.getItem(GAME_SESSION_KEY)); } catch (e) { return ''; }
   }
   function gamePort() {
-    try { return sessionStorage.getItem(GAME_PORT_KEY) || ''; } catch (e) { return ''; }
+    try { return validGamePort(sessionStorage.getItem(GAME_PORT_KEY)); } catch (e) { return ''; }
   }
   function gameRelay() {
     try { return sessionStorage.getItem(GAME_RELAY_KEY) === '1'; } catch (e) { return false; }
   }
   function storeGame(session, port, relay) {
-    if (!/^[A-Za-z0-9_-]{16,128}$/.test(session || '') || !/^\d{2,5}$/.test(port || '')) return;
+    if (!validGameSession(session) || !validGamePort(port)) return;
     try {
       sessionStorage.setItem(GAME_SESSION_KEY, session);
       sessionStorage.setItem(GAME_PORT_KEY, port);
@@ -358,7 +365,7 @@
       cleanUrl.searchParams.delete('state');
       window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
 
-      if (storedState && csrfState !== storedState) {
+      if (!storedState || csrfState !== storedState) {
         showError('Sign-in session mismatch. Please try again.');
         afterResult('error', null, undefined, 'state_mismatch');
         return;

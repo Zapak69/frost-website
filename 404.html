@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://bot.frostclient.eu https://api.modrinth.com http://127.0.0.1:*; media-src 'self' blob: https://bot.frostclient.eu; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Page Not Found | Frost</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -48,7 +49,7 @@
     <div class="links">
       <a class="btn-primary" href="https://frostclient.eu">Back to Home</a>
       <a class="btn-outline" href="https://frostclient.eu/faq">FAQ</a>
-      <a class="btn-outline" href="https://discord.gg/Kn8ydsABU8" target="_blank">Discord</a>
+      <a class="btn-outline" href="https://discord.gg/Kn8ydsABU8" target="_blank" rel="noopener noreferrer">Discord</a>
     </div>
   </div>
 </div>

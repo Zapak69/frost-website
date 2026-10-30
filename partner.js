@@ -609,7 +609,7 @@
     openModal();
     show('applyStateWorking');
 
-    if (storedState && returnedState !== storedState) {
+    if (!storedState || returnedState !== storedState) {
       showErrorState('Sign-in session mismatch. Please try again.');
       return;
     }

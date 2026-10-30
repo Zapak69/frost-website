@@ -281,7 +281,7 @@
       cleanUrl.searchParams.delete('state');
       window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
 
-      if (storedState && returnedState !== storedState) {
+      if (!storedState || returnedState !== storedState) {
         showError('Sign-in session mismatch. Please try again.');
         return;
       }

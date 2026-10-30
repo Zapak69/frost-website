@@ -515,6 +515,40 @@ function frostQueueToastShow(el, otherIds) {
     thanksEl.style.display = 'block';
   } else {
     let selected = null;
+    let needsLogin = false;
+    const pollToken = () => {
+      try {
+          return localStorage.getItem('frostToken') || '';
+      } catch (e) {
+          return '';
+      }
+    };
+    const showLoginToVote = () => {
+      needsLogin = true;
+      if (noteEl) {
+          noteEl.style.display = 'block';
+          noteEl.textContent = 'Log in with Discord to vote. One vote per account.';
+      }
+      submitBtn.textContent = 'Log in to vote';
+      submitBtn.disabled = false;
+    };
+    const startPollLogin = () => {
+      try {
+        const url = new URL(location.href);
+        url.searchParams.set('vote', '1');
+        history.replaceState(null, '', url.pathname + url.search);
+      } catch (e) {}
+      if (window.FrostAccount && window.FrostAccount.login) window.FrostAccount.login();
+      else location.href = '/#account';
+    };
+    const markVoted = (answer, votes, already) => {
+      votedAnswer = answer;
+      try {
+          localStorage.setItem(VOTED_KEY, answer);
+      } catch (e) {}
+      if (already) thanksEl.textContent = 'You have already voted with this account.';
+      renderResults(votes || {});
+    };
     options.forEach(opt => {
       opt.addEventListener('click', () => {
         if (opt.classList.contains('voted')) return;
@@ -525,24 +559,37 @@ function frostQueueToastShow(el, otherIds) {
       });
     });
     submitBtn.addEventListener('click', () => {
+      if (needsLogin) {
+          startPollLogin();
+          return;
+      }
       if (!selected || submitBtn.disabled) return;
+      const token = pollToken();
+      if (!token) {
+          showLoginToVote();
+          return;
+      }
       submitBtn.disabled = true;
       fetch(POLL_VOTE_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
         body: JSON.stringify({ answer: selected })
       })
-        .then(r => r.json())
-        .then(data => {
+        .then(r => r.json().catch(() => ({})).then(data => ({ status: r.status, data: data })))
+        .then(({ status, data }) => {
+          if (status === 401 || (data && data.error === 'token_expired')) {
+              showLoginToVote();
+              return;
+          }
+          if (status === 409 || (data && data.error === 'already_voted')) {
+              markVoted(ANSWERS.indexOf(data.answer) !== -1 ? data.answer : 'voted', data.votes, true);
+              return;
+          }
           if (!data || !data.ok) {
               submitBtn.disabled = false;
               return;
           }
-          votedAnswer = selected;
-          try {
-              localStorage.setItem(VOTED_KEY, selected);
-          } catch (e) {}
-          renderResults(data.votes);
+          markVoted(selected, data.votes, false);
         })
         .catch(() => {
             submitBtn.disabled = false;

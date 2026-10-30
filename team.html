@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://bot.frostclient.eu https://api.modrinth.com http://127.0.0.1:*; media-src 'self' blob: https://bot.frostclient.eu; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Join the Team | Frost</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -131,7 +132,7 @@
     <div class="apply-state" id="applyStateNotMember">
       <div class="apply-title">Join our Discord first</div>
       <p class="apply-text">You need to be a member of the Frost Discord server before you can apply — we need to be able to reach you if your application is accepted.</p>
-      <a class="apply-btn" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;" href="https://discord.gg/Kn8ydsABU8" target="_blank">Join Discord</a>
+      <a class="apply-btn" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;" href="https://discord.gg/Kn8ydsABU8" target="_blank" rel="noopener noreferrer">Join Discord</a>
       <button type="button" class="apply-btn-secondary" id="applyRetryAfterJoin">I've joined — try again</button>
     </div>
 
@@ -206,9 +207,9 @@
       <h4>Community</h4>
       <a href="https://frostclient.eu/team">Join FrostClient</a>
       <div class="footer-social-icons">
-        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
-        <a href="https://www.youtube.com/@frost-client" target="_blank" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
-        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
+        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" rel="noopener noreferrer" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
+        <a href="https://www.youtube.com/@frost-client" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
+        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
       </div>
     </div>
   </div>

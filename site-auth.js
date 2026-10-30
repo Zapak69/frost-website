@@ -502,14 +502,14 @@
     return modalEls;
   }
 
-  function handOffToPlayers(path) {
+  function handOffToPlayers(path, nonce) {
     var target = /^\/[A-Za-z0-9_\/?=&%.-]*$/.test(path || '') && !/^\/\//.test(path) ? path : '/settings';
     var token = loadToken();
     if (!token) {
       startLogin();
       return;
     }
-    window.location.href = PLAYERS_URL + '/#login=' + encodeURIComponent(token) + '&r=' + encodeURIComponent(target);
+    window.location.href = PLAYERS_URL + '/#login=' + encodeURIComponent(token) + '&r=' + encodeURIComponent(target) + (/^[a-f0-9]{32}$/.test(nonce || '') ? '&n=' + nonce : '');
   }
 
   function fetchAccountInfo(token) {
@@ -656,6 +656,7 @@
 
   window.FrostAccount = {
     open: openAccountModal,
+    login: startLogin,
     toggleMenu: function (btn) {
       if (btn && btn.classList.contains('frost-nav-pill')) toggleNavMenu(btn);
       else openAccountModal();
@@ -677,13 +678,14 @@
         prefetchAccountInfo();
     });
     if (loadToken()) prefetchAccountInfo();
-    var playersLogin = null;
+    var playersLogin = null, playersNonce = '';
     try {
         playersLogin = new URLSearchParams(window.location.search).get('players_login');
+        playersNonce = new URLSearchParams(window.location.search).get('n') || '';
     } catch (e) {}
     if (playersLogin !== null) {
       if (loadToken()) {
-        handOffToPlayers(playersLogin || '/settings');
+        handOffToPlayers(playersLogin || '/settings', playersNonce);
         return;
       }
       startLogin();
