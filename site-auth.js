@@ -1,4 +1,3 @@
-
 (function () {
   var LITE_API_URL = 'https://bot.frostclient.eu/sheets';
   var TOKEN_KEY = 'frostToken';

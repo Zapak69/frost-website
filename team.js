@@ -187,9 +187,6 @@
     });
     closeModal();
   }
-  // Returns a promise resolving to the application status ('none' if there isn't one, null on
-  // failure) so callers that need to know whether the page is already fully handled (banned) can
-  // wait for it instead of racing ahead and showing the role picker for a moment first.
   function checkStatus() {
     const token = loadToken();
     if (!token) return Promise.resolve(null);

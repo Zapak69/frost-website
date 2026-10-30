@@ -100,7 +100,6 @@
     show(loadToken() ? 'stateForm' : 'stateLogin');
   });
 
-  // --- Form state ---
   let kind = 'bug';
   let cheatType = null;
   let jarFile = null;

@@ -243,9 +243,6 @@
 
     const requested = (params.get('openDownload') || '').toLowerCase();
     if (requested === 'opengl' || requested === 'vulkan') {
-      // Only /opengl links straight into a specific renderer's modpack version picker,
-      // skipping the launcher-vs-modpack choice - it exists for crash-troubleshooting links
-      // where the visitor already knows they want the OpenGL modpack.
       openModal(requested);
     } else {
       openDownloadChoice();
@@ -280,7 +277,6 @@ for (let i = 0; i < 100; i++) particles.push({
   for (const p of particles) {
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    // embers, so they rise and glow instead of settling like snow
     ctx.fillStyle = p.warm ? `rgba(255,138,46,${p.opacity})` : `rgba(168,85,247,${p.opacity})`;
     ctx.shadowBlur = 6;
     ctx.shadowColor = p.warm ? 'rgba(255,122,26,0.85)' : 'rgba(168,85,247,0.8)';
