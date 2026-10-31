@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://bot.frostclient.eu https://api.modrinth.com http://127.0.0.1:*; media-src 'self' blob: https://bot.frostclient.eu; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ban Appeal | Frost</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Frost">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="halloween.css">
+<link rel="stylesheet" href="privacy.css">
+<link rel="stylesheet" href="appeal.css">
+</head>
+<body>
+<div class="topo-bg">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.tline{fill:none;stroke:#4fc8f8;stroke-width:1.2;}</style></defs>
+    <path class="tline" d="M-100,200 C100,180 250,240 400,200 S650,140 800,200 S1050,280 1200,220 S1400,160 1500,200"/>
+    <path class="tline" d="M-100,400 C40,380 160,440 340,400 S560,310 720,390 S960,450 1140,395 S1340,345 1500,395"/>
+    <path class="tline" d="M-100,620 C-20,598 100,658 280,620 S500,520 660,605 S900,665 1080,610 S1280,558 1500,608"/>
+  </svg>
+</div>
+<nav>
+<div class="nav-desktop">
+  <a class="nav-logo" href="https://frostclient.eu"><img src="favicon.ico" alt="" class="nav-logo-icon"/><span>FROST</span></a>
+  <div class="nav-right">
+    <a class="nav-back" href="https://frostclient.eu">← Back to Home</a>
+    <button type="button" class="nav-signin-btn js-site-auth-btn"><img src="icons/discord.webp" alt=""/><span class="js-site-auth-text">Sign in</span></button>
+  </div>
+</div>
+<button class="nav-hamburger" id="navHamburger" type="button" aria-label="Menu" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<a class="nav-logo-mobile" href="https://frostclient.eu">
+  <img src="favicon.ico" alt="" class="nav-logo-icon"/><span>Frost</span>
+</a>
+</nav>
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <a href="https://frostclient.eu">← Back to Home</a>
+</div>
+
+<main class="appeal-page">
+  <div class="legal-eyebrow">Support</div>
+  <h1>Ban Appeal</h1>
+  <p class="appeal-lead">See your Frost Client bans and ask our team to take another look.</p>
+  <div id="appealAccount" class="appeal-account" hidden>
+    <div class="appeal-account-who"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Signed in as <strong id="appealAccountName"></strong></span></div>
+    <button type="button" id="appealSwitchBtn" class="appeal-link-btn">Use another account</button>
+  </div>
+  <div id="appealNotice" class="appeal-notice" role="status" hidden></div>
+  <section id="appealLoading" class="appeal-card appeal-center" aria-live="polite"><div class="appeal-spinner" aria-hidden="true"></div><p class="appeal-muted">Loading your ban status...</p></section>
+  <section id="appealLoggedOut" class="appeal-card appeal-center" hidden>
+    <div class="appeal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 4.5 5.4v5.9c0 4.7 3.2 8.9 7.5 10.2 4.3-1.3 7.5-5.5 7.5-10.2V5.4z"/><path d="M9 12l2 2 4-4"/></svg></div>
+    <h2>Log in with Discord to view or appeal a ban</h2>
+    <p class="appeal-muted">Use the Discord account you sign in to the launcher with. You can still appeal if the launcher refused your sign-in.</p>
+    <button type="button" id="appealLoginBtn" class="btn-primary appeal-login-btn"><img src="icons/discord.webp" alt=""/>Log in with Discord</button>
+  </section>
+  <section id="appealError" class="appeal-card appeal-center" hidden>
+    <h2>Could not load your ban status</h2>
+    <p id="appealErrorText" class="appeal-muted">Please try again in a moment.</p>
+    <button type="button" id="appealRetryBtn" class="btn-secondary">Try again</button>
+  </section>
+  <section id="appealEmpty" class="appeal-card appeal-center" hidden>
+    <div class="appeal-icon is-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.3 2.3 4.7-5"/></svg></div>
+    <h2>Nothing to see here</h2>
+    <p class="appeal-muted">Your account has no active ban.</p>
+  </section>
+  <div id="appealBans" class="appeal-bans"></div>
+  <div class="appeal-reveal-wrap"><button type="button" id="appealRevealBtn" class="appeal-link-btn" hidden>Have a Ban ID from the launcher?</button></div>
+  <form id="appealForm" class="appeal-card appeal-form" novalidate hidden>
+    <h2>Submit an appeal</h2>
+    <p class="appeal-muted">Tell us why the ban should be lifted. A member of the team reviews every appeal and you can follow its status on this page.</p>
+    <label class="appeal-field"><span class="appeal-label">Ban ID</span><input type="text" id="appealBanId" class="appeal-input appeal-mono" placeholder="FB-XXXXXXXX" autocomplete="off" spellcheck="false" maxlength="40" required/></label>
+    <label class="appeal-field"><span class="appeal-label">Why should we lift this ban?</span><textarea id="appealReason" class="appeal-input appeal-textarea" rows="7" minlength="20" maxlength="2000" required></textarea></label>
+    <div class="appeal-form-foot"><span id="appealCounter" class="appeal-counter">0 / 2000</span><button type="submit" id="appealSubmitBtn" class="btn-primary">Submit appeal</button></div>
+    <p id="appealFormError" class="appeal-form-error" role="alert" hidden></p>
+  </form>
+  <section id="appealHistory" class="appeal-card appeal-history" hidden>
+    <h2>Your appeals</h2>
+    <p class="appeal-muted">Every appeal you have sent, newest first.</p>
+    <div id="appealHistoryList" class="appeal-history-list"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">❄ FROST</div>
+      <p class="footer-tagline">A fast, free Minecraft client<br/>built for players who care.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="https://frostclient.eu/?openDownload">Download</a>
+      <a href="https://frostclient.eu/reviews">Reviews</a>
+      <a href="https://frostclient.eu/partner">Creator Program</a>
+      <a href="https://store.frostclient.eu">Store</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <button type="button" class="footer-link-btn js-site-auth-btn"><span class="js-site-auth-text">Sign in</span></button>
+      <a href="https://store.frostclient.eu/lite">Frost Lite</a>
+    </div>
+    <div class="footer-col">
+      <h4>Creator</h4>
+      <a href="https://partner.frostclient.eu">Dashboard</a>
+      <a href="https://partner.frostclient.eu/balance">Withdraw</a>
+      <a href="https://partner.frostclient.eu/assets">Assets</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="https://frostclient.eu/faq">FAQ</a>
+      <a href="https://frostclient.eu/status">Status</a>
+      <a href="https://frostclient.eu/security">Security</a>
+      <a href="https://frostclient.eu/privacy">Privacy Policy</a>
+      <a href="https://frostclient.eu/terms">Terms of Service</a>
+      <a href="https://frostclient.eu/imprint">Imprint</a>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <a href="https://frostclient.eu/team">Join FrostClient</a>
+      <div class="footer-social-icons">
+        <a href="https://discord.gg/Kn8ydsABU8" target="_blank" rel="noopener noreferrer" aria-label="Discord"><img src="icons/discord.webp" alt="Discord"/></a>
+        <a href="https://www.youtube.com/@frost-client" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><img src="icons/youtube.webp" alt="YouTube"/></a>
+        <a href="https://www.tiktok.com/@frostclient.eu" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><img src="icons/tiktok.webp" alt="TikTok"/></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© Frost 2026. All rights reserved.<br>
+      Made by: Zipp
+    </span>
+    <span>Not affiliated with Minecraft or Mojang.</span>
+  </div>
+</footer>
+<script src="privacy.js"></script>
+<script src="appeal.js"></script>
+<script src="site-auth.js"></script>
+<script src="halloween.js"></script>
+</body>
+</html>

@@ -455,6 +455,16 @@
     })
       .then(r => r.json())
       .then(rawData => {
+        if (rawData && rawData.error === 'banned' && rawData.appealToken) {
+          setAuthPhase('loggedOut');
+          clearToken();
+          try { sessionStorage.setItem('frostAppealToken', String(rawData.appealToken)); } catch (e) {}
+          document.dispatchEvent(new CustomEvent('frostAccountLogout'));
+          afterResult('error', null);
+          const banQ = rawData.banId ? '?ban=' + encodeURIComponent(rawData.banId) : '';
+          window.location.replace(/^\/appeal(\.html)?(\?|#|$)/.test(returnTo) ? returnTo : '/appeal.html' + banQ);
+          return;
+        }
         if (!rawData.ok) {
           setAuthPhase('loggedOut');
           showError(rawData.error === 'auth_failed'

@@ -252,6 +252,13 @@
     })
       .then(r => r.json())
       .then(data => {
+        if (data && data.error === 'banned' && data.appealToken) {
+          clearToken();
+          try { sessionStorage.setItem('frostAppealToken', String(data.appealToken)); } catch (e) {}
+          afterResult('error', null, undefined, 'banned');
+          window.location.replace('/appeal.html' + (data.banId ? '?ban=' + encodeURIComponent(data.banId) : ''));
+          return;
+        }
         if (!data || !data.ok) {
           showError(data && data.error === 'auth_failed'
             ? 'Discord sign-in failed. Please try again.'
