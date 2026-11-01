@@ -549,6 +549,14 @@
     object-fit: cover;
     display: block;
   }
+  .preview-slide-launcher {
+    background: radial-gradient(ellipse 70% 60% at 50% 45%, rgba(79,200,248,0.16), transparent 70%), #05070a;
+  }
+  .preview-slide-launcher img {
+    object-fit: contain;
+    padding: 2.5% 4%;
+    box-sizing: border-box;
+  }
 
   .preview-nav {
     position: absolute; top: 50%; z-index: 5;
