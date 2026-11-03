@@ -57,15 +57,6 @@
         WHY_FIELD
       ])
     },
-    staff: {
-      label: 'Staff Team',
-      fields: COMMON_FIELDS.concat([
-        ['experience', 'Previous moderation/staff experience', 'Where, for how long, what you did...', true],
-        WHY_FIELD,
-        ['conflictScenario', 'What would you do if two members started arguing and spamming in chat?', 'Walk us through it...', true],
-        ['crashScenario', 'A member says the game keeps crashing after installing FrostClient — how would you help them troubleshoot?', 'Walk us through it...', true]
-      ])
-    },
     cape_designer: {
       label: 'Cloak Designer',
       fields: COMMON_FIELDS.concat([
@@ -386,6 +377,10 @@
   document.querySelectorAll('#applyRolePicker .role-pick-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       if (closedRoles.has(btn.dataset.role)) return;
+      if (btn.dataset.role === 'staff') {
+        window.location.href = '/staff-apply';
+        return;
+      }
       buildForm(btn.dataset.role);
       show('applyStep1');
     });
@@ -516,6 +511,15 @@
         }
         if (data.status === 'eligible' && data.staffToken) {
           saveToken(data.staffToken);
+          let toTest = false;
+          try {
+            toTest = sessionStorage.getItem('frostStaffTestIntent') === '1';
+            sessionStorage.removeItem('frostStaffTestIntent');
+          } catch (e) {}
+          if (toTest) {
+            window.location.replace('/staff-apply');
+            return;
+          }
           checkStatus().then(function (appStatus) {
             if (appStatus !== 'banned') show('applyStep0');
           });
