@@ -35,15 +35,15 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
-  const PARTNER_STATUS_URL = 'https://bot.frostclient.eu/partner-status';
+  const LITE_API_URL = 'https://api.frostclient.eu/sheets';
+  const PARTNER_STATUS_URL = 'https://api.frostclient.eu/partner-status';
   const TOKEN_KEY = 'frostToken';
   const OAUTH_STATE_KEY = 'frostPartnerOauthState';
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI_PARTNER = 'https://frostclient.eu/partner';
-  const STAFF_APPLY_URL = 'https://bot.frostclient.eu/staff-apply';
-  const STAFF_APPLY_STATUS_URL = 'https://bot.frostclient.eu/staff-apply-status';
-  const STAFF_APPLY_CONFIG_URL = 'https://bot.frostclient.eu/staff-apply-config';
+  const STAFF_APPLY_URL = 'https://api.frostclient.eu/staff-apply';
+  const STAFF_APPLY_STATUS_URL = 'https://api.frostclient.eu/staff-apply-status';
+  const STAFF_APPLY_CONFIG_URL = 'https://api.frostclient.eu/staff-apply-config';
   const INTENT_KEY = 'frostPartnerApplyIntent';
   const SERVER_ROLE = 'server_partnership';
   const SERVER_FIELDS = [
@@ -614,7 +614,7 @@
       return;
     }
 
-    fetch('https://bot.frostclient.eu/site/partner-login', {
+    fetch('https://api.frostclient.eu/site/partner-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: code }),

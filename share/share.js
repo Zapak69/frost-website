@@ -1,5 +1,5 @@
 (() => {
-  const BOT_BASE = 'https://bot.frostclient.eu';
+  const BOT_BASE = 'https://api.frostclient.eu';
   const params = new URLSearchParams(location.search);
   const code = (params.get('c') || location.hash.slice(1) || '').trim().toUpperCase();
   const states = { loading: document.getElementById('stateLoading'), error: document.getElementById('stateError'), ready: document.getElementById('stateReady') };

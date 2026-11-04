@@ -1,5 +1,5 @@
 (function () {
-  var LITE_API_URL = 'https://bot.frostclient.eu/sheets';
+  var LITE_API_URL = 'https://api.frostclient.eu/sheets';
   var TOKEN_KEY = 'frostToken';
   var LEGACY_TOKEN_KEYS = ['frostReportToken', 'frostStatisticsOwnerToken'];
   var LEGACY_DISCARD_KEYS = ['frostStatisticsToken', 'frostReviewToken', 'frostLiteToken'];
@@ -512,7 +512,7 @@
   }
 
   function fetchAccountInfo(token) {
-    return fetchJsonWithRetry('https://bot.frostclient.eu/site/account-info', {
+    return fetchJsonWithRetry('https://api.frostclient.eu/site/account-info', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: token }),

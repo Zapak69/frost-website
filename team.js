@@ -16,9 +16,9 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
-  const STAFF_APPLY_URL = 'https://bot.frostclient.eu/staff-apply';
-  const STAFF_APPLY_STATUS_URL = 'https://bot.frostclient.eu/staff-apply-status';
+  const LITE_API_URL = 'https://api.frostclient.eu/sheets';
+  const STAFF_APPLY_URL = 'https://api.frostclient.eu/staff-apply';
+  const STAFF_APPLY_STATUS_URL = 'https://api.frostclient.eu/staff-apply-status';
   const TOKEN_KEY = 'frostToken';
   const OAUTH_STATE_KEY = 'frostStaffOauthState';
   const APPLIED_KEY = 'frostStaffApplied';
@@ -367,7 +367,7 @@
       if (!hasApplied()) markClosed();
     }
   }
-  fetch('https://bot.frostclient.eu/staff-apply-config', { cache: 'no-store' })
+  fetch('https://api.frostclient.eu/staff-apply-config', { cache: 'no-store' })
     .then(function (r) {
         return r.json();
     })

@@ -36,7 +36,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
+  const LITE_API_URL = 'https://api.frostclient.eu/sheets';
   const TOKEN_KEY = 'frostToken';
   const LEGACY_OWNER_TOKEN_KEY = 'frostStatisticsOwnerToken';
   const LEGACY_TOKEN_KEY = 'frostStatisticsToken';
@@ -44,7 +44,7 @@
   const CACHE_KEY = 'frostStatisticsCache';
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI_STATISTICS = 'https://frostclient.eu/statistics';
-  const BRIDGE_URL = 'https://bot.frostclient.eu/statistics-data';
+  const BRIDGE_URL = 'https://api.frostclient.eu/statistics-data';
   function saveCache(data) {
     try {
         localStorage.setItem(CACHE_KEY, JSON.stringify(data));

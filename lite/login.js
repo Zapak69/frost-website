@@ -42,7 +42,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
+  const LITE_API_URL = 'https://api.frostclient.eu/sheets';
 
   const TOKEN_KEY = 'frostToken';
   const LEGACY_TOKEN_KEY = 'frostLiteToken';
@@ -52,7 +52,7 @@
   const GAME_SESSION_KEY = 'frostLiteGameSession';
   const GAME_PORT_KEY = 'frostLiteGamePort';
   const GAME_RELAY_KEY = 'frostLiteGameRelay';
-  const GAME_RELAY_URL = 'https://bot.frostclient.eu/launcher/game-login-relay';
+  const GAME_RELAY_URL = 'https://api.frostclient.eu/launcher/game-login-relay';
   function validGameSession(v) {
     return /^(?:[A-Za-z0-9_-]{32}|[A-Za-z0-9_-]{43})$/.test(v || '') ? v : '';
   }
@@ -237,14 +237,14 @@
     const out = { ok: true, status: status, user: data.user, gameToken: data.gameToken };
     if (status === 'eligible') {
       out.accessVia = 'subscriber';
-      out.dl = btoa('https://bot.frostclient.eu/dl/frost-lite.mrpack');
+      out.dl = btoa('https://cdn.frostclient.eu/get/frost-lite.mrpack?token=' + encodeURIComponent(data.gameToken || ''));
     }
     return out;
   }
 
   function exchange(code) {
     show('stateLoading');
-    fetch('https://bot.frostclient.eu/launcher/discord-login', {
+    fetch('https://api.frostclient.eu/launcher/discord-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: code }),

@@ -16,7 +16,7 @@
 })();
 
 (function () {
-  const SUMS_URL = 'https://bot.frostclient.eu/public_dl/SHA256SUMS';
+  const SUMS_URL = 'https://cdn.frostclient.eu/public_dl/SHA256SUMS';
   const rows = Array.prototype.slice.call(document.querySelectorAll('.checksum-hash[data-file]'));
   const status = document.getElementById('checksumStatus');
   if (!rows.length || !status || typeof fetch !== 'function') return;

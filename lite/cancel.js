@@ -42,7 +42,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
+  const LITE_API_URL = 'https://api.frostclient.eu/sheets';
   const TOKEN_KEY = 'frostToken';
 
   function loadToken() {

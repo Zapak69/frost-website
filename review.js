@@ -47,7 +47,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
+  const LITE_API_URL = 'https://api.frostclient.eu/sheets';
   const TOKEN_KEY = 'frostToken';
   const LEGACY_TOKEN_KEY = 'frostReviewToken';
   const OAUTH_STATE_KEY = 'frostReviewOauthState';

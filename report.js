@@ -16,8 +16,8 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
-  const BUG_REPORT_URL = 'https://bot.frostclient.eu/bug-report';
+  const LITE_API_URL = 'https://api.frostclient.eu/sheets';
+  const BUG_REPORT_URL = 'https://api.frostclient.eu/bug-report';
   const TOKEN_KEY = 'frostToken';
   const LEGACY_TOKEN_KEY = 'frostReportToken';
   const OAUTH_STATE_KEY = 'frostReportOauthState';

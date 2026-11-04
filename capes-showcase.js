@@ -1,5 +1,5 @@
 (function () {
-  const CAPES_BASE = 'https://bot.frostclient.eu/launcher/capes/';
+  const CAPES_BASE = 'https://cdn.frostclient.eu/launcher/capes/';
   const CAPES_JSON_URL = CAPES_BASE + 'capes.json';
   const STORE_URL = 'https://store.frostclient.eu/';
   const SHOW_COUNT = 6;

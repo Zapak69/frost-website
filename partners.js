@@ -16,7 +16,7 @@
 })();
 
 (function () {
-  const API = 'https://bot.frostclient.eu/site/partners';
+  const API = 'https://api.frostclient.eu/site/partners';
   const LINK_ORDER = ['youtube', 'tiktok', 'twitch', 'kick', 'x', 'instagram', 'discord', 'website', 'store'];
   const LINK_LABELS = { website: 'Website', discord: 'Discord', youtube: 'YouTube', twitch: 'Twitch', tiktok: 'TikTok', kick: 'Kick', x: 'X', instagram: 'Instagram', store: 'Store' };
   const ICON_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>';

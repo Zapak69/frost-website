@@ -1,5 +1,5 @@
 (function () {
-  const API = 'https://bot.frostclient.eu/site/partners';
+  const API = 'https://api.frostclient.eu/site/partners';
   const SHOW_COUNT = 9;
   const LINK_ORDER = ['youtube', 'tiktok', 'twitch', 'kick', 'x', 'instagram', 'discord', 'website', 'store'];
   const LINK_LABELS = { website: 'Website', discord: 'Discord', youtube: 'YouTube', twitch: 'Twitch', tiktok: 'TikTok', kick: 'Kick', x: 'X', instagram: 'Instagram', store: 'Store' };

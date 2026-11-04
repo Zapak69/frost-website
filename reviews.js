@@ -195,7 +195,7 @@
     document.querySelectorAll('.reviews-state').forEach(el => el.classList.toggle('active', el.id === id));
   }
 
-  fetch('https://bot.frostclient.eu/reviews_export.json', { cache: 'no-store' })
+  fetch('https://api.frostclient.eu/reviews_export.json', { cache: 'no-store' })
     .then(r => {
       if (!r.ok) throw new Error('http_' + r.status);
       return r.json();

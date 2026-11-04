@@ -140,7 +140,7 @@
   document.addEventListener('frostAccountLogout', applyLiteDownloadState);
 
   (function setupLauncherTile() {
-    const PUBLIC_DL_BASE = 'https://bot.frostclient.eu/public_dl/';
+    const PUBLIC_DL_BASE = 'https://cdn.frostclient.eu/get/';
     const LAUNCHER_FILES = {
       win: { file: 'Frost-Launcher-win.exe', label: 'Windows', icon: 'win' },
       mac: { file: 'Frost-Launcher-mac.dmg', label: 'macOS', icon: 'mac' },
@@ -338,8 +338,8 @@ function frostQueueToastShow(el, otherIds) {
   });
 })();
 (function () {
-  const POLL_VOTE_URL = 'https://bot.frostclient.eu/poll-vote';
-  const POLL_RESULTS_URL = 'https://bot.frostclient.eu/poll-votes';
+  const POLL_VOTE_URL = 'https://api.frostclient.eu/poll-vote';
+  const POLL_RESULTS_URL = 'https://api.frostclient.eu/poll-votes';
   const VOTED_KEY = 'frostPollVotedAnswer';
   const ANSWERS = ['CRYSTAL', 'MACE', 'SMP', 'UHC'];
 
@@ -838,7 +838,7 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
 
   const grid = document.getElementById('reviewsGridTeaser');
   if (!grid) return;
-  fetch('https://bot.frostclient.eu/reviews_export.json', { cache: 'no-store' })
+  fetch('https://api.frostclient.eu/reviews_export.json', { cache: 'no-store' })
     .then(r => {
       if (!r.ok) throw new Error('http_' + r.status);
       return r.json();
@@ -864,7 +864,7 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     return parts.join('.');
   }
-  fetch('https://bot.frostclient.eu/online-count', { cache: 'no-store' })
+  fetch('https://api.frostclient.eu/online-count', { cache: 'no-store' })
     .then(r => {
       if (!r.ok) throw new Error('http_' + r.status);
       return r.json();

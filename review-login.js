@@ -47,7 +47,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
+  const LITE_API_URL = 'https://api.frostclient.eu/sheets';
   const GAME_SESSION_KEY = 'frostReviewGameSession';
   const GAME_PORT_KEY = 'frostReviewGamePort';
   const OAUTH_STATE_KEY = 'frostReviewOauthState';

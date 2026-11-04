@@ -47,7 +47,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
+  const LITE_API_URL = 'https://api.frostclient.eu/sheets';
   const DISCORD_CLIENT_ID = '1512834635640475898';
   const DISCORD_REDIRECT_URI = 'https://frostclient.eu/lite';
   const WHOP_CHECKOUT_URL = 'https://whop.com/checkout/plan_oKGeLuyTvJb5u';
@@ -438,7 +438,7 @@
     const out = { ok: true, status: status, user: data.user, gameToken: data.gameToken };
     if (status === 'eligible') {
       out.accessVia = 'subscriber';
-      out.dl = btoa('https://bot.frostclient.eu/dl/frost-lite.mrpack');
+      out.dl = btoa('https://cdn.frostclient.eu/get/frost-lite.mrpack?token=' + encodeURIComponent(data.gameToken || ''));
     }
     return out;
   }
@@ -447,7 +447,7 @@
     show('stateLoading');
     setAuthPhase('checking');
     const returnTo = takeReturnTo();
-    fetch('https://bot.frostclient.eu/launcher/discord-login', {
+    fetch('https://api.frostclient.eu/launcher/discord-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: code, redirectUri: DISCORD_REDIRECT_URI }),
@@ -848,7 +848,7 @@ function frostQueueToastShow(el, otherIds) {
     return card;
   }
 
-  fetch('https://bot.frostclient.eu/reviews_export.json', { cache: 'no-store' })
+  fetch('https://api.frostclient.eu/reviews_export.json', { cache: 'no-store' })
     .then(r => {
       if (!r.ok) throw new Error('http_' + r.status);
       return r.json();

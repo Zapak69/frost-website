@@ -72,7 +72,7 @@
     document.getElementById('lastUpdated').textContent = data.updatedAt ? ('Last updated: ' + formatTime(data.updatedAt)) : '';
   }
 
-  fetch('https://bot.frostclient.eu/status-data?t=' + Date.now(), { cache: 'no-store' })
+  fetch('https://api.frostclient.eu/status-data?t=' + Date.now(), { cache: 'no-store' })
     .then(r => r.json())
     .then(render)
     .catch(() => {

@@ -42,7 +42,7 @@
 })();
 
 (function () {
-  const LITE_API_URL = 'https://bot.frostclient.eu/sheets';
+  const LITE_API_URL = 'https://api.frostclient.eu/sheets';
   const PAYMENT_ID_KEY = 'frostWhopPaymentId';
   const OAUTH_STATE_KEY = 'frostWhopOauthState';
   const DISCORD_CLIENT_ID = '1512834635640475898';

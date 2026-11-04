@@ -10,7 +10,7 @@
 })();
 
 (function () {
-  const API = 'https://bot.frostclient.eu/staff-test/';
+  const API = 'https://api.frostclient.eu/staff-test/';
   const TOKEN_KEY = 'frostToken';
   const OAUTH_STATE_KEY = 'frostStaffOauthState';
   const INTENT_KEY = 'frostStaffTestIntent';
