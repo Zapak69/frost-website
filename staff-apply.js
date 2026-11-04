@@ -23,12 +23,13 @@
     hoursPerWeek: ['Hours per week you can dedicate', 'e.g. 10-15 hours', false],
     experience: ['Previous moderation / staff experience', 'Where, for how long, what you did...', true],
     why: ['Why do you want to join the FrostClient team?', 'Tell us in your own words...', true],
+    launcherKnowledge: ['Do you know your way around the Frost Launcher? Could you guide a player to their logs, instance settings or mods?', 'How long you have used it and what you know how to do in it...', true],
     conflictScenario: ['Two members start arguing and spamming in chat. What do you do?', 'Walk us through it step by step...', true],
     extra: ['Anything else we should know about you?', 'Optional', true, true]
   };
   const BASE_STEPS = [
     { id: 'about', group: 'About you', title: 'About you', intro: 'A few basics so we know when you can help out.', fields: ['age', 'timezone', 'hoursPerWeek'] },
-    { id: 'experience', group: 'Experience', title: 'Your experience', intro: 'Moderation, support or community work you have done before. No experience is fine, just be honest.', fields: ['experience', 'why'] },
+    { id: 'experience', group: 'Experience', title: 'Your experience', intro: 'Moderation, support or community work you have done before. No experience is fine, just be honest.', fields: ['experience', 'why', 'launcherKnowledge'] },
     { id: 'scenario', group: 'Moderation', title: 'Moderation scenario', intro: 'There is no single right answer here. We want to see how you think.', fields: ['conflictScenario', 'extra'] }
   ];
   const gate = document.getElementById('saGate');
