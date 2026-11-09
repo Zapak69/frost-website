@@ -330,8 +330,20 @@
     setTimeout(() => dlBtn.classList.remove('clicked'), 450);
   });
 
+  function launcherReturn(params) {
+    if (!params.has('code') && !params.has('error')) return false;
+    const m = /^[0-9a-f]{48}\.l\.(\d{4,5})$/.exec(params.get('state') || '');
+    const port = m ? validGamePort(m[1]) : '';
+    if (!port) return false;
+    const out = new URLSearchParams();
+    ['code', 'state', 'error', 'error_description'].forEach(k => { if (params.has(k)) out.set(k, params.get(k)); });
+    window.location.replace('http://127.0.0.1:' + port + '/discord?' + out.toString());
+    return true;
+  }
+
   (function init() {
     const params = new URLSearchParams(window.location.search);
+    if (launcherReturn(params)) return;
 
     if (params.has('game') && params.has('session')) {
       storeGame(params.get('session'), params.get('port') || '41421', params.get('relay') === '1');
