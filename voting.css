@@ -1,0 +1,266 @@
+.lite-page.vote-page {
+  max-width: 780px;
+}
+.vote-card {
+  padding: 36px 32px;
+}
+.vote-intro-list {
+  display: flex; flex-direction: column; gap: 14px; margin-bottom: 26px;
+}
+.vote-intro-row {
+  display: flex; gap: 14px; align-items: flex-start; font-size: 14.5px; line-height: 1.55; color: var(--muted);
+}
+.vote-intro-row b {
+  color: var(--text); font-weight: 600;
+}
+.vote-intro-row svg {
+  width: 20px; height: 20px; flex-shrink: 0; color: var(--frost-blue); margin-top: 1px;
+}
+.vote-account {
+  display: flex; align-items: center; gap: 14px; padding: 16px 18px; margin-bottom: 20px;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
+.vote-account img {
+  width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+}
+.vote-account .va-text {
+  flex: 1; min-width: 0; font-size: 13.5px; color: var(--muted); line-height: 1.5;
+}
+.vote-account .va-text b {
+  display: block; color: var(--text); font-size: 14.5px; font-weight: 600;
+}
+.vote-account .va-lite {
+  display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 980px; font-size: 11px; font-weight: 700;
+  background: rgba(79,200,248,0.14); color: var(--frost-blue); vertical-align: 1px;
+}
+.vote-account .btn-secondary {
+  width: auto; padding: 10px 18px; font-size: 13px; flex-shrink: 0;
+}
+.vote-account svg {
+  width: 22px; height: 22px; color: var(--frost-blue); flex-shrink: 0;
+}
+.vote-progress {
+  margin-bottom: 26px;
+}
+.vote-progress-top {
+  display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin-bottom: 10px;
+}
+.vote-progress-top span:last-child {
+  color: var(--frost-blue); font-weight: 600;
+}
+.vote-progress-bar {
+  height: 6px; border-radius: 980px; background: var(--surface2); overflow: hidden;
+}
+.vote-progress-fill {
+  height: 100%; width: 0; border-radius: inherit; background: var(--frost-blue); transition: width 0.35s ease;
+}
+.vote-step-dots {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
+}
+.vote-step-dot {
+  font-family: inherit; font-size: 11.5px; font-weight: 500; padding: 5px 10px; border-radius: 980px; cursor: pointer;
+  background: transparent; border: 1px solid var(--border); color: var(--muted); transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.vote-step-dot:hover {
+  border-color: var(--border-strong); color: var(--text);
+}
+.vote-step-dot.done {
+  color: var(--text);
+}
+.vote-step-dot.active {
+  background: rgba(79,200,248,0.14); border-color: rgba(79,200,248,0.5); color: var(--frost-blue);
+}
+.vote-step-head h2 {
+  font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 6px;
+}
+.vote-step-head p {
+  font-size: 14px; color: var(--muted); margin: 0 0 22px; line-height: 1.55;
+}
+.vote-item {
+  padding: 18px 18px 16px; margin-bottom: 12px; border-radius: var(--radius-md);
+  background: var(--surface2); border: 1px solid var(--border); transition: border-color 0.2s, opacity 0.2s;
+}
+.vote-item.is-skipped .rate-row {
+  opacity: 0.35;
+}
+.vote-item.is-missing {
+  border-color: var(--red);
+}
+.vote-item-head {
+  display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 4px;
+}
+.vote-item-label {
+  font-size: 15px; font-weight: 600; color: var(--text);
+}
+.vote-item-label .req {
+  color: var(--frost-blue); margin-left: 4px;
+}
+.vote-item-score {
+  font-size: 13px; font-weight: 700; color: var(--muted); flex-shrink: 0;
+}
+.vote-item-hint {
+  font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-bottom: 4px;
+}
+.rate-row {
+  display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-top: 12px; transition: opacity 0.2s;
+}
+.rate-btn {
+  font-family: inherit; font-size: 14px; font-weight: 600; height: 40px; border-radius: 10px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+}
+.rate-btn:hover {
+  color: var(--text); border-color: var(--border-strong); transform: translateY(-1px);
+}
+.rate-btn.lvl-low.on {
+  background: rgba(255,105,97,0.18); border-color: var(--red); color: var(--red);
+}
+.rate-btn.lvl-mid.on {
+  background: rgba(255,201,77,0.16); border-color: var(--star); color: var(--star);
+}
+.rate-btn.lvl-high.on {
+  background: rgba(50,215,75,0.16); border-color: var(--green); color: var(--green);
+}
+.rate-scale {
+  display: flex; justify-content: space-between; font-size: 11px; color: var(--muted-dim); margin-top: 6px;
+}
+.vote-item-tools {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;
+}
+.vote-chip-btn {
+  display: inline-flex; align-items: center; gap: 6px; font-family: inherit; font-size: 12.5px; font-weight: 500;
+  padding: 7px 12px; border-radius: 980px; cursor: pointer; background: transparent;
+  border: 1px solid var(--border); color: var(--muted); transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.vote-chip-btn svg {
+  width: 14px; height: 14px;
+}
+.vote-chip-btn:hover {
+  color: var(--text); border-color: var(--border-strong);
+}
+.vote-chip-btn.on {
+  color: var(--frost-blue); border-color: rgba(79,200,248,0.5); background: rgba(79,200,248,0.1);
+}
+.vote-sugg {
+  display: none; margin-top: 12px; gap: 10px; flex-direction: column;
+}
+.vote-sugg.show {
+  display: flex;
+}
+.vote-sugg label {
+  display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--text); margin-bottom: 6px;
+}
+.vote-sugg label svg {
+  width: 14px; height: 14px;
+}
+.vote-sugg .s-add svg {
+  color: var(--green);
+}
+.vote-sugg .s-change svg {
+  color: var(--star);
+}
+.vote-sugg .s-remove svg {
+  color: var(--red);
+}
+.vote-sugg textarea, .vote-final textarea {
+  min-height: 64px; font-size: 13.5px;
+}
+.vote-final textarea {
+  min-height: 110px;
+}
+.vote-final .field-block {
+  margin-bottom: 20px;
+}
+.vote-profile-q {
+  margin-bottom: 22px;
+}
+.vote-options {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.vote-option {
+  font-family: inherit; font-size: 13.5px; font-weight: 500; padding: 9px 15px; border-radius: 980px; cursor: pointer;
+  background: var(--surface2); border: 1px solid var(--border); color: var(--muted); transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.vote-option:hover {
+  color: var(--text); border-color: var(--border-strong);
+}
+.vote-option.on {
+  background: rgba(79,200,248,0.14); border-color: rgba(79,200,248,0.55); color: var(--frost-blue);
+}
+.vote-summary {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 22px;
+}
+.vote-summary-card {
+  padding: 14px 16px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); cursor: pointer;
+  text-align: left; font-family: inherit; color: var(--text); transition: border-color 0.2s;
+}
+.vote-summary-card:hover {
+  border-color: var(--border-strong);
+}
+.vote-summary-card .t {
+  font-size: 13px; color: var(--muted);
+}
+.vote-summary-card .v {
+  font-size: 22px; font-weight: 700; margin-top: 4px;
+}
+.vote-summary-card .n {
+  font-size: 12px; color: var(--muted-dim); margin-top: 2px;
+}
+.vote-summary-card .v.lvl-low {
+  color: var(--red);
+}
+.vote-summary-card .v.lvl-mid {
+  color: var(--star);
+}
+.vote-summary-card .v.lvl-high {
+  color: var(--green);
+}
+.vote-lite-lock {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px; margin-bottom: 18px; border-radius: var(--radius-sm);
+  background: rgba(79,200,248,0.08); border: 1px solid rgba(79,200,248,0.25); font-size: 13.5px; color: var(--muted); line-height: 1.5;
+}
+.vote-lite-lock svg {
+  width: 20px; height: 20px; color: var(--frost-blue); flex-shrink: 0;
+}
+.vote-lite-lock b {
+  color: var(--text);
+}
+.vote-nav {
+  display: flex; gap: 12px; margin-top: 24px;
+}
+.vote-nav .btn-secondary {
+  width: auto; flex: 0 0 auto; padding: 14px 26px;
+}
+.vote-nav .btn-primary {
+  flex: 1;
+}
+.vote-done-icon {
+  width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center;
+  background: rgba(50,215,75,0.14); color: var(--green);
+}
+.vote-done-icon svg {
+  width: 30px; height: 30px;
+}
+@media (max-width: 640px) {
+  .vote-card {
+    padding: 28px 16px;
+  }
+  .vote-item {
+    padding: 16px 12px 14px;
+  }
+  .rate-row {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .rate-btn {
+    height: 38px;
+  }
+  .vote-account {
+    flex-wrap: wrap;
+  }
+  .vote-account .btn-secondary {
+    width: 100%;
+  }
+  .vote-step-dots {
+    display: none;
+  }
+}
