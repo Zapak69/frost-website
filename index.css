@@ -336,6 +336,32 @@
     background: radial-gradient(ellipse, rgba(79,200,248,0.09) 0%, transparent 70%);
     pointer-events: none;
   }
+  .rust-banner {
+    display: inline-flex; align-items: center; gap: 10px;
+    max-width: calc(100vw - 32px);
+    margin: 0 auto 14px;
+    padding: 6px 14px 6px 6px;
+    border-radius: 980px;
+    border: 1px solid rgba(226, 143, 33, 0.45);
+    background: linear-gradient(100deg, rgba(237, 188, 60, 0.16), rgba(199, 98, 0, 0.2));
+    box-shadow: 0 0 24px rgba(226, 143, 33, 0.18);
+    color: var(--text); text-decoration: none;
+    font-size: 13px; font-weight: 500; line-height: 1.3;
+    transition: border-color .2s, box-shadow .2s, transform .2s;
+  }
+  .rust-banner:hover { border-color: #e28f21; box-shadow: 0 0 32px rgba(226, 143, 33, 0.32); transform: translateY(-1px); }
+  .rust-banner:focus-visible { outline: 2px solid #edbc3c; outline-offset: 3px; }
+  .rust-banner-icon { width: 28px; height: 28px; border-radius: 8px; flex: none; }
+  .rust-banner-tag { flex: none; padding: 3px 8px; border-radius: 980px; background: #e28f21; color: #0b0806; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; }
+  .rust-banner-text strong { color: #edbc3c; font-weight: 700; }
+  .rust-banner-date { color: var(--muted); }
+  .rust-banner-arrow { width: 16px; height: 16px; flex: none; color: #edbc3c; transition: transform .2s; }
+  .rust-banner:hover .rust-banner-arrow { transform: translateX(3px); }
+  @media (max-width: 520px) {
+    .rust-banner { font-size: 12px; gap: 8px; padding-right: 10px; }
+    .rust-banner-date { display: block; }
+    .rust-banner-tag { display: none; }
+  }
   .hero-badge {
     display: inline-flex; align-items: center; gap: 8px;
     background: var(--surface);
@@ -1184,6 +1210,55 @@
       align-items: flex-start;
     }
   }
+  .dl-rust-row {
+    --dl-hl-angle: 0deg;
+    --dl-rust-veil: rgba(226,143,33,0.05);
+    margin-top: 10px;
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 20px;
+    border: 2px solid transparent; border-radius: 18px;
+    background-color: transparent;
+    background-image:
+      linear-gradient(var(--dl-rust-veil), var(--dl-rust-veil)),
+      linear-gradient(var(--surface), var(--surface)),
+      conic-gradient(from var(--dl-hl-angle), #8a3c0e 0%, #e28f21 25%, #ffd36a 50%, #e28f21 75%, #8a3c0e 100%);
+    background-origin: padding-box, padding-box, border-box;
+    background-clip: padding-box, padding-box, border-box;
+    color: var(--text); text-decoration: none;
+    transition: transform 0.2s;
+    animation: dlHighlightSpin 4s linear infinite;
+  }
+  .dl-rust-row:hover {
+    --dl-rust-veil: rgba(226,143,33,0.11);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+  .dl-rust-row .dl-lite-main { flex: 1; min-width: 0; }
+  .dl-rust-row .dl-lite-name { white-space: nowrap; flex-wrap: nowrap; }
+  .dl-rust-badge {
+    font-family: var(--font-bold);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap;
+    color: #1a0c04;
+    background: linear-gradient(110deg, #c2621a 0%, #e28f21 30%, #ffd36a 50%, #e28f21 70%, #c2621a 100%);
+    background-size: 220% 100%;
+    border-radius: 999px; padding: 3px 12px;
+    box-shadow: 0 2px 8px rgba(226,143,33,0.45);
+    animation: dlRustPillShine 3s linear infinite;
+  }
+  @keyframes dlRustPillShine {
+    from { background-position: 100% 0; }
+    to { background-position: -120% 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dl-rust-row, .dl-rust-badge { animation: none; }
+  }
+  .dl-rust-cta {
+    flex-shrink: 0;
+    font-size: 13.5px; font-weight: 700; color: #edbc3c; white-space: nowrap;
+  }
+  @media(max-width:600px) {
+    .dl-rust-row { flex-wrap: wrap; }
+  }
   .dl-alt-links {
     margin-top: 18px;
     font-size: 12px;
@@ -1912,6 +1987,14 @@
       max-width: none;
     }
   }
+
+  .rust-toast {
+    border-color: rgba(226, 143, 33, 0.5);
+    box-shadow: 0 20px 60px -12px rgba(0,0,0,0.6), 0 0 24px rgba(226, 143, 33, 0.12);
+  }
+  .rust-toast-icon { width: 40px; height: 40px; border-radius: 11px; flex: none; }
+  .rust-toast .poll-toast-text strong { color: #edbc3c; }
+  .rust-toast .poll-toast-cta { background: #e28f21; color: #0b0806; text-decoration: none; }
 
   .modal-box--poll {
     max-width: 480px;

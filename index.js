@@ -329,7 +329,32 @@ function frostQueueToastShow(el, otherIds) {
       dismissed = localStorage.getItem(KEY) === '1';
   } catch (e) {}
   if (dismissed) return;
-  setTimeout(() => frostQueueToastShow(toast, ['pollToast']), 1200);
+  setTimeout(() => frostQueueToastShow(toast, ['rustToast']), 1200);
+  closeBtn.addEventListener('click', () => {
+    toast.classList.remove('show');
+    try {
+        localStorage.setItem(KEY, '1');
+    } catch (e) {}
+  });
+})();
+(function () {
+  const KEY = 'frostRustToastDismissed';
+  const toast = document.getElementById('rustToast');
+  const closeBtn = document.getElementById('rustToastClose');
+  if (!toast || !closeBtn) return;
+  try {
+      if (localStorage.getItem(KEY) === '1') return;
+  } catch (e) {}
+  const promoToast = document.getElementById('promoToast');
+  function reposition() {
+    toast.style.bottom = promoToast && promoToast.classList.contains('show') ? (promoToast.getBoundingClientRect().height + 24 + 16) + 'px' : '';
+  }
+  const promoCloseBtn = document.getElementById('promoToastClose');
+  if (promoCloseBtn) promoCloseBtn.addEventListener('click', reposition);
+  setTimeout(() => {
+      reposition();
+      frostQueueToastShow(toast, ['promoToast']);
+  }, 1200);
   closeBtn.addEventListener('click', () => {
     toast.classList.remove('show');
     try {
