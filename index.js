@@ -929,3 +929,22 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   });
   render();
 })();
+(function () {
+  const pill = document.getElementById('dlRustCountdown');
+  if (!pill) return;
+  const target = Date.parse(pill.dataset.to);
+  if (isNaN(target)) return;
+  let timer = null;
+  function tick() {
+    const left = Math.max(0, Math.floor((target - Date.now()) / 1000));
+    if (!left) {
+      pill.textContent = 'Out now';
+      if (timer) clearInterval(timer);
+      return;
+    }
+    const d = Math.floor(left / 86400), h = Math.floor(left / 3600) % 24, m = Math.floor(left / 60) % 60, s = left % 60;
+    pill.textContent = d + 'D ' + h + 'H ' + m + 'M ' + s + 'S';
+  }
+  tick();
+  timer = setInterval(tick, 1000);
+})();

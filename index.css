@@ -1242,6 +1242,7 @@
     background: linear-gradient(110deg, #c2621a 0%, #e28f21 30%, #ffd36a 50%, #e28f21 70%, #c2621a 100%);
     background-size: 220% 100%;
     border-radius: 999px; padding: 3px 12px;
+    font-variant-numeric: tabular-nums;
     box-shadow: 0 2px 8px rgba(226,143,33,0.45);
     animation: dlRustPillShine 3s linear infinite;
   }
